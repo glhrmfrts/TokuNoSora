@@ -4,9 +4,12 @@ import com.badlogic.gdx.Application;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.habboi.tns.states.*;
+import com.habboi.tns.rendering.GameRenderer;
 
 public class Game extends ApplicationAdapter {
   static final float STEP_SECONDS = 0.016f;
@@ -15,6 +18,8 @@ public class Game extends ApplicationAdapter {
   long accumUpdateTime;
   long lastUpdateTime = -1;
 
+  InputMultiplexer inputMul;
+  GameRenderer renderer;
   GameState currentState;
   boolean stateChanged;
 
@@ -27,6 +32,11 @@ public class Game extends ApplicationAdapter {
     appType = Gdx.app.getType();
     width = Gdx.graphics.getWidth();
     height = Gdx.graphics.getHeight();
+
+    inputMul = new InputMultiplexer();
+    Gdx.input.setInputProcessor(inputMul);
+
+    renderer = new GameRenderer(this);
 		setCurrentState(new InGameState(this));
 	}
 
@@ -42,6 +52,10 @@ public class Game extends ApplicationAdapter {
     return height;
   }
 
+  public com.habboi.tns.rendering.GameRenderer getRenderer() {
+    return renderer;
+  }
+
   public void setCurrentState(GameState state) {
     if (currentState != null) {
       currentState.dispose();
@@ -51,11 +65,12 @@ public class Game extends ApplicationAdapter {
     currentState.create();
   }
 
+  public void addInput(InputProcessor input) {
+    inputMul.addProcessor(input);
+  }
+
 	@Override
 	public void render () {
-		Gdx.gl.glClearColor(0, 0, 0, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
-
 		if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
 			Gdx.app.exit();
 			return;
@@ -63,11 +78,13 @@ public class Game extends ApplicationAdapter {
 
     long start = TimeUtils.millis();
     if (lastUpdateTime == -1) {
-      lastUpdateTime = 1;
+      lastUpdateTime = start;
       return;
     }
 
-    float delta = (lastUpdateTime - start);
+    float delta = (start - lastUpdateTime);
+    lastUpdateTime = start;
+
     accumUpdateTime += delta;
     while (accumUpdateTime >= STEP) {
       accumUpdateTime -= delta;
@@ -84,5 +101,6 @@ public class Game extends ApplicationAdapter {
   @Override
   public void dispose() {
     currentState.dispose();
+    renderer.dispose();
   }
 }

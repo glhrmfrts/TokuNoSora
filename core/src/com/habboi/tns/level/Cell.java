@@ -1,23 +1,23 @@
 package com.habboi.tns.level;
 
-import com.badlogic.gdx.graphics.g3d.Environment;
-import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Vector3;
+import com.habboi.tns.rendering.GameRenderer;
 import com.habboi.tns.Ship;
 
 /**
  * Represents a cell in the level.
  */
 public abstract class Cell {
+  public CollisionInfo collisionInfo = new CollisionInfo();
+
   Vector3 pos = new Vector3();
   ModelInstance modelInstance;
-  CollisionInfo collisionInfo;
 
-  static class CollisionInfo {
-    Vector3 normal;
-    float depth;
-    float slide;
+  public static class CollisionInfo {
+    public Vector3 normal = new Vector3();
+    public float depth;
+    public float slide;
 
     void clear() {
       normal.set(0, 0, 0);
@@ -26,6 +26,6 @@ public abstract class Cell {
     }
   }
 
-  public abstract void render(ModelBatch batch, Environment environment);
+  public abstract void render(GameRenderer renderer);
   public abstract boolean checkCollision(Ship ship);
 }

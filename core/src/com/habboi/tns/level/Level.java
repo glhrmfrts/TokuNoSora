@@ -3,14 +3,13 @@ package com.habboi.tns.level;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.VertexAttributes;
-import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
-import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder.VertexInfo;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
+import com.habboi.tns.rendering.GameRenderer;
 import com.habboi.tns.Ship;
 
 import java.util.ArrayList;
@@ -19,13 +18,14 @@ import java.util.ArrayList;
  * Manages a level and it's objects.
  */
 public class Level {
-  static final float GRAVITY = -14.87f;
+  static final float GRAVITY = -9.87f;
   static final float BLENDING = 0.25f;
 
   String name;
   String music;
   int gravityLevel;
   int fuelFactor;
+  Vector3 shipPos;
   ArrayList<Color> colors;
   ArrayList<ArrayList<int[]>> presets;
 
@@ -34,16 +34,22 @@ public class Level {
   ArrayList<Cell> cells = new ArrayList<>();
   ArrayList<Cell> collisions = new ArrayList<>();
 
-  public Level(String name, String music, int gravityLevel, int fuelFactor, ArrayList<Color> colors, ArrayList<ArrayList<int[]>> presets) {
+  public Level(String name, String music, int gravityLevel, int fuelFactor,
+               Vector3 shipPos, ArrayList<Color> colors, ArrayList<ArrayList<int[]>> presets) {
     this.name = name;
     this.music = music;
     this.gravityLevel = gravityLevel;
     this.fuelFactor = fuelFactor;
+    this.shipPos = shipPos;
     this.colors = colors;
     this.presets = presets;
 
     mb = new ModelBuilder();
     createPresetModels();
+  }
+
+  public Vector3 getShipPos() {
+    return shipPos;
   }
 
   private void createPresetModels() {
@@ -134,9 +140,9 @@ public class Level {
     return mb.end();
   }
 
-  public void addTile(Vector3 pos, Vector3 size, Tile.TouchEffect effect, int preset) {
+  public void addTile(Vector3 pos, Vector3 size, Color outlineColor, Tile.TouchEffect effect, int preset) {
     Model model = presetModels.get(preset);
-    Tile tile = new Tile(pos, size, effect, model);
+    Tile tile = new Tile(pos, size, outlineColor, effect, model);
     cells.add(tile);
   }
 
@@ -171,12 +177,12 @@ public class Level {
   }
 
   public void update(Ship ship, float dt) {
-    //updatePhysics(ship, dt);
+    updatePhysics(ship, dt);
   }
 
-  public void render(ModelBatch batch, Environment environment) {
+  public void render(GameRenderer renderer) {
     for (Cell cell : cells) {
-      cell.render(batch, environment);
+      cell.render(renderer);
     }
   }
 

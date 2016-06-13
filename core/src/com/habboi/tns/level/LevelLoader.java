@@ -3,6 +3,7 @@ package com.habboi.tns.level;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 
@@ -21,11 +22,11 @@ public class LevelLoader {
     String music = root.getString("music");
     int gravityLevel = root.getInt("gravity_level");
     int fuelFactor = root.getInt("fuel_factor");
+    Vector3 shipPos = parseVector3(root.getString("ship_pos"));
 
     JsonValue jsonColors = root.get("colors");
     if (!jsonColors.isArray()) {
-      System.out.println("No colors");
-      return null;
+      throw new GdxRuntimeException("No colors or isn't array");
     }
     ArrayList<Color> colors = new ArrayList<>();
     for (String str : jsonColors.asStringArray()) {
@@ -35,8 +36,7 @@ public class LevelLoader {
 
     JsonValue jsonPresets = root.get("presets");
     if (!jsonPresets.isArray()) {
-      System.out.println("No presets");
-      return null;
+      throw new GdxRuntimeException("No presets or isn't array");
     }
     ArrayList<ArrayList<int[]>> presets = new ArrayList<>();
     for (JsonValue jsonPreset : jsonPresets.iterator()) {
@@ -47,7 +47,7 @@ public class LevelLoader {
       }
     }
 
-    level = new Level(name, music, gravityLevel, fuelFactor, colors, presets);
+    level = new Level(name, music, gravityLevel, fuelFactor, shipPos, colors, presets);
     JsonValue cells = root.get("cells");
     for (JsonValue cell : cells.iterator()) {
       if (cell.has("tile")) {
@@ -60,7 +60,12 @@ public class LevelLoader {
         if (tile.has("effect")) {
           effect = Tile.TouchEffect.values()[tile.getInt("effect")];
         }
-        level.addTile(pos, size, effect, preset);
+
+        Color outlineColor = Color.WHITE;
+        if (tile.has("outline")) {
+          outlineColor = colors.get(tile.getInt("outline"));
+        }
+        level.addTile(pos, size, outlineColor, effect, preset);
       }
     }
     return level;
