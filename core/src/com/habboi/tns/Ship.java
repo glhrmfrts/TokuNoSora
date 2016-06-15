@@ -30,7 +30,7 @@ public class Ship {
   static final float MAX_VEL = 50;
   static final float STEER_VEL = 12;
   static final float JUMP_VEL = 8;
-  static final float MIN_BOUNCE_VEL = 0.25f;
+  static final float MIN_BOUNCE_VEL = 0.4f;
   static final float BOUNCE_FACTOR = 0.35f;
   static final Color COLOR = new Color(0x7F0000<<8);
   static Model bodyModel;
