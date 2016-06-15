@@ -1,6 +1,5 @@
 package com.habboi.tns.states;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.habboi.tns.Game;
 import com.habboi.tns.Ship;
@@ -28,8 +27,8 @@ public class InGameState extends GameState {
     level = LevelLoader.load("map1.json");
 
     ShipController sc = new ShipController(false);
-    ship = new Ship(level.getShipPos(), sc);
     game.addInput(sc);
+    ship = new Ship(level.getShipPos(), sc);
   }
 
   @Override
@@ -40,17 +39,12 @@ public class InGameState extends GameState {
 
   @Override
   public void render() {
-    //Gdx.gl.glEnable(GL20.GL_BLEND);
-    //Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-
     camController.update();
 
     game.getRenderer().begin();
     level.render(game.getRenderer());
     ship.render(game.getRenderer());
     game.getRenderer().end();
-
-    //Gdx.gl.glDisable(GL20.GL_BLEND);
   }
 
   @Override

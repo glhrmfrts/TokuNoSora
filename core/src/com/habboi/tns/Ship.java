@@ -27,22 +27,15 @@ public class Ship {
   static final float BODY_WIDTH = 1;
   static final float BODY_HEIGHT = 0.5f;
   static final float BODY_DEPTH = 2.5f;
-  static final float ENGINE_WIDTH = 0.5f;
-  static final float ENGINE_HEIGHT = 0.5f;
-  static final float ENGINE_DEPTH = 1;
   static final float MAX_VEL = 50;
   static final float STEER_VEL = 12;
   static final float JUMP_VEL = 8;
-  static final float MIN_BOUNCE_VEL = 0.4f;
+  static final float MIN_BOUNCE_VEL = 0.25f;
   static final float BOUNCE_FACTOR = 0.35f;
   static final Color COLOR = new Color(0x7F0000<<8);
-
   static Model bodyModel;
-  static Model engineModel;
 
   ModelInstance bodyInstance;
-  ModelInstance[] engineInstances;
-  Vector3[] enginePositions;
   ShipController controller;
   int floorCollisions;
   float dSlide;
@@ -54,7 +47,7 @@ public class Ship {
     VertexInfo v1, v2, v3, v4;
     Vector3 normal;
 
-    float front = 0.125f;
+    final float front = 0.125f;
 
     ModelBuilder mb = new ModelBuilder();
     mb.begin();
@@ -65,10 +58,10 @@ public class Ship {
             new Material());
 
     partBuilder.setColor(COLOR);
-    v1 = new VertexInfo().setPos(0.3f, -front, -0.5f);
+    v1 = new VertexInfo().setPos(0.3f, -0.5f, -0.5f);
     v2 = new VertexInfo().setPos(0.5f, -0.5f, 0.5f);
     v3 = new VertexInfo().setPos(-0.5f, -0.5f, 0.5f);
-    v4 = new VertexInfo().setPos(-0.3f, -front, -0.5f);
+    v4 = new VertexInfo().setPos(-0.3f, -0.5f, -0.5f);
 
     normal = Util.calculateNormal(v1.position, v2.position, v3.position);
     v1.setNor(normal);
@@ -85,8 +78,8 @@ public class Ship {
 
     partBuilder.setColor(COLOR);
     v1 = new VertexInfo().setPos(-0.3f, front, -0.5f);
-    v2 = new VertexInfo().setPos(-0.5f, 0.5f, 0.5f);
-    v3 = new VertexInfo().setPos(0.5f, 0.5f, 0.5f);
+    v2 = new VertexInfo().setPos(-0.25f, 0.5f, 0.5f);
+    v3 = new VertexInfo().setPos(0.25f, 0.5f, 0.5f);
     v4 = new VertexInfo().setPos(0.3f, front, -0.5f);
 
     normal = Util.calculateNormal(v1.position, v2.position, v3.position);
@@ -103,9 +96,9 @@ public class Ship {
             new Material());
 
     partBuilder.setColor(COLOR);
-    v1 = new VertexInfo().setPos(-0.3f, -front, -0.5f).setNor(-1, 0, 0);
+    v1 = new VertexInfo().setPos(-0.3f, -0.5f, -0.5f).setNor(-1, 0, 0);
     v2 = new VertexInfo().setPos(-0.5f, -0.5f, 0.5f).setNor(-1, 0, 0);
-    v3 = new VertexInfo().setPos(-0.5f, 0.5f, 0.5f).setNor(-1, 0, 0);
+    v3 = new VertexInfo().setPos(-0.25f, 0.5f, 0.5f).setNor(-1, 0, 0);
     v4 = new VertexInfo().setPos(-0.3f, front, -0.5f).setNor(-1, 0, 0);
     partBuilder.rect(v1, v2, v3, v4);
 
@@ -116,9 +109,9 @@ public class Ship {
 
     partBuilder.setColor(COLOR);
     v1 = new VertexInfo().setPos(0.5f, -0.5f, 0.5f).setNor(1, 0, 0);
-    v2 = new VertexInfo().setPos(0.3f, -front, -0.5f).setNor(1, 0, 0);
+    v2 = new VertexInfo().setPos(0.3f, -0.5f, -0.5f).setNor(1, 0, 0);
     v3 = new VertexInfo().setPos(0.3f, front, -0.5f).setNor(1, 0, 0);
-    v4 = new VertexInfo().setPos(0.5f, 0.5f, 0.5f).setNor(1, 0, 0);
+    v4 = new VertexInfo().setPos(0.25f, 0.5f, 0.5f).setNor(1, 0, 0);
     partBuilder.rect(v1, v2, v3, v4);
 
     // create front part
@@ -127,8 +120,8 @@ public class Ship {
             new Material());
 
     partBuilder.setColor(COLOR);
-    v1 = new VertexInfo().setPos(0.3f, -front, -0.5f).setNor(0, 0, -1);
-    v2 = new VertexInfo().setPos(-0.3f, -front, -0.5f).setNor(0, 0, -1);
+    v1 = new VertexInfo().setPos(0.3f, -0.5f, -0.5f).setNor(0, 0, -1);
+    v2 = new VertexInfo().setPos(-0.3f, -0.5f, -0.5f).setNor(0, 0, -1);
     v3 = new VertexInfo().setPos(-0.3f, front, -0.5f).setNor(0, 0, -1);
     v4 = new VertexInfo().setPos(0.3f, front, -0.5f).setNor(0, 0, -1);
     partBuilder.rect(v1, v2, v3, v4);
@@ -141,54 +134,23 @@ public class Ship {
     partBuilder.setColor(COLOR);
     v1 = new VertexInfo().setPos(-0.5f, -0.5f, 0.5f).setNor(0, 0, 1);
     v2 = new VertexInfo().setPos(0.5f, -0.5f, 0.5f).setNor(0, 0, 1);
-    v3 = new VertexInfo().setPos(0.5f, 0.5f, 0.5f).setNor(0, 0, 1);
-    v4 = new VertexInfo().setPos(-0.5f, 0.5f, 0.5f).setNor(0, 0, 1);
+    v3 = new VertexInfo().setPos(0.25f, 0.5f, 0.5f).setNor(0, 0, 1);
+    v4 = new VertexInfo().setPos(-0.25f, 0.5f, 0.5f).setNor(0, 0, 1);
     partBuilder.rect(v1, v2, v3, v4);
 
     return bodyModel = mb.end();
   }
 
-  private static Model createEngineModel() {
-    if (engineModel != null) return engineModel;
-
-    MeshPartBuilder partBuilder;
-
-    ModelBuilder mb = new ModelBuilder();
-    mb.begin();
-
-    partBuilder = mb.part("outside", GL20.GL_TRIANGLES,
-            VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.ColorPacked,
-            new Material());
-
-    partBuilder.setColor(COLOR);
-    partBuilder.cone(ENGINE_WIDTH, ENGINE_DEPTH, ENGINE_HEIGHT, 8);
-
-    return engineModel = mb.end();
-  }
-
   public Ship(Vector3 pos, ShipController controller) {
+    half.set(BODY_WIDTH / 2f, BODY_HEIGHT / 2f, BODY_DEPTH / 2f);
+
     this.pos.set(pos);
     this.pos.z -= half.z;
 
     this.controller = controller;
 
-    half.set(BODY_WIDTH / 2f, BODY_HEIGHT / 2f, BODY_DEPTH / 2f);
-
-    // add the engines size
-    half.x += ENGINE_WIDTH;
-
     bodyInstance = new ModelInstance(createBodyModel());
     bodyInstance.transform.setToScaling(BODY_WIDTH, BODY_HEIGHT, BODY_DEPTH);
-
-    engineInstances = new ModelInstance[2];
-    enginePositions = new Vector3[2];
-    for (int i = 0; i < engineInstances.length; i++) {
-      ModelInstance inst = new ModelInstance(createEngineModel());
-
-      inst.transform.setToRotation(-1, 0, 0, 90);
-      engineInstances[i] = inst;
-      enginePositions[i] = new Vector3();
-    }
   }
 
   public void update(float dt) {
@@ -209,9 +171,9 @@ public class Ship {
     if (floorCollisions > 0) {
       // only steer and jump when ship is on the floor
       vel.x = 0;
-      if (dSlide <= 0 && controller.isDown(Key.LEFT)) {
+      if ((dSlide <= 0 || floorCollisions > 1) && controller.isDown(Key.LEFT)) {
         vel.x = -STEER_VEL * Math.max(-vel.z / MAX_VEL, 0.25f);
-      } else if (dSlide >= 0 && controller.isDown(Key.RIGHT)) {
+      } else if ((dSlide >= 0 || floorCollisions > 1) && controller.isDown(Key.RIGHT)) {
         vel.x = STEER_VEL * Math.max(-vel.z / MAX_VEL, 0.25f);
       }
 
@@ -223,25 +185,18 @@ public class Ship {
     }
 
     floorCollisions = 0;
+    dSlide = 0;
   }
 
   public void render(GameRenderer renderer) {
     bodyInstance.transform.setTranslation(pos);
     renderer.render(bodyInstance);
-
-    for (int i = 0; i < engineInstances.length; i++) {
-      enginePositions[i].set(pos);
-      enginePositions[i].x = pos.x + (BODY_WIDTH/2f + 0.2f) * (i == 0 ? -1 : 1);
-      enginePositions[i].y = pos.y;
-      enginePositions[i].z = pos.z + (BODY_DEPTH/2f) - 0.5f;
-
-      engineInstances[i].transform.setTranslation(enginePositions[i]);
-      renderer.render(engineInstances[i]);
-    }
   }
 
   public boolean handleCollision(Cell cell) {
     Cell.CollisionInfo c = cell.collisionInfo;
+    System.out.println(c);
+
     if (c.normal.y == 1) {
       floorCollisions++;
 
@@ -250,12 +205,12 @@ public class Ship {
       }
     }
 
-    dSlide = c.slide;
-    if (dSlide != 0) {
+    if (c.slide != 0) {
       float dx = Math.copySign(1, vel.x);
-      float ds = Math.copySign(1, dSlide);
+      float ds = Math.copySign(1, c.slide);
       if (dx == ds || vel.x == 0) {
-        c.normal.x = dSlide;
+        c.normal.x = c.slide;
+        dSlide = c.slide;
       }
     }
     return true;

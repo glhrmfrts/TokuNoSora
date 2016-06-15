@@ -13,6 +13,7 @@ import com.habboi.tns.rendering.GameRenderer;
 import com.habboi.tns.Ship;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 /**
  * Manages a level and it's objects.
@@ -32,7 +33,7 @@ public class Level {
   ModelBuilder mb;
   ArrayList<Model> presetModels = new ArrayList<>();
   ArrayList<Cell> cells = new ArrayList<>();
-  ArrayList<Cell> collisions = new ArrayList<>();
+  LinkedList<Cell> collisions = new LinkedList<>();
 
   public Level(String name, String music, int gravityLevel, int fuelFactor,
                Vector3 shipPos, ArrayList<Color> colors, ArrayList<ArrayList<int[]>> presets) {
@@ -140,8 +141,12 @@ public class Level {
     return mb.end();
   }
 
-  public void addTile(Vector3 pos, Vector3 size, Color outlineColor, Tile.TouchEffect effect, int preset) {
+  public void addTile(Vector3 pos, Vector3 size, int outline, Tile.TouchEffect effect, int preset) {
     Model model = presetModels.get(preset);
+    Color outlineColor = Color.WHITE;
+    if (outline != -1) {
+      outlineColor = colors.get(outline);
+    }
     Tile tile = new Tile(pos, size, outlineColor, effect, model);
     cells.add(tile);
   }
@@ -149,14 +154,14 @@ public class Level {
   private void updatePhysics(Ship ship, float dt) {
     ship.vel.y += (GRAVITY * gravityLevel) * dt;
 
-    collisions.clear();
     for (Cell cell : cells) {
       if (cell.checkCollision(ship)) {
         collisions.add(cell);
       }
     }
 
-    for (Cell cell : collisions) {
+    Cell cell;
+    while ((cell = collisions.pollFirst()) != null) {
       if (ship.handleCollision(cell)) {
         Cell.CollisionInfo c = cell.collisionInfo;
 

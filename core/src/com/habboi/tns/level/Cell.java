@@ -24,6 +24,12 @@ public abstract class Cell {
       depth = 0;
       slide = 0;
     }
+
+    public String toString() {
+      String result = "{" + normal;
+      result += ", " + depth + ", " + slide + "}";
+      return result;
+    }
   }
 
   public abstract void render(GameRenderer renderer);

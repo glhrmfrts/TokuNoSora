@@ -61,11 +61,11 @@ public class LevelLoader {
           effect = Tile.TouchEffect.values()[tile.getInt("effect")];
         }
 
-        Color outlineColor = Color.WHITE;
+        int outline = -1;
         if (tile.has("outline")) {
-          outlineColor = colors.get(tile.getInt("outline"));
+          outline = tile.getInt("outline");
         }
-        level.addTile(pos, size, outlineColor, effect, preset);
+        level.addTile(pos, size, outline, effect, preset);
       }
     }
     return level;
