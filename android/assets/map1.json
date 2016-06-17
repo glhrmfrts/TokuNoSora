@@ -30,6 +30,7 @@
 {
   "name": "Something",
   "music": "nice.ogg",
+  "world": "Beggining",
   "gravity_level": 2,
   "fuel_factor": 2,
   "ship_pos": "3,1,0",
@@ -37,7 +38,7 @@
     "0x0c7cac",
     "0xf540ef",
     "0x5678e3",
-    "0x031658",
+    "0x1a37f5",
     "0x5a67c7"
   ],
   "presets": [
@@ -63,6 +64,20 @@
     {
       "tile": {
         "pos": "0,0,4",
+        "size": "6,2,200",
+        "preset": 2
+      }
+    },
+    {
+      "tile": {
+        "pos": "-6,0,205",
+        "size": "6,2,200",
+        "preset": 2
+      }
+    },
+    {
+      "tile": {
+        "pos": "6,0,205",
         "size": "6,2,200",
         "preset": 2
       }

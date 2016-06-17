@@ -67,6 +67,19 @@ public class LevelLoader {
           outline = tile.getInt("outline");
         }
         level.addTile(pos, size, outline, effect, preset);
+      } else if (cell.has("sun")) {
+        JsonValue sun = cell.get("sun");
+        Vector3 pos = parseVector3(sun.getString("pos"));
+        Vector3 size = parseVector3(sun.getString("size"));
+
+        level.addSun(pos, size);
+      } else if (cell.has("tunnel")) {
+        JsonValue tunnel = cell.get("tunnel");
+        Vector3 pos = parseVector3(tunnel.getString("pos"));
+        int depth = tunnel.getInt("depth");
+        int[] tunnelColors = tunnel.get("colors").asIntArray();
+
+        level.addTunnel(pos, depth, tunnelColors);
       }
     }
     return level;

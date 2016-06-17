@@ -21,7 +21,6 @@ import java.util.LinkedList;
  */
 public class Level {
   static final float GRAVITY = -9.87f;
-  static final float BLENDING = 0.25f;
 
   String name;
   String music;
@@ -155,6 +154,14 @@ public class Level {
     }
     Tile tile = new Tile(pos, size, outlineColor, effect, model);
     cells.add(tile);
+  }
+
+  public void addTunnel(Vector3 pos, float depth, int[] colors) {
+
+  }
+
+  public void addSun(Vector3 pos, Vector3 size) {
+
   }
 
   private void updatePhysics(Ship ship, float dt) {

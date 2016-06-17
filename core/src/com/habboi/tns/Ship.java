@@ -30,7 +30,8 @@ public class Ship {
   static final float BODY_DEPTH = 2.5f;
   static final float MAX_VEL = 50;
   static final float STEER_VEL = 12;
-  static final float STEER_ACCELERATION = 40;
+  static final float STEER_ACCELERATION = 50;
+  static final float MAX_STEER_ACCUL = 300;
   static final float JUMP_VEL = 8;
   static final float MIN_BOUNCE_VEL = 0.4f;
   static final float BOUNCE_FACTOR = 0.35f;
@@ -44,6 +45,7 @@ public class Ship {
   ShipController controller;
   int floorCollisions;
   float dSlide;
+  float steerAccul;
 
   public Ship(Vector3 pos, ShipController controller) {
     half.set(BODY_WIDTH / 2f, BODY_HEIGHT / 2f, BODY_DEPTH / 2f);
@@ -97,12 +99,21 @@ public class Ship {
       } else if ((dSlide >= 0 || floorCollisions > 1) && controller.isDown(Key.RIGHT)) {
         target = STEER_VEL * Math.max(-vel.z / MAX_VEL, 0.25f);
       }
-      vel.x = steer(vel.x, target, STEER_ACCELERATION, dt);
+      float accel = STEER_ACCELERATION + steerAccul;
+      if (target == 0) {
+        accel *= 4;
+      }
+      vel.x = steer(vel.x, target, accel, dt);
+      steerAccul = 0;
 
       if (controller.isJustDown(Key.JUMP)) {
         vel.y = JUMP_VEL;
       } else if (dSlide != 0) {
         vel.y = Math.min(vel.y, 0);
+      }
+    } else {
+      if (controller.isDown(Key.LEFT) || controller.isDown(Key.RIGHT)) {
+        steerAccul = Math.min(steerAccul + STEER_VEL, MAX_STEER_ACCUL);
       }
     }
 
