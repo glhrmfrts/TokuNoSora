@@ -1,9 +1,9 @@
 package com.habboi.tns.rendering;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g3d.Environment;
@@ -32,8 +32,8 @@ public class GameRenderer implements Disposable {
   static final int GLOWMAP_HEIGHT = 256;
 
   Game game;
+  Camera cam;
   Environment environment;
-  PerspectiveCamera cam;
   ModelBatch batch;
   Renderable tmpRenderable = new Renderable();
   FrameBuffer fboDefault;
@@ -52,12 +52,6 @@ public class GameRenderer implements Disposable {
     environment = new Environment();
     environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.4f, 0.4f, 0.4f, 1f));
     environment.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
-
-    cam = new PerspectiveCamera(45, game.getWidth(), game.getHeight());
-    cam.near = 0.1f;
-    cam.far = 1000f;
-    cam.position.set(0, 10f, 10f);
-    cam.lookAt(0, 0, 0);
 
     batch = new ModelBatch();
     fboDefault = new FrameBuffer(Pixmap.Format.RGB888, game.getWidth(), game.getHeight(), true);
@@ -99,11 +93,9 @@ public class GameRenderer implements Disposable {
     return mb.end();
   }
 
-  public PerspectiveCamera getCam() {
-    return cam;
-  }
+  public void begin(Camera cam) {
+    this.cam = cam;
 
-  public void begin() {
     occludingInstances.clear();
     glowingInstances.clear();
     fboDefault.begin();

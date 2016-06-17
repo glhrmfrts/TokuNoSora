@@ -31,6 +31,7 @@ public class Ship {
   static final float BODY_DEPTH = 2.5f;
   static final float MAX_VEL = 50;
   static final float STEER_VEL = 12;
+  static final float STEER_ACCELERATION = 10;
   static final float JUMP_VEL = 8;
   static final float MIN_BOUNCE_VEL = 0.4f;
   static final float BOUNCE_FACTOR = 0.35f;
@@ -65,6 +66,15 @@ public class Ship {
     attr.color.set(OUTLINE_COLOR);
   }
 
+  private static float steer(float c, float t, float a, float dt) {
+    if (c == t) {
+      return t;
+    }
+    float dir = Math.signum(t - c);
+    c += a * dir * dt;
+    return (dir == Math.signum(t - c)) ? c : t;
+  }
+
   public void update(float dt) {
     if (controller.isDown(Key.UP)) {
       if (vel.z > -MAX_VEL) {
@@ -82,12 +92,13 @@ public class Ship {
 
     if (floorCollisions > 0) {
       // only steer and jump when ship is on the floor
-      vel.x = 0;
+      float target = 0;
       if ((dSlide <= 0 || floorCollisions > 1) && controller.isDown(Key.LEFT)) {
-        vel.x = -STEER_VEL * Math.max(-vel.z / MAX_VEL, 0.25f);
+        target = -STEER_VEL * Math.max(-vel.z / MAX_VEL, 0.25f);
       } else if ((dSlide >= 0 || floorCollisions > 1) && controller.isDown(Key.RIGHT)) {
-        vel.x = STEER_VEL * Math.max(-vel.z / MAX_VEL, 0.25f);
+        target = STEER_VEL * Math.max(-vel.z / MAX_VEL, 0.25f);
       }
+      vel.x = steer(vel.x, target, STEER_ACCELERATION, dt);
 
       if (controller.isJustDown(Key.JUMP)) {
         vel.y = JUMP_VEL;

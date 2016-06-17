@@ -24,7 +24,9 @@ public class Background implements Disposable {
     ModelInstance instance;
   }
 
-  static final float DEPTH = 200f;
+  static final float DEPTH = 800f;
+  static final float WIDTH = 200f;
+  static final float DISTANCE_Y = -5;
   static Model lineModel;
 
   ArrayList<Line> lines = new ArrayList<>();
@@ -45,7 +47,7 @@ public class Background implements Disposable {
             material);
 
     partBuilder.setColor(Color.WHITE);
-    partBuilder.line(-50, -5, 0, 50, -5, 0);
+    partBuilder.line(-1, 0, 0, 1, 0, 0);
 
     return lineModel = mb.end();
   }
@@ -57,23 +59,23 @@ public class Background implements Disposable {
       Line line = new Line();
       line.zOffset = spread * i;
       line.instance = new ModelInstance(createLineModel());
+      line.instance.transform.setToScaling(WIDTH, 1, 1);
       lines.add(line);
     }
   }
 
   public void update(Ship ship, float dt) {
     center.set(ship.pos);
-    offset = -ship.vel.z * dt;
+    offset = -ship.vel.z * dt * 2;
   }
 
   public void render(GameRenderer renderer) {
-    final float base = center.z - DEPTH;
+    final float base = center.z - DEPTH/1.1f;
     for (int i = 0; i < count; i++) {
       Line line = lines.get(i);
       line.zOffset += offset;
       line.zOffset %= DEPTH;
-      System.out.println(line.zOffset);
-      line.instance.transform.setTranslation(center.x, center.y, base + line.zOffset);
+      line.instance.transform.setTranslation(center.x, center.y + DISTANCE_Y, base + line.zOffset);
       renderer.renderGlow(line.instance);
     }
   }
