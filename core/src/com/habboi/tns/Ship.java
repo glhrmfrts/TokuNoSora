@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.Renderable;
+import com.badlogic.gdx.graphics.g3d.attributes.BlendingAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder.VertexInfo;
@@ -20,8 +21,6 @@ import com.habboi.tns.rendering.GameRenderer;
  * My ship :).
  */
 public class Ship {
-  public static final float SLIDE_DISTANCE_MIN = 1.15f;
-
   public Vector3 pos = new Vector3();
   public Vector3 vel = new Vector3();
   public Vector3 half = new Vector3();
@@ -31,12 +30,12 @@ public class Ship {
   static final float BODY_DEPTH = 2.5f;
   static final float MAX_VEL = 50;
   static final float STEER_VEL = 12;
-  static final float STEER_ACCELERATION = 10;
+  static final float STEER_ACCELERATION = 40;
   static final float JUMP_VEL = 8;
   static final float MIN_BOUNCE_VEL = 0.4f;
   static final float BOUNCE_FACTOR = 0.35f;
-  static final Color COLOR = new Color(0);
-  static final Color OUTLINE_COLOR = new Color(0x1A0E74<<8);
+  static final Color COLOR = new Color(0xff);
+  static final Color OUTLINE_COLOR = new Color(0x1A0E74<<8 | 0xFF);
   static Model bodyModel;
   static Model outlineModel;
 
@@ -150,7 +149,7 @@ public class Ship {
     Vector3 normal;
 
     final float front = 0.125f;
-    final Material material = new Material();
+    final Material material = new Material(new BlendingAttribute(0.75f));
 
     ModelBuilder mb = new ModelBuilder();
     mb.begin();

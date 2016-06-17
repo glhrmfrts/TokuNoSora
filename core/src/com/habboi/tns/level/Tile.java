@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
-import com.badlogic.gdx.graphics.g3d.Renderable;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
@@ -21,6 +20,7 @@ public class Tile extends Cell {
   static final float TILE_WIDTH = 1;
   static final float TILE_HEIGHT = 0.25f;
   static final float TILE_DEPTH = 1;
+  static final float SLIDE_DISTANCE_MIN = 1.05f;
   static Model outlineModel;
 
   TouchEffect effect;
@@ -163,7 +163,7 @@ public class Tile extends Cell {
       c.depth = dy;
 
       float slide = Math.abs(dif.x)/half.x;
-      if (slide > Ship.SLIDE_DISTANCE_MIN && c.normal.y == 1) {
+      if (slide > SLIDE_DISTANCE_MIN && c.normal.y == 1) {
         c.slide = slide * Math.copySign(1, dif.x) * 2;
       }
     } else {

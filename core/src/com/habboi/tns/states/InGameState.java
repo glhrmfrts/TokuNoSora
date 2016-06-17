@@ -1,7 +1,7 @@
 package com.habboi.tns.states;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
-import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.habboi.tns.Background;
 import com.habboi.tns.Game;
 import com.habboi.tns.Ship;
@@ -9,6 +9,8 @@ import com.habboi.tns.ShipCamera;
 import com.habboi.tns.ShipController;
 import com.habboi.tns.level.Level;
 import com.habboi.tns.level.LevelLoader;
+
+import java.util.ArrayList;
 
 /**
  * In-game state.
@@ -34,7 +36,8 @@ public class InGameState extends GameState {
     PerspectiveCamera cam = new PerspectiveCamera(45, game.getWidth(), game.getHeight());
     shipCam = new ShipCamera(ship, cam);
 
-    background = new Background(30);
+    ArrayList<Color> colors = level.getColors();
+    background = new Background(colors.get(0), colors.get(1), 30);
   }
 
   @Override

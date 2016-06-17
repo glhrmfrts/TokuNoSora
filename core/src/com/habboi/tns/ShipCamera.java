@@ -10,6 +10,7 @@ public class ShipCamera {
   static final float DISTANCE_Y = 2;
   static final float DISTANCE_Z = 8;
   static final float LERP_X = 3;
+  static final float LERP_Y = 3;
   static final float LERP_Z = 10;
   Ship ship;
   PerspectiveCamera cam;
@@ -26,17 +27,19 @@ public class ShipCamera {
     final float max = 80;
 
     float dx = pos.x - cam.position.x;
+    float dy = pos.y + DISTANCE_Y - cam.position.y;
     float dz = pos.z + DISTANCE_Z - cam.position.z;
 
     dx = Math.min(Math.abs(dx), max) * Math.copySign(1, dx);
+    dy = Math.min(Math.abs(dy), max) * Math.copySign(1, dy);
     dz = Math.min(Math.abs(dz), max) * Math.copySign(1, dz);
 
-    cam.translate(dx * LERP_X * dt, 0, dz * LERP_Z * dt);
+    cam.translate(dx * LERP_X * dt, dy * LERP_Y * dt, dz * LERP_Z * dt);
   }
 
   public void update(float dt) {
     setCameraPos(ship.pos, dt);
-    cam.lookAt(cam.position.x, 2, ship.pos.z);
+    cam.lookAt(cam.position.x, cam.position.y - 1, ship.pos.z);
   }
 
   public PerspectiveCamera getCam() {

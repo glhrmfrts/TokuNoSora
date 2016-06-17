@@ -28,8 +28,8 @@ import java.util.ArrayList;
  * Encapsulates the rendering context.
  */
 public class GameRenderer implements Disposable {
-  static final int GLOWMAP_WIDTH = 256;
-  static final int GLOWMAP_HEIGHT = 256;
+  static final int GLOWMAP_WIDTH = 384;
+  static final int GLOWMAP_HEIGHT = 384;
 
   Game game;
   Camera cam;

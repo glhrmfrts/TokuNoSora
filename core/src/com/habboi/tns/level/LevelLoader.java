@@ -31,6 +31,7 @@ public class LevelLoader {
     ArrayList<Color> colors = new ArrayList<>();
     for (String str : jsonColors.asStringArray()) {
       Color c = new Color(Integer.decode(str) << 8);
+      c.a = 1;
       colors.add(c);
     }
 

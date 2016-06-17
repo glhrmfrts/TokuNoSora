@@ -6,8 +6,10 @@ import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.graphics.g3d.attributes.BlendingAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
+import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder.VertexInfo;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Disposable;
@@ -25,23 +27,40 @@ public class Background implements Disposable {
   }
 
   static final float DEPTH = 800f;
-  static final float WIDTH = 200f;
+  static final float WIDTH = 400f;
   static final float DISTANCE_Y = -5;
-  static Model lineModel;
 
-  ArrayList<Line> lines = new ArrayList<>();
   float offset;
   float spread;
   int count;
   Vector3 center = new Vector3();
+  Model lineModel;
+  Model planeModel;
+  ModelInstance planeInstance;
+  ArrayList<Line> lines = new ArrayList<>();
 
-  private static Model createLineModel() {
+  public Background(Color planeColor, Color linesColor, int count) {
+    this.count = count;
+    spread = DEPTH / count;
+    planeInstance = new ModelInstance(createPlaneModel(planeColor));
+    planeInstance.transform.setToScaling(WIDTH, 1, DEPTH);
+
+    for (int i = 0; i < count; i++) {
+      Line line = new Line();
+      line.zOffset = spread * i;
+      line.instance = new ModelInstance(createLineModel(linesColor));
+      line.instance.transform.setToScaling(WIDTH, 1, 1);
+      lines.add(line);
+    }
+  }
+
+  private Model createLineModel(Color color) {
     if (lineModel != null) return lineModel;
 
     ModelBuilder mb = new ModelBuilder();
     mb.begin();
 
-    final Material material = new Material(ColorAttribute.createDiffuse(Color.RED));
+    final Material material = new Material(ColorAttribute.createDiffuse(color));
     MeshPartBuilder partBuilder = mb.part("line", GL20.GL_LINES,
             VertexAttributes.Usage.Position | VertexAttributes.Usage.ColorPacked,
             material);
@@ -52,16 +71,31 @@ public class Background implements Disposable {
     return lineModel = mb.end();
   }
 
-  public Background(int count) {
-    this.count = count;
-    spread = DEPTH / count;
-    for (int i = 0; i < count; i++) {
-      Line line = new Line();
-      line.zOffset = spread * i;
-      line.instance = new ModelInstance(createLineModel());
-      line.instance.transform.setToScaling(WIDTH, 1, 1);
-      lines.add(line);
-    }
+  private Model createPlaneModel(Color color) {
+    if (planeModel != null) return planeModel;
+
+    VertexInfo v1, v2, v3, v4;
+    ModelBuilder mb = new ModelBuilder();
+    mb.begin();
+
+    color = color.cpy();
+    color.a = 0.75f;
+    final Material material = new Material(ColorAttribute.createDiffuse(color));
+    material.set(new BlendingAttribute(1));
+
+    MeshPartBuilder partBuilder = mb.part("line", GL20.GL_TRIANGLES,
+            VertexAttributes.Usage.Position | VertexAttributes.Usage.ColorPacked,
+            material);
+
+    v1 = new VertexInfo().setPos(-1, 0, -1);
+    v2 = new VertexInfo().setPos(-1, 0, 1);
+    v3 = new VertexInfo().setPos(1, 0, 1);
+    v4 = new VertexInfo().setPos(1, 0, -1);
+
+    partBuilder.setColor(Color.WHITE);
+    partBuilder.rect(v1, v2, v3, v4);
+
+    return planeModel = mb.end();
   }
 
   public void update(Ship ship, float dt) {
@@ -70,6 +104,9 @@ public class Background implements Disposable {
   }
 
   public void render(GameRenderer renderer) {
+    planeInstance.transform.setTranslation(center.x, center.y + DISTANCE_Y - 0.5f, center.z);
+    renderer.render(planeInstance);
+
     final float base = center.z - DEPTH/1.1f;
     for (int i = 0; i < count; i++) {
       Line line = lines.get(i);
@@ -83,5 +120,7 @@ public class Background implements Disposable {
   @Override
   public void dispose() {
     lines.clear();
+    lineModel.dispose();
+    planeModel.dispose();
   }
 }

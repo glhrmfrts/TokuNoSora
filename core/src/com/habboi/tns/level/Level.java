@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
+import com.badlogic.gdx.graphics.g3d.attributes.BlendingAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder.VertexInfo;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
@@ -53,6 +54,10 @@ public class Level {
     return shipPos;
   }
 
+  public ArrayList<Color> getColors() {
+    return colors;
+  }
+
   private void createPresetModels() {
     for (ArrayList<int[]> preset : presets) {
       presetModels.add(createTileModel(preset));
@@ -62,6 +67,7 @@ public class Level {
   private Model createTileModel(ArrayList<int[]> colors) {
     MeshPartBuilder partBuilder;
     VertexInfo v1, v2, v3, v4;
+    final Material material = new Material(new BlendingAttribute(true, GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA, 0.75f));
 
     int[] bottomColors = colors.get(0);
     int[] topColors = colors.get(1);
@@ -75,7 +81,7 @@ public class Level {
     // create bottom part
     partBuilder = mb.part("bottom", GL20.GL_TRIANGLES,
             VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.ColorPacked,
-            new Material());
+            material);
 
     v1 = new VertexInfo().setPos(1, 0, -1).setNor(0, -1, 0).setCol(this.colors.get(bottomColors[0]));
     v2 = new VertexInfo().setPos(1, 0, 0).setNor(0, -1, 0).setCol(this.colors.get(bottomColors[1]));
@@ -86,7 +92,7 @@ public class Level {
     // create top part
     partBuilder = mb.part("top", GL20.GL_TRIANGLES,
             VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.ColorPacked,
-            new Material());
+            material);
 
     v1 = new VertexInfo().setPos(0, 1, -1).setNor(0, 1, 0).setCol(this.colors.get(topColors[0]));
     v2 = new VertexInfo().setPos(0, 1, 0).setNor(0, 1, 0).setCol(this.colors.get(topColors[1]));
@@ -97,7 +103,7 @@ public class Level {
     // create left part
     partBuilder = mb.part("left", GL20.GL_TRIANGLES,
             VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.ColorPacked,
-            new Material());
+            material);
 
     v1 = new VertexInfo().setPos(0, 0, -1).setNor(-1, 0, 0).setCol(this.colors.get(leftColors[0]));
     v2 = new VertexInfo().setPos(0, 0, 0).setNor(-1, 0, 0).setCol(this.colors.get(leftColors[1]));
@@ -108,7 +114,7 @@ public class Level {
     // create right part
     partBuilder = mb.part("right", GL20.GL_TRIANGLES,
             VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.ColorPacked,
-            new Material());
+            material);
 
     v1 = new VertexInfo().setPos(1, 0, 0).setNor(1, 0, 0).setCol(this.colors.get(rightColors[0]));
     v2 = new VertexInfo().setPos(1, 0, -1).setNor(1, 0, 0).setCol(this.colors.get(rightColors[1]));
@@ -119,7 +125,7 @@ public class Level {
     // create front part
     partBuilder = mb.part("front", GL20.GL_TRIANGLES,
             VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.ColorPacked,
-            new Material());
+            material);
 
     v1 = new VertexInfo().setPos(1, 0, -1).setNor(0, 0, -1).setCol(this.colors.get(frontColors[0]));
     v2 = new VertexInfo().setPos(0, 0, -1).setNor(0, 0, -1).setCol(this.colors.get(frontColors[1]));
@@ -130,7 +136,7 @@ public class Level {
     // create back part (visible to player)
     partBuilder = mb.part("back", GL20.GL_TRIANGLES,
             VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.ColorPacked,
-            new Material());
+            material);
 
     v1 = new VertexInfo().setPos(0, 0, 0).setNor(0, 0, 1).setCol(this.colors.get(backColors[0]));
     v2 = new VertexInfo().setPos(1, 0, 0).setNor(0, 0, 1).setCol(this.colors.get(backColors[1]));

@@ -18,8 +18,8 @@ public class GlowShader implements Shader {
 
   @Override
   public void init() {
-    String vert = Gdx.files.internal("image.vert.glsl").readString();
-    String frag = Gdx.files.internal("glow.frag.glsl").readString();
+    String vert = Gdx.files.internal("shaders/image.vert.glsl").readString();
+    String frag = Gdx.files.internal("shaders/glow.frag.glsl").readString();
     program = new ShaderProgram(vert, frag);
     if (!program.isCompiled()) {
       throw new GdxRuntimeException(program.getLog());

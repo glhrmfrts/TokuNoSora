@@ -22,8 +22,8 @@ public class BasicShader implements Shader {
 
   @Override
   public void init() {
-    String vert = Gdx.files.internal("basic.vert.glsl").readString();
-    String frag = Gdx.files.internal("basic.frag.glsl").readString();
+    String vert = Gdx.files.internal("shaders/basic.vert.glsl").readString();
+    String frag = Gdx.files.internal("shaders/basic.frag.glsl").readString();
     program = new ShaderProgram(vert, frag);
     if (!program.isCompiled()) {
       throw new GdxRuntimeException(program.getLog());

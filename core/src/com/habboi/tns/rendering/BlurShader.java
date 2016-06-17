@@ -2,7 +2,6 @@ package com.habboi.tns.rendering;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g3d.Renderable;
 import com.badlogic.gdx.graphics.g3d.Shader;
 import com.badlogic.gdx.graphics.g3d.utils.RenderContext;
@@ -24,8 +23,8 @@ public class BlurShader implements Shader {
 
   @Override
   public void init() {
-    String vert = Gdx.files.internal("image.vert.glsl").readString();
-    String frag = Gdx.files.internal("blur.frag.glsl").readString();
+    String vert = Gdx.files.internal("shaders/image.vert.glsl").readString();
+    String frag = Gdx.files.internal("shaders/blur.frag.glsl").readString();
     program = new ShaderProgram(vert, frag);
     if (!program.isCompiled()) {
       throw new GdxRuntimeException(program.getLog());
