@@ -1,6 +1,7 @@
 package com.habboi.tns.states;
 
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
+import com.habboi.tns.Background;
 import com.habboi.tns.Game;
 import com.habboi.tns.Ship;
 import com.habboi.tns.ShipController;
@@ -14,6 +15,7 @@ public class InGameState extends GameState {
   CameraInputController camController;
   Level level;
   Ship ship;
+  Background background;
 
   public InGameState(Game g) {
     super(g);
@@ -29,11 +31,14 @@ public class InGameState extends GameState {
     ShipController sc = new ShipController(false);
     game.addInput(sc);
     ship = new Ship(level.getShipPos(), sc);
+
+    background = new Background(10);
   }
 
   @Override
   public void update(float dt) {
     level.update(ship, dt);
+    background.update(ship, dt);
     ship.update(dt);
   }
 
@@ -42,6 +47,7 @@ public class InGameState extends GameState {
     camController.update();
 
     game.getRenderer().begin();
+    background.render(game.getRenderer());
     level.render(game.getRenderer());
     ship.render(game.getRenderer());
     game.getRenderer().end();
