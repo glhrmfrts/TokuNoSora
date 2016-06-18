@@ -35,6 +35,7 @@ public class LevelLoader {
       colors.add(c);
     }
 
+    // read tile presets
     JsonValue jsonPresets = root.get("presets");
     if (!jsonPresets.isArray()) {
       throw new GdxRuntimeException("No presets or isn't array");
@@ -48,7 +49,18 @@ public class LevelLoader {
       }
     }
 
-    level = new Level(name, music, gravityLevel, fuelFactor, shipPos, colors, presets);
+    // read tunnel presets
+    jsonPresets = root.get("tunnel_presets");
+    if (!jsonPresets.isArray()) {
+      throw new GdxRuntimeException("No tunnel presets or isn't array");
+    }
+    ArrayList<int[]> tunnelPresets = new ArrayList<>();
+    for (JsonValue jsonPreset : jsonPresets.iterator()) {
+      int[] preset = jsonPreset.asIntArray();
+      tunnelPresets.add(preset);
+    }
+
+    level = new Level(name, music, gravityLevel, fuelFactor, shipPos, colors, presets, tunnelPresets);
     JsonValue cells = root.get("cells");
     for (JsonValue cell : cells.iterator()) {
       if (cell.has("tile")) {
@@ -77,9 +89,9 @@ public class LevelLoader {
         JsonValue tunnel = cell.get("tunnel");
         Vector3 pos = parseVector3(tunnel.getString("pos"));
         int depth = tunnel.getInt("depth");
-        int[] tunnelColors = tunnel.get("colors").asIntArray();
+        int preset = tunnel.getInt("preset");
 
-        level.addTunnel(pos, depth, tunnelColors);
+        level.addTunnel(pos, depth, preset);
       }
     }
     return level;

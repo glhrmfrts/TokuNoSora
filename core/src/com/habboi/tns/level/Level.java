@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder.VertexInfo;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
+import com.habboi.tns.Util;
 import com.habboi.tns.rendering.GameRenderer;
 import com.habboi.tns.Ship;
 
@@ -28,25 +29,30 @@ public class Level {
   int fuelFactor;
   Vector3 shipPos;
   ArrayList<Color> colors;
-  ArrayList<ArrayList<int[]>> presets;
 
   ModelBuilder mb;
   ArrayList<Model> presetModels = new ArrayList<>();
+  ArrayList<Model> tunnelModels = new ArrayList<>();
   ArrayList<Cell> cells = new ArrayList<>();
   LinkedList<Cell> collisions = new LinkedList<>();
 
   public Level(String name, String music, int gravityLevel, int fuelFactor,
-               Vector3 shipPos, ArrayList<Color> colors, ArrayList<ArrayList<int[]>> presets) {
+               Vector3 shipPos, ArrayList<Color> colors, ArrayList<ArrayList<int[]>> presets,
+               ArrayList<int[]> tunnelPresets) {
     this.name = name;
     this.music = music;
     this.gravityLevel = gravityLevel;
     this.fuelFactor = fuelFactor;
     this.shipPos = shipPos;
     this.colors = colors;
-    this.presets = presets;
 
     mb = new ModelBuilder();
-    createPresetModels();
+    for (ArrayList<int[]> preset : presets) {
+      presetModels.add(createTileModel(preset));
+    }
+    for (int[] preset : tunnelPresets) {
+      tunnelModels.add(createTunnelModel(preset));
+    }
   }
 
   public Vector3 getShipPos() {
@@ -57,9 +63,62 @@ public class Level {
     return colors;
   }
 
-  private void createPresetModels() {
-    for (ArrayList<int[]> preset : presets) {
-      presetModels.add(createTileModel(preset));
+  public void addTile(Vector3 pos, Vector3 size, int outline, Tile.TouchEffect effect, int preset) {
+    Model model = presetModels.get(preset);
+    Color outlineColor = Color.WHITE;
+    if (outline != -1) {
+      outlineColor = colors.get(outline);
+    }
+    Tile tile = new Tile(pos, size, outlineColor, effect, model);
+    cells.add(tile);
+  }
+
+  public void addTunnel(Vector3 pos, float depth, int preset) {
+    Tunnel tunnel = new Tunnel(pos, depth, tunnelModels.get(preset));
+    cells.add(tunnel);
+  }
+
+  public void addSun(Vector3 pos, Vector3 size) {
+
+  }
+
+  private void updatePhysics(Ship ship, float dt) {
+    ship.vel.y += (GRAVITY * gravityLevel) * dt;
+
+    for (Cell cell : cells) {
+      if (cell.checkCollision(ship)) {
+        collisions.add(cell);
+      }
+    }
+
+    Cell cell;
+    while ((cell = collisions.pollFirst()) != null) {
+      if (ship.handleCollision(cell)) {
+        Cell.CollisionInfo c = cell.collisionInfo;
+
+        float velNormal = ship.vel.dot(c.normal);
+        if (velNormal > 0.0f) continue;
+
+        float j = -1 * velNormal;
+        Vector3 impulse = new Vector3(c.normal.x * j, c.normal.y * j, c.normal.z * j);
+        ship.vel.add(impulse);
+
+        float s = Math.max(c.depth - 0.05f, 0.0f) * 0.9f;
+        Vector3 correction = new Vector3(c.normal.x * s, c.normal.y * s, c.normal.z * s);
+        ship.pos.add(correction);
+      }
+    }
+
+    ship.pos.add(ship.vel.x * dt, ship.vel.y * dt, ship.vel.z * dt);
+  }
+
+  public void update(Ship ship, float dt) {
+    updatePhysics(ship, dt);
+  }
+
+  public void render(GameRenderer renderer) {
+    for (Cell cell : cells) {
+      cell.render(renderer);
     }
   }
 
@@ -146,62 +205,124 @@ public class Level {
     return mb.end();
   }
 
-  public void addTile(Vector3 pos, Vector3 size, int outline, Tile.TouchEffect effect, int preset) {
-    Model model = presetModels.get(preset);
-    Color outlineColor = Color.WHITE;
-    if (outline != -1) {
-      outlineColor = colors.get(outline);
+  private void adjustTunnelVertexScale(VertexInfo v1) {
+    v1.position.x *= 0.5f;
+    v1.position.y -= 0.5f;
+    v1.position.y *= 0.5f;
+    v1.position.z *= 0.5f;
+  }
+
+  private void adjustTunnelVertexScale(VertexInfo... vs) {
+    for (VertexInfo v : vs) {
+      adjustTunnelVertexScale(v);
     }
-    Tile tile = new Tile(pos, size, outlineColor, effect, model);
-    cells.add(tile);
   }
 
-  public void addTunnel(Vector3 pos, float depth, int[] colors) {
+  private Model createTunnelModel(int[] cols) {
+    MeshPartBuilder partBuilder;
+    VertexInfo v1, v2, v3, v4;
+    mb.begin();
 
-  }
+    final Material material = new Material(new BlendingAttribute(true, GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA, 0.75f));
+    final int segments = 12;
+    final float deltaTheta = (float)Math.PI / segments;
+    final float backZ = 1;
+    final float frontZ = -1;
 
-  public void addSun(Vector3 pos, Vector3 size) {
+    float theta = 0;
+    float x = 1;
+    float y = -0.5f;
+    for (int i = 0; i < segments; i++)
+    {
+      theta += deltaTheta;
+      float nx = (float)Math.cos(theta);
+      float ny = (float)Math.sin(theta);
+      float ix = x * 0.9f;
+      float iy = y * 0.9f;
+      float inx = nx * 0.9f;
+      float iny = ny * 0.9f;
 
-  }
+      // create outside part of this segment
+      partBuilder = mb.part("outside" + i, GL20.GL_TRIANGLES,
+              VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.ColorPacked,
+              material);
 
-  private void updatePhysics(Ship ship, float dt) {
-    ship.vel.y += (GRAVITY * gravityLevel) * dt;
+      // TODO: temp
+      partBuilder.setColor(Color.WHITE);
 
-    for (Cell cell : cells) {
-      if (cell.checkCollision(ship)) {
-        collisions.add(cell);
-      }
+      v1 = new VertexInfo().setPos(x, y, backZ);
+      v2 = new VertexInfo().setPos(x, y, frontZ);
+      v3 = new VertexInfo().setPos(nx, ny, frontZ);
+      v4 = new VertexInfo().setPos(nx, ny, backZ);
+      v1.setNor(v1.position.x, v1.position.y, 0);
+      v2.setNor(v2.position.x, v2.position.y, 0);
+      v3.setNor(v3.position.x, v3.position.y, 0);
+      v4.setNor(v4.position.x, v4.position.y, 0);
+      adjustTunnelVertexScale(v1, v2, v3, v4);
+      partBuilder.rect(v1, v2, v3, v4);
+
+      // create back part of this segment (visible to player)
+      partBuilder = mb.part("back" + i, GL20.GL_TRIANGLES,
+              VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.ColorPacked,
+              material);
+
+      // TODO: temp
+      partBuilder.setColor(Color.WHITE);
+
+      v1 = new VertexInfo().setPos(ix, iy, backZ);
+      v2 = new VertexInfo().setPos(inx, iny, backZ);
+      v3 = new VertexInfo().setPos(nx, ny, backZ);
+      v4 = new VertexInfo().setPos(x, y, backZ);
+      v1.setNor(0, 0, 1);
+      v2.setNor(0, 0, 1);
+      v3.setNor(0, 0, 1);
+      v4.setNor(0, 0, 1);
+      adjustTunnelVertexScale(v1, v2, v3, v4);
+      partBuilder.rect(v1, v2, v3, v4);
+
+      // create inside part of this segment
+      partBuilder = mb.part("inside" + i, GL20.GL_TRIANGLES,
+              VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.ColorPacked,
+              material);
+
+      // TODO: temp
+      partBuilder.setColor(Color.WHITE);
+
+      v1 = new VertexInfo().setPos(ix, iy, backZ);
+      v2 = new VertexInfo().setPos(ix, iy, frontZ);
+      v3 = new VertexInfo().setPos(inx, iny, frontZ);
+      v4 = new VertexInfo().setPos(inx, iny, backZ);
+      v1.setNor(-v1.position.x, -v1.position.y, 0);
+      v2.setNor(-v2.position.x, -v2.position.y, 0);
+      v3.setNor(-v3.position.x, -v3.position.y, 0);
+      v4.setNor(-v4.position.x, -v4.position.y, 0);
+      adjustTunnelVertexScale(v1, v2, v3, v4);
+      partBuilder.rect(v1, v2, v3, v4);
+
+      // create front part of this segment
+      partBuilder = mb.part("front" + i, GL20.GL_TRIANGLES,
+              VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.ColorPacked,
+              material);
+
+      // TODO: temp
+      partBuilder.setColor(Color.WHITE);
+
+      v1 = new VertexInfo().setPos(ix, iy, frontZ);
+      v2 = new VertexInfo().setPos(inx, iny, frontZ);
+      v3 = new VertexInfo().setPos(nx, ny, frontZ);
+      v4 = new VertexInfo().setPos(x, y, frontZ);
+      v1.setNor(0, 0, -1);
+      v2.setNor(0, 0, -1);
+      v3.setNor(0, 0, -1);
+      v4.setNor(0, 0, -1);
+      adjustTunnelVertexScale(v1, v2, v3, v4);
+      partBuilder.rect(v1, v2, v3, v4);
+
+      x = nx;
+      y = ny;
     }
 
-    Cell cell;
-    while ((cell = collisions.pollFirst()) != null) {
-      if (ship.handleCollision(cell)) {
-        Cell.CollisionInfo c = cell.collisionInfo;
-
-        float velNormal = ship.vel.dot(c.normal);
-        if (velNormal > 0.0f) continue;
-
-        float j = -1 * velNormal;
-        Vector3 impulse = new Vector3(c.normal.x * j, c.normal.y * j, c.normal.z * j);
-        ship.vel.add(impulse);
-
-        float s = Math.max(c.depth - 0.05f, 0.0f) * 0.9f;
-        Vector3 correction = new Vector3(c.normal.x * s, c.normal.y * s, c.normal.z * s);
-        ship.pos.add(correction);
-      }
-    }
-
-    ship.pos.add(ship.vel.x * dt, ship.vel.y * dt, ship.vel.z * dt);
-  }
-
-  public void update(Ship ship, float dt) {
-    updatePhysics(ship, dt);
-  }
-
-  public void render(GameRenderer renderer) {
-    for (Cell cell : cells) {
-      cell.render(renderer);
-    }
+    return mb.end();
   }
 
   public void dispose() {

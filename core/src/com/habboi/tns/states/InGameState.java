@@ -2,6 +2,7 @@ package com.habboi.tns.states;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
+import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.habboi.tns.Background;
 import com.habboi.tns.Game;
 import com.habboi.tns.Ship;
@@ -16,6 +17,7 @@ import java.util.ArrayList;
  * In-game state.
  */
 public class InGameState extends GameState {
+  CameraInputController tempCamInput;
   Level level;
   Ship ship;
   ShipCamera shipCam;
@@ -34,10 +36,15 @@ public class InGameState extends GameState {
     ship = new Ship(level.getShipPos(), sc);
 
     PerspectiveCamera cam = new PerspectiveCamera(45, game.getWidth(), game.getHeight());
-    shipCam = new ShipCamera(ship, cam);
+    cam.near = 0.1f;
+    cam.far = 1000f;
+    //shipCam = new ShipCamera(ship, cam);
 
     ArrayList<Color> colors = level.getColors();
     background = new Background(colors.get(0), colors.get(1), 30);
+
+    tempCamInput = new CameraInputController(cam);
+    game.addInput(tempCamInput);
   }
 
   @Override
@@ -45,12 +52,16 @@ public class InGameState extends GameState {
     level.update(ship, dt);
     background.update(ship, dt);
     ship.update(dt);
-    shipCam.update(dt);
+    //shipCam.update(dt);
   }
 
   @Override
   public void render() {
-    game.getRenderer().begin(shipCam.getCam());
+    if (tempCamInput != null) tempCamInput.update();
+
+    //game.getRenderer().begin(shipCam.getCam());
+    game.getRenderer().begin(tempCamInput.camera);
+
     background.render(game.getRenderer());
     level.render(game.getRenderer());
     ship.render(game.getRenderer());
