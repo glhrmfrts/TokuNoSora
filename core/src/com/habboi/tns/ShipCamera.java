@@ -11,7 +11,7 @@ public class ShipCamera {
   static final float DISTANCE_Z = 8;
   static final float LERP_X = 3;
   static final float LERP_Y = 3;
-  static final float LERP_Z = 10;
+  static final float LERP_Z = 15;
   Ship ship;
   PerspectiveCamera cam;
 

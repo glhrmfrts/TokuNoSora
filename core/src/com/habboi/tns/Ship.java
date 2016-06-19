@@ -25,8 +25,8 @@ public class Ship {
   public Vector3 vel = new Vector3();
   public Vector3 half = new Vector3();
 
-  static final float BODY_WIDTH = 1;
-  static final float BODY_HEIGHT = 0.5f;
+  static final float BODY_WIDTH = 0.75f;
+  static final float BODY_HEIGHT = 0.3f;
   static final float BODY_DEPTH = 2.5f;
   static final float MAX_VEL = 50;
   static final float STEER_VEL = 12;
@@ -36,7 +36,9 @@ public class Ship {
   static final float MIN_BOUNCE_VEL = 0.4f;
   static final float BOUNCE_FACTOR = 0.35f;
   static final Color COLOR = new Color(0xff);
-  static final Color OUTLINE_COLOR = new Color(0x1A0E74<<8 | 0xFF);
+  //static final Color OUTLINE_COLOR = new Color(0x1A0E74<<8 | 0xFF);
+  static final Color OUTLINE_COLOR = new Color(0x00ff00<<8 | 0xFF);
+
   static Model bodyModel;
   static Model outlineModel;
 

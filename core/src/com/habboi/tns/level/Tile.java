@@ -110,9 +110,9 @@ public class Tile extends Cell {
     size.z *= TILE_DEPTH;
 
     half.set(size.x/2, size.y/2, size.z/2);
-    float x = pos.x + half.x;
-    float y = pos.y + half.y;
-    float z = -(pos.z + half.z);
+    float x = pos.x*TILE_WIDTH + half.x;
+    float y = pos.y*TILE_HEIGHT + half.y;
+    float z = -(pos.z*TILE_DEPTH + half.z);
 
     this.pos.set(x, y, z);
     this.effect = effect;

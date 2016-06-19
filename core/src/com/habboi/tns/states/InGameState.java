@@ -1,5 +1,7 @@
 package com.habboi.tns.states;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
@@ -17,6 +19,8 @@ import java.util.ArrayList;
  * In-game state.
  */
 public class InGameState extends GameState {
+  int debugCam;
+
   CameraInputController tempCamInput;
   Level level;
   Ship ship;
@@ -38,13 +42,13 @@ public class InGameState extends GameState {
     PerspectiveCamera cam = new PerspectiveCamera(45, game.getWidth(), game.getHeight());
     cam.near = 0.1f;
     cam.far = 1000f;
-    //shipCam = new ShipCamera(ship, cam);
-
-    ArrayList<Color> colors = level.getColors();
-    background = new Background(colors.get(0), colors.get(1), 30);
+    shipCam = new ShipCamera(ship, cam);
 
     tempCamInput = new CameraInputController(cam);
     game.addInput(tempCamInput);
+
+    ArrayList<Color> colors = level.getColors();
+    background = new Background(colors.get(0), colors.get(1), 30);
   }
 
   @Override
@@ -52,15 +56,23 @@ public class InGameState extends GameState {
     level.update(ship, dt);
     background.update(ship, dt);
     ship.update(dt);
-    //shipCam.update(dt);
+    if (debugCam == 0) {
+      shipCam.update(dt);
+    }
+
+    if (Gdx.input.isKeyJustPressed(Input.Keys.X)) {
+      debugCam = (debugCam == 0) ? 1 : 0;
+    }
   }
 
   @Override
   public void render() {
-    if (tempCamInput != null) tempCamInput.update();
-
-    //game.getRenderer().begin(shipCam.getCam());
-    game.getRenderer().begin(tempCamInput.camera);
+    if (debugCam == 0) {
+      game.getRenderer().begin(shipCam.getCam());
+    } else {
+      tempCamInput.update();
+      game.getRenderer().begin(tempCamInput.camera);
+    }
 
     background.render(game.getRenderer());
     level.render(game.getRenderer());
