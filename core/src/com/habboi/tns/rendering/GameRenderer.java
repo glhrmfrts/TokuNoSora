@@ -118,13 +118,13 @@ public class GameRenderer implements Disposable {
           inst.getRenderable(tmpRenderable);
           shaderBasic.render(tmpRenderable);
         }
-        Gdx.gl.glEnable(GL20.GL_CULL_FACE);
 
         Gdx.gl.glColorMask(true, true, true, true);
         for (ModelInstance inst : glowingInstances) {
           inst.getRenderable(tmpRenderable);
           shaderBasic.render(tmpRenderable);
         }
+        Gdx.gl.glEnable(GL20.GL_CULL_FACE);
     shaderBasic.end();
 
     // the only renderable used from here on is the screen surface

@@ -9,10 +9,10 @@ import com.habboi.tns.Ship;
  * Represents a cell in the level.
  */
 public abstract class Cell {
-  public CollisionInfo collisionInfo = new CollisionInfo();
-
-  Vector3 pos = new Vector3();
-  ModelInstance modelInstance;
+  public enum TouchEffect {
+    None,
+    End
+  }
 
   public static class CollisionInfo {
     public Vector3 normal = new Vector3();
@@ -31,6 +31,12 @@ public abstract class Cell {
       return result;
     }
   }
+
+  public CollisionInfo collisionInfo = new CollisionInfo();
+  public TouchEffect effect;
+
+  Vector3 pos = new Vector3();
+  ModelInstance modelInstance;
 
   public abstract void render(GameRenderer renderer);
   public abstract boolean checkCollision(Ship ship);

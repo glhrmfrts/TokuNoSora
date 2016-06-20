@@ -1,17 +1,9 @@
 package com.habboi.tns;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.VertexAttributes;
-import com.badlogic.gdx.graphics.g3d.Material;
-import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.Renderable;
-import com.badlogic.gdx.graphics.g3d.attributes.BlendingAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
-import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
-import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder.VertexInfo;
-import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
 import com.habboi.tns.level.Cell;
 import com.habboi.tns.ShipController.Key;
@@ -39,9 +31,6 @@ public class Ship {
   //static final Color OUTLINE_COLOR = new Color(0x1A0E74<<8 | 0xFF);
   static final Color OUTLINE_COLOR = new Color(0x00ff00<<8 | 0xFF);
 
-  static Model bodyModel;
-  static Model outlineModel;
-
   ModelInstance bodyInstance;
   ModelInstance outlineInstance;
   ShipController controller;
@@ -57,15 +46,23 @@ public class Ship {
 
     this.controller = controller;
 
-    bodyInstance = new ModelInstance(createBodyModel());
+    bodyInstance = new ModelInstance(Models.getShipModel());
     bodyInstance.transform.setToScaling(BODY_WIDTH, BODY_HEIGHT, BODY_DEPTH);
 
-    outlineInstance = new ModelInstance(createOutlineModel());
+    outlineInstance = new ModelInstance(Models.getShipOutlineModel());
     outlineInstance.transform.setToScaling(BODY_WIDTH, BODY_HEIGHT, BODY_DEPTH);
 
     Renderable r = new Renderable();
+    ColorAttribute attr;
+
+    // set the body color
+    bodyInstance.getRenderable(r);
+    attr = (ColorAttribute) r.material.get(ColorAttribute.Diffuse);
+    attr.color.set(COLOR);
+
+    // set the outline color
     outlineInstance.getRenderable(r);
-    ColorAttribute attr = (ColorAttribute) r.material.get(ColorAttribute.Diffuse);
+    attr = (ColorAttribute) r.material.get(ColorAttribute.Diffuse);
     attr.color.set(OUTLINE_COLOR);
   }
 
@@ -135,6 +132,11 @@ public class Ship {
     Cell.CollisionInfo c = cell.collisionInfo;
     //System.out.println(c);
 
+    if (cell.effect == Cell.TouchEffect.End) {
+      Util.d("end");
+      return false;
+    }
+
     if (c.normal.y == 1) {
       floorCollisions++;
 
@@ -152,180 +154,5 @@ public class Ship {
       }
     }
     return true;
-  }
-
-  private static Model createBodyModel() {
-    if (bodyModel != null) return bodyModel;
-
-    MeshPartBuilder partBuilder;
-    VertexInfo v1, v2, v3, v4;
-    Vector3 normal;
-
-    final float front = 0.125f;
-    final Material material = new Material(new BlendingAttribute(0.75f));
-
-    ModelBuilder mb = new ModelBuilder();
-    mb.begin();
-
-    // create bottom part
-    partBuilder = mb.part("bottom", GL20.GL_TRIANGLES,
-            VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.ColorPacked,
-            material);
-
-    partBuilder.setColor(COLOR);
-    v1 = new VertexInfo().setPos(0.125f, -0.5f, -0.5f);
-    v2 = new VertexInfo().setPos(0.5f, -0.5f, 0.5f);
-    v3 = new VertexInfo().setPos(-0.5f, -0.5f, 0.5f);
-    v4 = new VertexInfo().setPos(-0.125f, -0.5f, -0.5f);
-
-    normal = Util.calculateNormal(v1.position, v2.position, v3.position);
-    v1.setNor(normal);
-    v2.setNor(normal);
-    v3.setNor(normal);
-    v4.setNor(normal);
-
-    partBuilder.rect(v1, v2, v3, v4);
-
-    // create top part
-    partBuilder = mb.part("top", GL20.GL_TRIANGLES,
-            VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.ColorPacked,
-            material);
-
-    partBuilder.setColor(COLOR);
-    v1 = new VertexInfo().setPos(-0.125f, front, -0.5f);
-    v2 = new VertexInfo().setPos(-0.25f, 0.5f, 0.5f);
-    v3 = new VertexInfo().setPos(0.25f, 0.5f, 0.5f);
-    v4 = new VertexInfo().setPos(0.125f, front, -0.5f);
-
-    normal = Util.calculateNormal(v1.position, v2.position, v3.position);
-    v1.setNor(normal);
-    v2.setNor(normal);
-    v3.setNor(normal);
-    v4.setNor(normal);
-
-    partBuilder.rect(v1, v2, v3, v4);
-
-    // create left part
-    partBuilder = mb.part("left", GL20.GL_TRIANGLES,
-            VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.ColorPacked,
-            material);
-
-    partBuilder.setColor(COLOR);
-    v1 = new VertexInfo().setPos(-0.125f, -0.5f, -0.5f).setNor(-1, 0, 0);
-    v2 = new VertexInfo().setPos(-0.5f, -0.5f, 0.5f).setNor(-1, 0, 0);
-    v3 = new VertexInfo().setPos(-0.25f, 0.5f, 0.5f).setNor(-1, 0, 0);
-    v4 = new VertexInfo().setPos(-0.125f, front, -0.5f).setNor(-1, 0, 0);
-    partBuilder.rect(v1, v2, v3, v4);
-
-    // create right part
-    partBuilder = mb.part("right", GL20.GL_TRIANGLES,
-            VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.ColorPacked,
-            material);
-
-    partBuilder.setColor(COLOR);
-    v1 = new VertexInfo().setPos(0.5f, -0.5f, 0.5f).setNor(1, 0, 0);
-    v2 = new VertexInfo().setPos(0.125f, -0.5f, -0.5f).setNor(1, 0, 0);
-    v3 = new VertexInfo().setPos(0.125f, front, -0.5f).setNor(1, 0, 0);
-    v4 = new VertexInfo().setPos(0.25f, 0.5f, 0.5f).setNor(1, 0, 0);
-    partBuilder.rect(v1, v2, v3, v4);
-
-    // create front part
-    partBuilder = mb.part("front", GL20.GL_TRIANGLES,
-            VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.ColorPacked,
-            material);
-
-    partBuilder.setColor(COLOR);
-    v1 = new VertexInfo().setPos(0.125f, -0.5f, -0.5f).setNor(0, 0, -1);
-    v2 = new VertexInfo().setPos(-0.125f, -0.5f, -0.5f).setNor(0, 0, -1);
-    v3 = new VertexInfo().setPos(-0.125f, front, -0.5f).setNor(0, 0, -1);
-    v4 = new VertexInfo().setPos(0.125f, front, -0.5f).setNor(0, 0, -1);
-    partBuilder.rect(v1, v2, v3, v4);
-
-    // create back part (visible to player)
-    partBuilder = mb.part("back", GL20.GL_TRIANGLES,
-            VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.ColorPacked,
-            material);
-
-    partBuilder.setColor(COLOR);
-    v1 = new VertexInfo().setPos(-0.5f, -0.5f, 0.5f).setNor(0, 0, 1);
-    v2 = new VertexInfo().setPos(0.5f, -0.5f, 0.5f).setNor(0, 0, 1);
-    v3 = new VertexInfo().setPos(0.25f, 0.5f, 0.5f).setNor(0, 0, 1);
-    v4 = new VertexInfo().setPos(-0.25f, 0.5f, 0.5f).setNor(0, 0, 1);
-    partBuilder.rect(v1, v2, v3, v4);
-
-    return bodyModel = mb.end();
-  }
-
-  private static Model createOutlineModel() {
-    if (outlineModel != null) return outlineModel;
-
-    MeshPartBuilder partBuilder;
-    final float front = 0.125f;
-    final Material material = new Material(ColorAttribute.createDiffuse(Color.WHITE));
-
-    ModelBuilder mb = new ModelBuilder();
-    mb.begin();
-
-    // create bottom part
-    partBuilder = mb.part("bottom", GL20.GL_LINES,
-            VertexAttributes.Usage.Position | VertexAttributes.Usage.ColorPacked,
-            material);
-    partBuilder.setColor(Color.WHITE);
-    partBuilder.line(0.125f, -0.5f, -0.5f, 0.5f, -0.5f, 0.5f);
-    partBuilder.line(0.5f, -0.5f, 0.5f, -0.5f, -0.5f, 0.5f);
-    partBuilder.line(-0.5f, -0.5f, 0.5f, -0.125f, -0.5f, -0.5f);
-    partBuilder.line(-0.125f, -0.5f, -0.5f, 0.125f, -0.5f, -0.5f);
-
-    // create top part
-    partBuilder = mb.part("top", GL20.GL_LINES,
-            VertexAttributes.Usage.Position | VertexAttributes.Usage.ColorPacked,
-            material);
-    partBuilder.setColor(Color.WHITE);
-    partBuilder.line(-0.125f, front, -0.5f, -0.25f, 0.5f, 0.5f);
-    partBuilder.line(-0.25f, 0.5f, 0.5f, 0.25f, 0.5f, 0.5f);
-    partBuilder.line(0.25f, 0.5f, 0.5f, 0.125f, front, -0.5f);
-    partBuilder.line(0.125f, front, -0.5f, -0.125f, front, -0.5f);
-
-    // create left part
-    partBuilder = mb.part("left", GL20.GL_LINES,
-            VertexAttributes.Usage.Position | VertexAttributes.Usage.ColorPacked,
-            material);
-    partBuilder.setColor(Color.WHITE);
-    partBuilder.line(-0.125f, -0.5f, -0.5f, -0.5f, -0.5f, 0.5f);
-    partBuilder.line(-0.5f, -0.5f, 0.5f, -0.25f, 0.5f, 0.5f);
-    partBuilder.line(-0.25f, 0.5f, 0.5f, -0.125f, front, -0.5f);
-    partBuilder.line(-0.125f, front, -0.5f, -0.125f, -0.5f, -0.5f);
-
-    // create right part
-    partBuilder = mb.part("right", GL20.GL_LINES,
-            VertexAttributes.Usage.Position | VertexAttributes.Usage.ColorPacked,
-            material);
-    partBuilder.setColor(Color.WHITE);
-    partBuilder.line(0.5f, -0.5f, 0.5f, 0.125f, -0.5f, -0.5f);
-    partBuilder.line(0.125f, -0.5f, -0.5f, 0.125f, front, -0.5f);
-    partBuilder.line(0.125f, front, -0.5f, 0.25f, 0.5f, 0.5f);
-    partBuilder.line(0.25f, 0.5f, 0.5f, 0.5f, -0.5f, 0.5f);
-
-    // create front part
-    partBuilder = mb.part("front", GL20.GL_LINES,
-            VertexAttributes.Usage.Position | VertexAttributes.Usage.ColorPacked,
-            material);
-    partBuilder.setColor(Color.WHITE);
-    partBuilder.line(0.125f, -0.5f, -0.5f, -0.125f, -0.5f, -0.5f);
-    partBuilder.line(-0.125f, -0.5f, -0.5f, -0.125f, front, -0.5f);
-    partBuilder.line(-0.125f, front, -0.5f, 0.125f, front, -0.5f);
-    partBuilder.line(0.125f, front, -0.5f, 0.125f, -0.5f, -0.5f);
-
-    // create back part (visible to player)
-    partBuilder = mb.part("back", GL20.GL_LINES,
-            VertexAttributes.Usage.Position | VertexAttributes.Usage.ColorPacked,
-            material);
-    partBuilder.setColor(Color.WHITE);
-    partBuilder.line(-0.5f, -0.5f, 0.5f, 0.5f, -0.5f, 0.5f);
-    partBuilder.line(0.5f, -0.5f, 0.5f, 0.25f, 0.5f, 0.5f);
-    partBuilder.line(0.25f, 0.5f, 0.5f, -0.25f, 0.5f, 0.5f);
-    partBuilder.line(-0.25f, 0.5f, 0.5f, -0.5f, -0.5f, 0.5f);
-
-    return outlineModel = mb.end();
   }
 }

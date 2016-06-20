@@ -6,7 +6,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.habboi.tns.states.*;
 import com.habboi.tns.rendering.GameRenderer;
@@ -102,5 +101,6 @@ public class Game extends ApplicationAdapter {
   public void dispose() {
     currentState.dispose();
     renderer.dispose();
+    Models.dispose();
   }
 }

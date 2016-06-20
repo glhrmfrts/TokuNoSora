@@ -82,9 +82,9 @@ public class LevelLoader {
       } else if (cell.has("sun")) {
         JsonValue sun = cell.get("sun");
         Vector3 pos = parseVector3(sun.getString("pos"));
-        Vector3 size = parseVector3(sun.getString("size"));
+        float radius = sun.getFloat("radius");
 
-        level.addSun(pos, size);
+        level.addSun(pos, radius);
       } else if (cell.has("tunnel")) {
         JsonValue tunnel = cell.get("tunnel");
         Vector3 pos = parseVector3(tunnel.getString("pos"));

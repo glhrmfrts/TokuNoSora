@@ -1,17 +1,8 @@
 package com.habboi.tns.level;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.VertexAttributes;
-import com.badlogic.gdx.graphics.g3d.Material;
-import com.badlogic.gdx.graphics.g3d.Model;
-import com.badlogic.gdx.graphics.g3d.attributes.BlendingAttribute;
-import com.badlogic.gdx.graphics.g3d.attributes.IntAttribute;
-import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
-import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder.VertexInfo;
-import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
-import com.habboi.tns.Util;
+import com.habboi.tns.Models;
 import com.habboi.tns.rendering.GameRenderer;
 import com.habboi.tns.Ship;
 
@@ -23,7 +14,6 @@ import java.util.LinkedList;
  */
 public class Level {
   static final float GRAVITY = -9.87f;
-  static final int TUNNEL_SEGMENTS = 12;
 
   String name;
   String music;
@@ -32,11 +22,6 @@ public class Level {
   Vector3 shipPos;
   ArrayList<Color> colors;
 
-  ModelBuilder mb;
-  Model tunnelOutlineModel;
-  Model tileOutlineModel;
-  ArrayList<Model> presetModels = new ArrayList<>();
-  ArrayList<Model> tunnelModels = new ArrayList<>();
   ArrayList<Cell> cells = new ArrayList<>();
   LinkedList<Cell> collisions = new LinkedList<>();
 
@@ -50,14 +35,12 @@ public class Level {
     this.shipPos = shipPos;
     this.colors = colors;
 
-    mb = new ModelBuilder();
     for (ArrayList<int[]> preset : presets) {
-      presetModels.add(createTileModel(preset));
+      Models.createTileModel(colors, preset);
     }
     for (int[] preset : tunnelPresets) {
-      tunnelModels.add(createTunnelModel(preset));
+      Models.createTunnelModel(colors, preset);
     }
-    tunnelOutlineModel = createTunnelOutlineModel();
   }
 
   public Vector3 getShipPos() {
@@ -69,22 +52,22 @@ public class Level {
   }
 
   public void addTile(Vector3 pos, Vector3 size, int outline, Tile.TouchEffect effect, int preset) {
-    Model model = presetModels.get(preset);
     Color outlineColor = Color.WHITE;
     if (outline != -1) {
       outlineColor = colors.get(outline);
     }
-    Tile tile = new Tile(pos, size, outlineColor, effect, model);
+    Tile tile = new Tile(pos, size, outlineColor, effect, preset);
     cells.add(tile);
   }
 
   public void addTunnel(Vector3 pos, float depth, int preset) {
-    Tunnel tunnel = new Tunnel(pos, depth, tunnelModels.get(preset), tunnelOutlineModel);
+    Tunnel tunnel = new Tunnel(pos, depth, preset);
     cells.add(tunnel);
   }
 
-  public void addSun(Vector3 pos, Vector3 size) {
-
+  public void addSun(Vector3 pos, float radius) {
+    Sun sun = new Sun(pos, radius);
+    cells.add(sun);
   }
 
   private void updatePhysics(Ship ship, float dt) {
@@ -127,319 +110,7 @@ public class Level {
     }
   }
 
-  private Model createTileModel(ArrayList<int[]> colors) {
-    MeshPartBuilder partBuilder;
-    VertexInfo v1, v2, v3, v4;
-    final Material material = new Material(new BlendingAttribute(true, GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA, 0.75f));
-
-    int[] bottomColors = colors.get(0);
-    int[] topColors = colors.get(1);
-    int[] leftColors = colors.get(2);
-    int[] rightColors = colors.get(3);
-    int[] frontColors = colors.get(4);
-    int[] backColors = colors.get(5);
-
-    mb.begin();
-
-    // create bottom part
-    partBuilder = mb.part("bottom", GL20.GL_TRIANGLES,
-            VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.ColorPacked,
-            material);
-
-    v1 = new VertexInfo().setPos(1, 0, -1).setNor(0, -1, 0).setCol(this.colors.get(bottomColors[0]));
-    v2 = new VertexInfo().setPos(1, 0, 0).setNor(0, -1, 0).setCol(this.colors.get(bottomColors[1]));
-    v3 = new VertexInfo().setPos(0, 0, 0).setNor(0, -1, 0).setCol(this.colors.get(bottomColors[2]));
-    v4 = new VertexInfo().setPos(0, 0, -1).setNor(0, -1, 0).setCol(this.colors.get(bottomColors[3]));
-    partBuilder.rect(v1, v2, v3, v4);
-
-    // create top part
-    partBuilder = mb.part("top", GL20.GL_TRIANGLES,
-            VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.ColorPacked,
-            material);
-
-    v1 = new VertexInfo().setPos(0, 1, -1).setNor(0, 1, 0).setCol(this.colors.get(topColors[0]));
-    v2 = new VertexInfo().setPos(0, 1, 0).setNor(0, 1, 0).setCol(this.colors.get(topColors[1]));
-    v3 = new VertexInfo().setPos(1, 1, 0).setNor(0, 1, 0).setCol(this.colors.get(topColors[2]));
-    v4 = new VertexInfo().setPos(1, 1, -1).setNor(0, 1, 0).setCol(this.colors.get(topColors[3]));
-    partBuilder.rect(v1, v2, v3, v4);
-
-    // create left part
-    partBuilder = mb.part("left", GL20.GL_TRIANGLES,
-            VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.ColorPacked,
-            material);
-
-    v1 = new VertexInfo().setPos(0, 0, -1).setNor(-1, 0, 0).setCol(this.colors.get(leftColors[0]));
-    v2 = new VertexInfo().setPos(0, 0, 0).setNor(-1, 0, 0).setCol(this.colors.get(leftColors[1]));
-    v3 = new VertexInfo().setPos(0, 1, 0).setNor(-1, 0, 0).setCol(this.colors.get(leftColors[2]));
-    v4 = new VertexInfo().setPos(0, 1, -1).setNor(-1, 0, 0).setCol(this.colors.get(leftColors[3]));
-    partBuilder.rect(v1, v2, v3, v4);
-
-    // create right part
-    partBuilder = mb.part("right", GL20.GL_TRIANGLES,
-            VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.ColorPacked,
-            material);
-
-    v1 = new VertexInfo().setPos(1, 0, 0).setNor(1, 0, 0).setCol(this.colors.get(rightColors[0]));
-    v2 = new VertexInfo().setPos(1, 0, -1).setNor(1, 0, 0).setCol(this.colors.get(rightColors[1]));
-    v3 = new VertexInfo().setPos(1, 1, -1).setNor(1, 0, 0).setCol(this.colors.get(rightColors[2]));
-    v4 = new VertexInfo().setPos(1, 1, 0).setNor(1, 0, 0).setCol(this.colors.get(rightColors[3]));
-    partBuilder.rect(v1, v2, v3, v4);
-
-    // create front part
-    partBuilder = mb.part("front", GL20.GL_TRIANGLES,
-            VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.ColorPacked,
-            material);
-
-    v1 = new VertexInfo().setPos(1, 0, -1).setNor(0, 0, -1).setCol(this.colors.get(frontColors[0]));
-    v2 = new VertexInfo().setPos(0, 0, -1).setNor(0, 0, -1).setCol(this.colors.get(frontColors[1]));
-    v3 = new VertexInfo().setPos(0, 1, -1).setNor(0, 0, -1).setCol(this.colors.get(frontColors[2]));
-    v4 = new VertexInfo().setPos(1, 1, -1).setNor(0, 0, -1).setCol(this.colors.get(frontColors[3]));
-    partBuilder.rect(v1, v2, v3, v4);
-
-    // create back part (visible to player)
-    partBuilder = mb.part("back", GL20.GL_TRIANGLES,
-            VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.ColorPacked,
-            material);
-
-    v1 = new VertexInfo().setPos(0, 0, 0).setNor(0, 0, 1).setCol(this.colors.get(backColors[0]));
-    v2 = new VertexInfo().setPos(1, 0, 0).setNor(0, 0, 1).setCol(this.colors.get(backColors[1]));
-    v3 = new VertexInfo().setPos(1, 1, 0).setNor(0, 0, 1).setCol(this.colors.get(backColors[2]));
-    v4 = new VertexInfo().setPos(0, 1, 0).setNor(0, 0, 1).setCol(this.colors.get(backColors[3]));
-    partBuilder.rect(v1, v2, v3, v4);
-
-    return mb.end();
-  }
-
-  private void adjustTunnelVertexScale(VertexInfo v1) {
-    v1.position.x *= 0.5f;
-    v1.position.y -= 0.5f;
-    v1.position.y *= 0.5f;
-    v1.position.z *= 0.5f;
-  }
-
-  private void adjustTunnelVertexScale(VertexInfo... vs) {
-    for (VertexInfo v : vs) {
-      adjustTunnelVertexScale(v);
-    }
-  }
-
-  private Model createTunnelModel(int[] cols) {
-    MeshPartBuilder partBuilder;
-    VertexInfo v1, v2, v3, v4;
-    mb.begin();
-
-    Color backColor = colors.get(cols[0]);
-    Color frontColor = colors.get(cols[1]);
-
-    final Material material = new Material();
-    material.set(IntAttribute.createCullFace(GL20.GL_NONE));
-
-    final int segments = TUNNEL_SEGMENTS;
-    final float deltaTheta = (float)Math.PI / segments;
-    final float backZ = 1;
-    final float frontZ = -1;
-
-    float theta = 0;
-    float x = 1;
-    float y = -0.5f + (float)Math.sin(deltaTheta*2);
-    for (int i = 0; i < segments; i++) {
-      theta += deltaTheta;
-      float nx = (float)Math.cos(theta);
-      float ny = (float)Math.sin(theta);
-      float ix = x * 0.9f;
-      float iy = y * 0.9f;
-      float inx = nx * 0.9f;
-      float iny = ny * 0.9f;
-
-      // create outside part of this segment
-      partBuilder = mb.part("outside" + i, GL20.GL_TRIANGLES,
-              VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.ColorPacked,
-              material);
-
-      v1 = new VertexInfo().setPos(x, y, backZ).setCol(backColor);
-      v2 = new VertexInfo().setPos(x, y, frontZ).setCol(frontColor);
-      v3 = new VertexInfo().setPos(nx, ny, frontZ).setCol(frontColor);
-      v4 = new VertexInfo().setPos(nx, ny, backZ).setCol(backColor);
-      v1.setNor(v1.position.x, v1.position.y, 0);
-      v2.setNor(v2.position.x, v2.position.y, 0);
-      v3.setNor(v3.position.x, v3.position.y, 0);
-      v4.setNor(v4.position.x, v4.position.y, 0);
-      adjustTunnelVertexScale(v1, v2, v3, v4);
-      partBuilder.rect(v1, v2, v3, v4);
-
-      // create back part of this segment (visible to player)
-      partBuilder = mb.part("back" + i, GL20.GL_TRIANGLES,
-              VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.ColorPacked,
-              material);
-
-      v1 = new VertexInfo().setPos(ix, iy, backZ).setCol(backColor);
-      v2 = new VertexInfo().setPos(inx, iny, backZ).setCol(backColor);
-      v3 = new VertexInfo().setPos(nx, ny, backZ).setCol(backColor);
-      v4 = new VertexInfo().setPos(x, y, backZ).setCol(backColor);
-      v1.setNor(0, 0, 1);
-      v2.setNor(0, 0, 1);
-      v3.setNor(0, 0, 1);
-      v4.setNor(0, 0, 1);
-      adjustTunnelVertexScale(v1, v2, v3, v4);
-      partBuilder.rect(v1, v2, v3, v4);
-
-      // create inside part of this segment
-      partBuilder = mb.part("inside" + i, GL20.GL_TRIANGLES,
-              VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.ColorPacked,
-              material);
-
-      v1 = new VertexInfo().setPos(ix, iy, backZ).setCol(backColor);
-      v2 = new VertexInfo().setPos(ix, iy, frontZ).setCol(frontColor);
-      v3 = new VertexInfo().setPos(inx, iny, frontZ).setCol(frontColor);
-      v4 = new VertexInfo().setPos(inx, iny, backZ).setCol(backColor);
-      v1.setNor(-v1.position.x, -v1.position.y, 0);
-      v2.setNor(-v2.position.x, -v2.position.y, 0);
-      v3.setNor(-v3.position.x, -v3.position.y, 0);
-      v4.setNor(-v4.position.x, -v4.position.y, 0);
-      adjustTunnelVertexScale(v1, v2, v3, v4);
-      partBuilder.rect(v1, v2, v3, v4);
-
-      // create front part of this segment
-      partBuilder = mb.part("front" + i, GL20.GL_TRIANGLES,
-              VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.ColorPacked,
-              material);
-
-      v1 = new VertexInfo().setPos(ix, iy, frontZ).setCol(frontColor);
-      v2 = new VertexInfo().setPos(inx, iny, frontZ).setCol(frontColor);
-      v3 = new VertexInfo().setPos(nx, ny, frontZ).setCol(frontColor);
-      v4 = new VertexInfo().setPos(x, y, frontZ).setCol(frontColor);
-      v1.setNor(0, 0, -1);
-      v2.setNor(0, 0, -1);
-      v3.setNor(0, 0, -1);
-      v4.setNor(0, 0, -1);
-      adjustTunnelVertexScale(v1, v2, v3, v4);
-      partBuilder.rect(v1, v2, v3, v4);
-
-      x = nx;
-      y = ny;
-    }
-
-    return mb.end();
-  }
-
-  private Model createTunnelOutlineModel() {
-    MeshPartBuilder partBuilder;
-    VertexInfo v1, v2, v3, v4;
-    mb.begin();
-
-    final Material material = new Material();
-
-    final int segments = TUNNEL_SEGMENTS;
-    final float deltaTheta = (float)Math.PI / segments;
-    final float backZ = 1;
-    final float frontZ = -1;
-
-    float theta = 0;
-    float x = 1;
-    float y = -0.5f + (float)Math.sin(deltaTheta*2);
-    for (int i = 0; i < segments; i++) {
-      theta += deltaTheta;
-      float nx = (float)Math.cos(theta);
-      float ny = (float)Math.sin(theta);
-      float ix = x * 0.9f;
-      float iy = y * 0.9f;
-      float inx = nx * 0.9f;
-      float iny = ny * 0.9f;
-
-      if (i == 0 || i == segments - 1) {
-        // create outside part of this segment
-        partBuilder = mb.part("outside" + i, GL20.GL_LINES,
-                VertexAttributes.Usage.Position | VertexAttributes.Usage.ColorPacked,
-                material);
-        partBuilder.setColor(Color.WHITE);
-
-        v1 = new VertexInfo().setPos(x, y, backZ);
-        v2 = new VertexInfo().setPos(x, y, frontZ);
-        v3 = new VertexInfo().setPos(nx, ny, frontZ);
-        v4 = new VertexInfo().setPos(nx, ny, backZ);
-        adjustTunnelVertexScale(v1, v2, v3, v4);
-
-        if (i == 0) {
-          partBuilder.line(v1, v2);
-        } else {
-          partBuilder.line(v3, v4);
-        }
-
-        // create inside part of this segment
-        partBuilder = mb.part("inside" + i, GL20.GL_LINES,
-                VertexAttributes.Usage.Position | VertexAttributes.Usage.ColorPacked,
-                material);
-        partBuilder.setColor(Color.WHITE);
-
-        v1 = new VertexInfo().setPos(ix, iy, backZ);
-        v2 = new VertexInfo().setPos(ix, iy, frontZ);
-        v3 = new VertexInfo().setPos(inx, iny, frontZ);
-        v4 = new VertexInfo().setPos(inx, iny, backZ);
-        adjustTunnelVertexScale(v1, v2, v3, v4);
-
-        if (i == 0) {
-          partBuilder.line(v1, v2);
-        } else {
-          partBuilder.line(v3, v4);
-        }
-      }
-
-      // create back part of this segment (visible to player)
-      partBuilder = mb.part("back" + i, GL20.GL_LINES,
-              VertexAttributes.Usage.Position | VertexAttributes.Usage.ColorPacked,
-              material);
-      partBuilder.setColor(Color.WHITE);
-
-      v1 = new VertexInfo().setPos(ix, iy, backZ);
-      v2 = new VertexInfo().setPos(inx, iny, backZ);
-      v3 = new VertexInfo().setPos(nx, ny, backZ);
-      v4 = new VertexInfo().setPos(x, y, backZ);
-      adjustTunnelVertexScale(v1, v2, v3, v4);
-      partBuilder.line(v1, v2);
-      partBuilder.line(v3, v4);
-
-      if (i == 0) {
-        partBuilder.line(v4, v1);
-      }
-      if (i == segments - 1) {
-        partBuilder.line(v2, v3);
-      }
-
-      // create front part of this segment
-      partBuilder = mb.part("front" + i, GL20.GL_LINES,
-              VertexAttributes.Usage.Position | VertexAttributes.Usage.ColorPacked,
-              material);
-      partBuilder.setColor(Color.WHITE);
-
-      v1 = new VertexInfo().setPos(ix, iy, frontZ);
-      v2 = new VertexInfo().setPos(inx, iny, frontZ);
-      v3 = new VertexInfo().setPos(nx, ny, frontZ);
-      v4 = new VertexInfo().setPos(x, y, frontZ);
-      adjustTunnelVertexScale(v1, v2, v3, v4);
-      partBuilder.line(v1, v2);
-      partBuilder.line(v3, v4);
-
-      if (i == 0) {
-        partBuilder.line(v4, v1);
-      }
-      if (i == segments - 1) {
-        partBuilder.line(v2, v3);
-      }
-
-      x = nx;
-      y = ny;
-    }
-
-    return mb.end();
-  }
-
   public void dispose() {
-    for (Model model : tunnelModels) {
-      model.dispose();
-    }
-    for (Model model : presetModels) {
-      model.dispose();
-    }
-    tunnelOutlineModel.dispose();
+
   }
 }
