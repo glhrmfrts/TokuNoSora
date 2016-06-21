@@ -69,7 +69,7 @@ public class LevelLoader {
         Vector3 size = parseVector3(tile.getString("size"));
         int preset = tile.getInt("preset");
 
-        Tile.TouchEffect effect = Tile.TouchEffect.None;
+        Cell.TouchEffect effect = Cell.TouchEffect.NONE;
         if (tile.has("effect")) {
           effect = Tile.TouchEffect.values()[tile.getInt("effect")];
         }
@@ -90,8 +90,12 @@ public class LevelLoader {
         Vector3 pos = parseVector3(tunnel.getString("pos"));
         int depth = tunnel.getInt("depth");
         int preset = tunnel.getInt("preset");
+        boolean end = false;
+        if (tunnel.has("end")) {
+          end = true;
+        }
 
-        level.addTunnel(pos, depth, preset);
+        level.addTunnel(pos, depth, preset, end);
       }
     }
     return level;

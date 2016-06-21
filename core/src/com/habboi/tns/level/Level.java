@@ -24,6 +24,7 @@ public class Level {
 
   ArrayList<Cell> cells = new ArrayList<>();
   LinkedList<Cell> collisions = new LinkedList<>();
+  ArrayList<Tunnel> endTunnels = new ArrayList<>();
 
   public Level(String name, String music, int gravityLevel, int fuelFactor,
                Vector3 shipPos, ArrayList<Color> colors, ArrayList<ArrayList<int[]>> presets,
@@ -60,8 +61,11 @@ public class Level {
     cells.add(tile);
   }
 
-  public void addTunnel(Vector3 pos, float depth, int preset) {
+  public void addTunnel(Vector3 pos, float depth, int preset, boolean end) {
     Tunnel tunnel = new Tunnel(pos, depth, preset);
+    if (end) {
+      endTunnels.add(tunnel);
+    }
     cells.add(tunnel);
   }
 
@@ -72,7 +76,6 @@ public class Level {
 
   private void updatePhysics(Ship ship, float dt) {
     ship.vel.y += (GRAVITY * gravityLevel) * dt;
-
     for (Cell cell : cells) {
       if (cell.checkCollision(ship)) {
         collisions.add(cell);
@@ -96,12 +99,22 @@ public class Level {
         ship.pos.add(correction);
       }
     }
-
     ship.pos.add(ship.vel.x * dt, ship.vel.y * dt, ship.vel.z * dt);
   }
 
   public void update(Ship ship, float dt) {
     updatePhysics(ship, dt);
+
+    boolean readyToEnd = ship.readyToEnd;
+    for (Tunnel t : endTunnels) {
+      if (t.isShipInside()) {
+        readyToEnd = true;
+        break;
+      } else {
+        readyToEnd = false;
+      }
+    }
+    ship.readyToEnd = readyToEnd;
   }
 
   public void render(GameRenderer renderer) {

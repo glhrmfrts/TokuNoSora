@@ -14,6 +14,7 @@ public class Tunnel extends Cell {
   static final float TUNNEL_WIDTH = Tile.TILE_WIDTH;
   static final float TUNNEL_HEIGHT = 1;
 
+  boolean shipInside;
   float depth;
   ModelInstance outlineInstance;
 
@@ -38,6 +39,10 @@ public class Tunnel extends Cell {
 
     outlineInstance = new ModelInstance(Models.getTunnelOutlineModel());
     outlineInstance.transform.setToScaling(TUNNEL_WIDTH, TUNNEL_HEIGHT, depth*Tile.TILE_DEPTH);
+  }
+
+  public boolean isShipInside() {
+    return shipInside;
   }
 
   @Override
@@ -69,10 +74,12 @@ public class Tunnel extends Cell {
 
     Cell.CollisionInfo c = collisionInfo;
     c.clear();
+    shipInside = false;
     if (insideY) {
       if (insideZ && insideX) {
         float cos = (spos.x - pos.x) / (rightEdge - thickness - pos.x);
         float sin = (spos.y - pos.y) / (upperEdge - thickness - pos.y);
+        shipInside = true;
 
         if (Math.abs(cos) > 0.12f || sin > 0.4f) {
           c.normal.x = -Math.copySign(1, cos);
@@ -106,7 +113,7 @@ public class Tunnel extends Cell {
       }
     }
 
-    if (insideZ && !insideX) {
+    if (insideZ && !shipInside) {
       // since we know we are inside the tunnel's z range we simply
       // discard the z axis in this collision detection
       dif.set(spos).sub(pos);

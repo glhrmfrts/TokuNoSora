@@ -51,7 +51,7 @@ public class Game extends ApplicationAdapter {
     return height;
   }
 
-  public com.habboi.tns.rendering.GameRenderer getRenderer() {
+  public GameRenderer getRenderer() {
     return renderer;
   }
 
@@ -66,6 +66,11 @@ public class Game extends ApplicationAdapter {
 
   public void addInput(InputProcessor input) {
     inputMul.addProcessor(input);
+  }
+
+  public void update() {
+    currentState.update(STEP_SECONDS);
+    GameTweenManager.update(STEP_SECONDS);
   }
 
 	@Override
@@ -87,9 +92,9 @@ public class Game extends ApplicationAdapter {
     accumUpdateTime += delta;
     while (accumUpdateTime >= STEP) {
       accumUpdateTime -= delta;
-      currentState.update(STEP_SECONDS);
+      update();
       if (stateChanged) {
-        currentState.update(STEP_SECONDS);
+        update();
         stateChanged = false;
       }
     }

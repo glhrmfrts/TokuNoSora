@@ -11,10 +11,10 @@ import com.habboi.tns.rendering.GameRenderer;
  * Represents a tile instance on the level.
  */
 public class Tile extends Cell {
-  static final float TILE_WIDTH = 1;
-  static final float TILE_HEIGHT = 0.25f;
-  static final float TILE_DEPTH = 1;
-  static final float SLIDE_DISTANCE_MIN = 1.05f;
+  public static final float TILE_WIDTH = 1;
+  public static final float TILE_HEIGHT = 0.25f;
+  public static final float TILE_DEPTH = 1;
+  public static final float SLIDE_DISTANCE_MIN = 1.05f;
 
   Vector3 half = new Vector3();
   ModelInstance outlineInstance;

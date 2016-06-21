@@ -10,8 +10,8 @@ import com.habboi.tns.Ship;
  */
 public abstract class Cell {
   public enum TouchEffect {
-    None,
-    End
+    NONE,
+    END
   }
 
   public static class CollisionInfo {
@@ -19,7 +19,7 @@ public abstract class Cell {
     public float depth;
     public float slide;
 
-    void clear() {
+    public void clear() {
       normal.set(0, 0, 0);
       depth = 0;
       slide = 0;
@@ -34,8 +34,8 @@ public abstract class Cell {
 
   public CollisionInfo collisionInfo = new CollisionInfo();
   public TouchEffect effect;
+  public Vector3 pos = new Vector3();
 
-  Vector3 pos = new Vector3();
   ModelInstance modelInstance;
 
   public abstract void render(GameRenderer renderer);

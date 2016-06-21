@@ -257,7 +257,7 @@ public final class Models {
     MeshPartBuilder partBuilder;
     mb.begin();
 
-    Material material = new Material(ColorAttribute.createDiffuse(Color.WHITE));
+    final Material material = new Material(ColorAttribute.createDiffuse(Color.WHITE));
     // create bottom part
     partBuilder = mb.part("bottom", GL20.GL_LINES,
             VertexAttributes.Usage.Position | VertexAttributes.Usage.ColorPacked,

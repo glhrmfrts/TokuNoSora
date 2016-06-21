@@ -106,7 +106,6 @@ public class Background implements Disposable {
   public void render(GameRenderer renderer) {
     planeInstance.transform.setTranslation(center.x, center.y + DISTANCE_Y - 0.5f, center.z);
     renderer.render(planeInstance);
-
     final float base = center.z - DEPTH/1.1f;
     for (int i = 0; i < count; i++) {
       Line line = lines.get(i);
@@ -115,6 +114,7 @@ public class Background implements Disposable {
       line.instance.transform.setTranslation(center.x, center.y + DISTANCE_Y, base + line.zOffset);
       renderer.renderGlow(line.instance);
     }
+    offset = 0;
   }
 
   @Override

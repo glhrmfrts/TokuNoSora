@@ -7,10 +7,17 @@ import com.habboi.tns.Models;
 import com.habboi.tns.Ship;
 import com.habboi.tns.rendering.GameRenderer;
 
+import aurelienribon.tweenengine.Tween;
+import aurelienribon.tweenengine.TweenAccessor;
+
 /**
  * Sun represents the end of the level.
  */
 public class Sun extends Cell {
+
+  static {
+    Tween.registerAccessor(Sun.class, new Accessor());
+  }
 
   float radius;
 
@@ -23,15 +30,15 @@ public class Sun extends Cell {
   public Sun(Vector3 pos, float radius) {
     this.pos.set(pos.x*Tile.TILE_WIDTH, pos.y*Tile.TILE_HEIGHT, -pos.z * Tile.TILE_DEPTH);
     this.radius = radius;
-    this.effect = TouchEffect.End;
+    this.effect = TouchEffect.END;
 
     modelInstance = new ModelInstance(Models.getSunModel());
-    modelInstance.transform.setToScaling(radius, radius, 0);
-    modelInstance.transform.setTranslation(this.pos);
   }
 
   @Override
   public void render(GameRenderer renderer) {
+    modelInstance.transform.setToScaling(radius, radius, 0);
+    modelInstance.transform.setTranslation(this.pos);
     renderer.renderGlow(modelInstance);
   }
 
@@ -86,5 +93,28 @@ public class Sun extends Cell {
 
     c.slide = c.normal.x;
     return true;
+  }
+
+  public static class Accessor implements TweenAccessor<Sun> {
+    public static final int TWEEN_RADIUS = 0;
+
+    @Override
+    public int getValues(Sun sun, int i, float[] floats) {
+      switch (i) {
+        case TWEEN_RADIUS:
+          floats[0] = sun.radius;
+          return 1;
+      }
+      return 0;
+    }
+
+    @Override
+    public void setValues(Sun sun, int i, float[] floats) {
+      switch (i) {
+        case TWEEN_RADIUS:
+          sun.radius = floats[0];
+          break;
+      }
+    }
   }
 }

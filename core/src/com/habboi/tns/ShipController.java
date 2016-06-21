@@ -7,19 +7,19 @@ import com.badlogic.gdx.InputProcessor;
  * Controls the ship, also record input.
  */
 public class ShipController implements InputProcessor {
-  int[] keys = new int[Key.NUM_KEYS.ordinal()];
-  int[] prevKeys = new int[Key.NUM_KEYS.ordinal()];
-  boolean recording;
-  float time;
-
   enum Key {
     LEFT,
     RIGHT,
     UP,
     DOWN,
-    JUMP,
-    NUM_KEYS
+    JUMP
   }
+  static final int NUM_KEYS = 5;
+
+  int[] keys = new int[NUM_KEYS];
+  int[] prevKeys = new int[NUM_KEYS];
+  boolean recording;
+  float time;
 
   public ShipController(boolean record) {
     recording = record;

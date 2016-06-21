@@ -7,15 +7,22 @@ import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.math.Vector3;
 import com.habboi.tns.level.Cell;
 import com.habboi.tns.ShipController.Key;
+import com.habboi.tns.level.Sun;
+import com.habboi.tns.level.Tile;
 import com.habboi.tns.rendering.GameRenderer;
 
 /**
  * My ship :).
  */
 public class Ship {
+  public enum State {
+    ALIVE, EXPLODED, ENDED
+  }
+  public State state = State.ALIVE;
   public Vector3 pos = new Vector3();
   public Vector3 vel = new Vector3();
   public Vector3 half = new Vector3();
+  public boolean readyToEnd;
 
   static final float BODY_WIDTH = 0.75f;
   static final float BODY_HEIGHT = 0.3f;
@@ -34,6 +41,7 @@ public class Ship {
   ModelInstance bodyInstance;
   ModelInstance outlineInstance;
   ShipController controller;
+  Sun sun;
   int floorCollisions;
   float dSlide;
   float steerAccul;
@@ -41,7 +49,7 @@ public class Ship {
   public Ship(Vector3 pos, ShipController controller) {
     half.set(BODY_WIDTH / 2f, BODY_HEIGHT / 2f, BODY_DEPTH / 2f);
 
-    this.pos.set(pos);
+    this.pos.set(pos.x*Tile.TILE_WIDTH, pos.y*Tile.TILE_HEIGHT, -pos.z*Tile.TILE_DEPTH);
     this.pos.z -= half.z;
 
     this.controller = controller;
@@ -66,6 +74,10 @@ public class Ship {
     attr.color.set(OUTLINE_COLOR);
   }
 
+  public Sun getSun() {
+    return sun;
+  }
+
   private static float steer(float c, float t, float a, float dt) {
     if (c == t) {
       return t;
@@ -76,6 +88,10 @@ public class Ship {
   }
 
   public void update(float dt) {
+    if (state == State.ENDED) {
+      vel.set(0, 0, 0);
+      return;
+    }
     if (controller.isDown(Key.UP)) {
       if (vel.z > -MAX_VEL) {
         vel.z -= 1;
@@ -118,23 +134,33 @@ public class Ship {
 
     floorCollisions = 0;
     dSlide = 0;
+    controller.update(dt);
   }
 
   public void render(GameRenderer renderer) {
+    if (state == State.ENDED) {
+      return;
+    }
     bodyInstance.transform.setTranslation(pos);
     renderer.render(bodyInstance);
-
     outlineInstance.transform.setTranslation(pos);
     renderer.renderGlow(outlineInstance);
   }
 
   public boolean handleCollision(Cell cell) {
     Cell.CollisionInfo c = cell.collisionInfo;
-    //System.out.println(c);
 
-    if (cell.effect == Cell.TouchEffect.End) {
-      Util.d("end");
+    if (cell.effect == Cell.TouchEffect.END) {
+      if (readyToEnd) {
+        state = State.ENDED;
+        sun = (Sun) cell;
+      }
       return false;
+    }
+
+    if (c.normal.z == 1 && -vel.z > MAX_VEL/2) {
+      state = State.EXPLODED;
+      return true;
     }
 
     if (c.normal.y == 1) {
