@@ -1,4 +1,4 @@
-package com.habboi.tns;
+package com.habboi.tns.level;
 
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.math.Vector3;
@@ -20,6 +20,10 @@ public class ShipCamera {
     this.cam = cam;
     cam.near = 0.1f;
     cam.far = 1000f;
+    reset();
+  }
+
+  public void reset() {
     cam.position.set(ship.pos.x, ship.pos.y + DISTANCE_Y, ship.pos.z + DISTANCE_Z);
   }
 

@@ -3,8 +3,6 @@ package com.habboi.tns.level;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.habboi.tns.Models;
-import com.habboi.tns.Ship;
 import com.habboi.tns.rendering.GameRenderer;
 
 /**
@@ -43,6 +41,11 @@ public class Tunnel extends Cell {
 
   public boolean isShipInside() {
     return shipInside;
+  }
+
+  @Override
+  public void reset() {
+    shipInside = false;
   }
 
   @Override

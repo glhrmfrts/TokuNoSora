@@ -1,4 +1,4 @@
-package com.habboi.tns;
+package com.habboi.tns.level;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;

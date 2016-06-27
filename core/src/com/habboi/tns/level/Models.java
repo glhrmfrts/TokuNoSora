@@ -1,4 +1,4 @@
-package com.habboi.tns;
+package com.habboi.tns.level;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -101,7 +101,7 @@ public final class Models {
     v3 = new VertexInfo().setPos(-0.5f, -0.5f, 0.5f);
     v4 = new VertexInfo().setPos(-0.125f, -0.5f, -0.5f);
 
-    normal = Util.calculateNormal(v1.position, v2.position, v3.position);
+    normal = calculateNormal(v1.position, v2.position, v3.position);
     v1.setNor(normal);
     v2.setNor(normal);
     v3.setNor(normal);
@@ -120,7 +120,7 @@ public final class Models {
     v3 = new VertexInfo().setPos(0.25f, 0.5f, 0.5f);
     v4 = new VertexInfo().setPos(0.125f, front, -0.5f);
 
-    normal = Util.calculateNormal(v1.position, v2.position, v3.position);
+    normal = calculateNormal(v1.position, v2.position, v3.position);
     v1.setNor(normal);
     v2.setNor(normal);
     v3.setNor(normal);
@@ -655,5 +655,11 @@ public final class Models {
     for (VertexInfo v : vs) {
       adjustTunnelVertexScale(v);
     }
+  }
+
+  public static Vector3 calculateNormal(Vector3 p1, Vector3 p2, Vector3 p3) {
+    Vector3 v1 = new Vector3(p2).sub(p1);
+    Vector3 v2 = new Vector3(p3).sub(p1);
+    return v1.crs(v2).nor();
   }
 }

@@ -5,24 +5,24 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
-import com.habboi.tns.Background;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Rectangle;
+import com.habboi.tns.level.Background;
 import com.habboi.tns.Game;
-import com.habboi.tns.GameTweenManager;
-import com.habboi.tns.Resource;
-import com.habboi.tns.Ship;
-import com.habboi.tns.ShipCamera;
-import com.habboi.tns.ShipController;
+import com.habboi.tns.ui.GameTweenManager;
+import com.habboi.tns.level.Ship;
+import com.habboi.tns.level.ShipCamera;
+import com.habboi.tns.level.ShipController;
 import com.habboi.tns.level.Level;
-import com.habboi.tns.level.LevelLoader;
 import com.habboi.tns.rendering.GameRenderer;
+import com.habboi.tns.ui.Rect;
 import com.habboi.tns.ui.Text;
 
 import java.util.ArrayList;
 
-import aurelienribon.tweenengine.BaseTween;
 import aurelienribon.tweenengine.Tween;
-import aurelienribon.tweenengine.TweenCallback;
 
 /**
  * In-game state.
@@ -37,6 +37,8 @@ public class InGameState extends GameState {
   ShipCamera shipCam;
   Background background;
   Text levelCompleteText;
+  GameTweenManager gtm;
+  Rect screenRect;
 
   public InGameState(Game g) {
     super(g);
@@ -46,11 +48,11 @@ public class InGameState extends GameState {
   public void create() {
     orthoCam = new OrthographicCamera();
     orthoCam.setToOrtho(false, game.getWidth(), game.getHeight());
-    level = LevelLoader.load("map1.json");
+    level = game.getAssetManager().get("map1.json");
 
     ShipController sc = new ShipController(false);
     game.addInput(sc);
-    ship = new Ship(level.getShipPos(), sc);
+    ship = new Ship(game, level.getShipPos(), sc);
 
     PerspectiveCamera cam = new PerspectiveCamera(45, game.getWidth(), game.getHeight());
     cam.near = 0.1f;
@@ -63,25 +65,68 @@ public class InGameState extends GameState {
     ArrayList<Color> colors = level.getColors();
     background = new Background(colors.get(0), colors.get(1), 30);
 
-    levelCompleteText = new Text(Resource.getFont("mine.ttf", 32),
+    levelCompleteText = new Text(game.getAssetManager().get("mine.ttf", BitmapFont.class),
             "LEVEL COMPLETE", null, Color.WHITE);
     levelCompleteText.getPos().set(game.getWidth() / 2, game.getHeight() / 2);
     levelCompleteText.getColor().a = 0;
+
+    screenRect = new Rect(new Rectangle(0, 0, game.getWidth(), game.getHeight()));
+
+    gtm = GameTweenManager.get();
+    gtm.register("start", new GameTweenManager.GameTween() {
+      @Override
+      public Tween tween() {
+        return screenRect.getFadeTween(1, 0);
+      }
+
+      @Override
+      public void onComplete() {
+        ship.state = Ship.State.PLAYABLE;
+      }
+    }).register("level_complete", new GameTweenManager.GameTween() {
+
+      @Override
+      public Tween tween() {
+        return Tween.to(levelCompleteText, Text.Accessor.TWEEN_ALPHA, 1f)
+                .target(1);
+      }
+
+      @Override
+      public void onComplete() {
+
+      }
+    }).register("reset", new GameTweenManager.GameTween() {
+
+      @Override
+      public Tween tween() {
+        return screenRect.getFadeTween(0, 1);
+      }
+
+      @Override
+      public void onComplete() {
+        reset();
+      }
+    });
+
+    gtm.start("start");
+  }
+
+  private void reset() {
+    ship.reset();
+    shipCam.reset();
+    level.reset();
+    gtm.start("start");
   }
 
   @Override
   public void update(float dt) {
     if (ship.state == Ship.State.ENDED) {
-      if (!GameTweenManager.contains("level_complete")) {
-        GameTweenManager.start("level_complete");
-        Tween.to(levelCompleteText, Text.Accessor.TWEEN_ALPHA, 1f)
-                .target(1)
-                .setCallback(new TweenCallback() {
-                  @Override
-                  public void onEvent(int i, BaseTween<?> baseTween) {
-                    GameTweenManager.end("level_complete");
-                  }
-                }).start(GameTweenManager.getTweenManager());
+      if (!gtm.played("level_complete")) {
+        gtm.start("level_complete");
+      }
+    } else if (ship.state == Ship.State.FELL) {
+      if (!gtm.isActive("reset")) {
+        gtm.start("reset");
       }
     }
 
@@ -117,6 +162,9 @@ public class InGameState extends GameState {
     gr.beginOrtho(orthoCam.combined);
     levelCompleteText.draw(gr.getSpriteBatch(), true);
     gr.endOrtho();
+
+    ShapeRenderer sr = game.getShapeRenderer();
+    screenRect.draw(sr);
   }
 
   @Override

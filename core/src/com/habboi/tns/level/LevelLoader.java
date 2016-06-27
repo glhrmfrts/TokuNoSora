@@ -1,8 +1,14 @@
 package com.habboi.tns.level;
 
-import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.assets.AssetDescriptor;
+import com.badlogic.gdx.assets.AssetLoaderParameters;
+import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.assets.loaders.FileHandleResolver;
+import com.badlogic.gdx.assets.loaders.SynchronousAssetLoader;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
@@ -10,14 +16,28 @@ import com.badlogic.gdx.utils.JsonValue;
 import java.util.ArrayList;
 
 /**
- * Loads a level from a file.
+ * Loads a level from a file (synchronously because of OpenGL =/).
  */
-public class LevelLoader {
+public class LevelLoader extends SynchronousAssetLoader<Level, LevelLoader.LevelParameter> {
 
-  public static Level load(String filename) {
+  private static Vector3 parseVector3(String str) {
+    String[] parts = str.split(",");
+    float x = Float.parseFloat(parts[0].trim());
+    float y = Float.parseFloat(parts[1].trim());
+    float z = Float.parseFloat(parts[2].trim());
+
+    return new Vector3(x, y, z);
+  }
+
+  public LevelLoader(FileHandleResolver resolver) {
+    super(resolver);
+  }
+
+  @Override
+  public Level load(AssetManager assetManager, String fileName, FileHandle file, LevelParameter parameter) {
     Level level;
 
-    JsonValue root = new JsonReader().parse(Gdx.files.internal(filename));
+    JsonValue root = new JsonReader().parse(file);
     String name = root.getString("name");
     String music = root.getString("music");
     int gravityLevel = root.getInt("gravity_level");
@@ -101,12 +121,11 @@ public class LevelLoader {
     return level;
   }
 
-  private static Vector3 parseVector3(String str) {
-    String[] parts = str.split(",");
-    float x = Float.parseFloat(parts[0].trim());
-    float y = Float.parseFloat(parts[1].trim());
-    float z = Float.parseFloat(parts[2].trim());
+  @Override
+  public Array<AssetDescriptor> getDependencies(String fileName, FileHandle file, LevelParameter parameter) {
+    return null;
+  }
 
-    return new Vector3(x, y, z);
+  static class LevelParameter extends AssetLoaderParameters<Level> {
   }
 }

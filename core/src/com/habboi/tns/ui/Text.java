@@ -60,6 +60,8 @@ public class Text {
   }
 
   public void draw(SpriteBatch sb, boolean center) {
+    if (color.a == 0) return;
+
     float x = pos.x;
     float y = pos.y;
     if (center) {

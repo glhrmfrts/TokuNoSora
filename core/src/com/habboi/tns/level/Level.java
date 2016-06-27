@@ -2,9 +2,7 @@ package com.habboi.tns.level;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
-import com.habboi.tns.Models;
 import com.habboi.tns.rendering.GameRenderer;
-import com.habboi.tns.Ship;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -100,6 +98,12 @@ public class Level {
       }
     }
     ship.pos.add(ship.vel.x * dt, ship.vel.y * dt, ship.vel.z * dt);
+  }
+
+  public void reset() {
+    for (Cell c : cells) {
+      c.reset();
+    }
   }
 
   public void update(Ship ship, float dt) {

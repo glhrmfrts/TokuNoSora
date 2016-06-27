@@ -1,14 +1,12 @@
-package com.habboi.tns;
+package com.habboi.tns.level;
 
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.Renderable;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.math.Vector3;
-import com.habboi.tns.level.Cell;
-import com.habboi.tns.ShipController.Key;
-import com.habboi.tns.level.Sun;
-import com.habboi.tns.level.Tile;
+import com.habboi.tns.Game;
 import com.habboi.tns.rendering.GameRenderer;
 
 /**
@@ -16,9 +14,9 @@ import com.habboi.tns.rendering.GameRenderer;
  */
 public class Ship {
   public enum State {
-    ALIVE, EXPLODED, ENDED
+    WAITING, PLAYABLE, EXPLODED, FELL, ENDED
   }
-  public State state = State.ALIVE;
+  public State state = State.WAITING;
   public Vector3 pos = new Vector3();
   public Vector3 vel = new Vector3();
   public Vector3 half = new Vector3();
@@ -38,21 +36,25 @@ public class Ship {
   //static final Color OUTLINE_COLOR = new Color(0x1A0E74<<8 | 0xFF);
   static final Color OUTLINE_COLOR = new Color(0x00ff00<<8 | 0xFF);
 
+  Vector3 spawnPos = new Vector3();
+  Game game;
   ModelInstance bodyInstance;
   ModelInstance outlineInstance;
   ShipController controller;
   Sun sun;
+  Sound bounceSound;
   int floorCollisions;
   float dSlide;
   float steerAccul;
 
-  public Ship(Vector3 pos, ShipController controller) {
+  public Ship(Game game, Vector3 pos, ShipController controller) {
     half.set(BODY_WIDTH / 2f, BODY_HEIGHT / 2f, BODY_DEPTH / 2f);
 
     this.pos.set(pos.x*Tile.TILE_WIDTH, pos.y*Tile.TILE_HEIGHT, -pos.z*Tile.TILE_DEPTH);
     this.pos.z -= half.z;
-
+    this.spawnPos.set(this.pos);
     this.controller = controller;
+    this.game = game;
 
     bodyInstance = new ModelInstance(Models.getShipModel());
     bodyInstance.transform.setToScaling(BODY_WIDTH, BODY_HEIGHT, BODY_DEPTH);
@@ -72,6 +74,8 @@ public class Ship {
     outlineInstance.getRenderable(r);
     attr = (ColorAttribute) r.material.get(ColorAttribute.Diffuse);
     attr.color.set(OUTLINE_COLOR);
+
+    bounceSound = game.getAssetManager().get("audio/bounce.wav");
   }
 
   public Sun getSun() {
@@ -87,18 +91,24 @@ public class Ship {
     return (dir == Math.signum(t - c)) ? c : t;
   }
 
+  public void reset() {
+    state = State.WAITING;
+    pos.set(spawnPos);
+    vel.set(0, 0, 0);
+  }
+
   public void update(float dt) {
-    if (state == State.ENDED) {
+    if (state == State.WAITING || state == State.ENDED) {
       vel.set(0, 0, 0);
       return;
     }
-    if (controller.isDown(Key.UP)) {
+    if (controller.isDown(ShipController.Key.UP)) {
       if (vel.z > -MAX_VEL) {
         vel.z -= 1;
       } else {
         vel.z = -MAX_VEL;
       }
-    } else if (controller.isDown(Key.DOWN)) {
+    } else if (controller.isDown(ShipController.Key.DOWN)) {
       if (vel.z < 0) {
         vel.z += 1;
       } else {
@@ -109,9 +119,9 @@ public class Ship {
     if (floorCollisions > 0) {
       // only steer and jump when ship is on the floor
       float target = 0;
-      if ((dSlide <= 0 || floorCollisions > 1) && controller.isDown(Key.LEFT)) {
+      if ((dSlide <= 0 || floorCollisions > 1) && controller.isDown(ShipController.Key.LEFT)) {
         target = -STEER_VEL * Math.max(-vel.z / MAX_VEL, 0.25f);
-      } else if ((dSlide >= 0 || floorCollisions > 1) && controller.isDown(Key.RIGHT)) {
+      } else if ((dSlide >= 0 || floorCollisions > 1) && controller.isDown(ShipController.Key.RIGHT)) {
         target = STEER_VEL * Math.max(-vel.z / MAX_VEL, 0.25f);
       }
       float accel = STEER_ACCELERATION + steerAccul;
@@ -121,15 +131,19 @@ public class Ship {
       vel.x = steer(vel.x, target, accel, dt);
       steerAccul = 0;
 
-      if (controller.isJustDown(Key.JUMP)) {
+      if (controller.isJustDown(ShipController.Key.JUMP)) {
         vel.y = JUMP_VEL;
       } else if (dSlide != 0) {
         vel.y = Math.min(vel.y, 0);
       }
     } else {
-      if (controller.isDown(Key.LEFT) || controller.isDown(Key.RIGHT)) {
+      if (controller.isDown(ShipController.Key.LEFT) || controller.isDown(ShipController.Key.RIGHT)) {
         steerAccul = Math.min(steerAccul + STEER_VEL, MAX_STEER_ACCUL);
       }
+    }
+
+    if (pos.y < -5) {
+      state = Ship.State.FELL;
     }
 
     floorCollisions = 0;
@@ -168,7 +182,16 @@ public class Ship {
 
       if (vel.y < -MIN_BOUNCE_VEL) {
         vel.y = -vel.y * BOUNCE_FACTOR;
+        bounceSound.play();
       }
+    }
+
+    if (Math.abs(c.normal.x) == 1 && Math.abs(vel.x) > MIN_BOUNCE_VEL) {
+      bounceSound.play();
+    }
+
+    if (Math.abs(c.normal.z) == 1 && Math.abs(vel.z) > MIN_BOUNCE_VEL) {
+      bounceSound.play();
     }
 
     if (c.slide != 0) {

@@ -6,9 +6,17 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.TimeUtils;
+import com.habboi.tns.level.Level;
+import com.habboi.tns.level.LevelLoader;
 import com.habboi.tns.states.*;
 import com.habboi.tns.rendering.GameRenderer;
+import com.habboi.tns.ui.GameTweenManager;
+import com.habboi.tns.utils.FontLoader;
 
 public class Game extends ApplicationAdapter {
   static final float STEP_SECONDS = 0.016f;
@@ -19,9 +27,11 @@ public class Game extends ApplicationAdapter {
 
   InputMultiplexer inputMul;
   GameRenderer renderer;
+  ShapeRenderer sr;
   GameState currentState;
   boolean stateChanged;
 
+  AssetManager am;
   Application.ApplicationType appType;
   int width;
   int height;
@@ -36,8 +46,20 @@ public class Game extends ApplicationAdapter {
     Gdx.input.setInputProcessor(inputMul);
 
     renderer = new GameRenderer(this);
-		setCurrentState(new InGameState(this));
+    sr = new ShapeRenderer();
+    am = new AssetManager();
+    am.setLoader(Level.class, new LevelLoader(new InternalFileHandleResolver()));
+    am.setLoader(BitmapFont.class, new FontLoader(new InternalFileHandleResolver()));
+
+		setCurrentState(new LoadingState(this));
 	}
+
+  public float getDensity() {
+    if (isAndroid()) {
+      return Gdx.graphics.getDensity();
+    }
+    return 1;
+  }
 
   public boolean isAndroid() {
     return appType == Application.ApplicationType.Android;
@@ -55,6 +77,14 @@ public class Game extends ApplicationAdapter {
     return renderer;
   }
 
+  public ShapeRenderer getShapeRenderer() {
+    return sr;
+  }
+
+  public AssetManager getAssetManager() {
+    return am;
+  }
+
   public void setCurrentState(GameState state) {
     if (currentState != null) {
       currentState.dispose();
@@ -70,7 +100,7 @@ public class Game extends ApplicationAdapter {
 
   public void update() {
     currentState.update(STEP_SECONDS);
-    GameTweenManager.update(STEP_SECONDS);
+    GameTweenManager.get().update(STEP_SECONDS);
   }
 
 	@Override
@@ -106,6 +136,6 @@ public class Game extends ApplicationAdapter {
   public void dispose() {
     currentState.dispose();
     renderer.dispose();
-    Models.dispose();
+    com.habboi.tns.level.Models.dispose();
   }
 }

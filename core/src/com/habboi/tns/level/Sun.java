@@ -3,8 +3,6 @@ package com.habboi.tns.level;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.habboi.tns.Models;
-import com.habboi.tns.Ship;
 import com.habboi.tns.rendering.GameRenderer;
 
 import aurelienribon.tweenengine.Tween;
@@ -33,6 +31,11 @@ public class Sun extends Cell {
     this.effect = TouchEffect.END;
 
     modelInstance = new ModelInstance(Models.getSunModel());
+  }
+
+  @Override
+  public void reset() {
+
   }
 
   @Override
