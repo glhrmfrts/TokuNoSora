@@ -35,15 +35,15 @@ public class Rect {
     return rect;
   }
 
-  public Tween getEnterFromLeftTween(int width) {
-    return Tween.to(this, Accessor.TWEEN_WIDTH, 0.5f)
+  public Tween getEnterFromLeftTween(int width, float time) {
+    return Tween.to(this, Accessor.TWEEN_WIDTH, time)
             .target(width)
             .ease(TweenEquations.easeOutQuad);
   }
 
-  public Tween getFadeTween(float from, float to) {
+  public Tween getFadeTween(float from, float to, float time) {
     color.a = from;
-    return Tween.to(this, Accessor.TWEEN_ALPHA, 0.5f)
+    return Tween.to(this, Accessor.TWEEN_ALPHA, time)
             .target(to)
             .ease(TweenEquations.easeOutQuad);
   }

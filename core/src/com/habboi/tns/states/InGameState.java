@@ -76,7 +76,7 @@ public class InGameState extends GameState {
     gtm.register("start", new GameTweenManager.GameTween() {
       @Override
       public Tween tween() {
-        return screenRect.getFadeTween(1, 0);
+        return screenRect.getFadeTween(1, 0, 0.5f);
       }
 
       @Override
@@ -99,7 +99,7 @@ public class InGameState extends GameState {
 
       @Override
       public Tween tween() {
-        return screenRect.getFadeTween(0, 1);
+        return screenRect.getFadeTween(0, 1, 0.5f);
       }
 
       @Override
@@ -131,7 +131,7 @@ public class InGameState extends GameState {
     }
 
     level.update(ship, dt);
-    background.update(ship, dt);
+    background.update(ship.pos, -ship.vel.z, dt);
     ship.update(dt);
 
     if (debugCam == 0) {

@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.habboi.tns.level.Level;
 import com.habboi.tns.level.LevelLoader;
+import com.habboi.tns.level.Models;
 import com.habboi.tns.states.*;
 import com.habboi.tns.rendering.GameRenderer;
 import com.habboi.tns.ui.GameTweenManager;
@@ -20,7 +21,7 @@ import com.habboi.tns.utils.FontLoader;
 
 public class Game extends ApplicationAdapter {
   static final float STEP_SECONDS = 0.016f;
-  static final float STEP         = STEP_SECONDS * 1000f;
+  static final float STEP	  = STEP_SECONDS * 1000f;
 
   long accumUpdateTime;
   long lastUpdateTime = -1;
@@ -36,23 +37,23 @@ public class Game extends ApplicationAdapter {
   int width;
   int height;
 	
-	@Override
-	public void create () {
+  @Override
+  public void create () {
     appType = Gdx.app.getType();
     width = Gdx.graphics.getWidth();
     height = Gdx.graphics.getHeight();
 
     inputMul = new InputMultiplexer();
     Gdx.input.setInputProcessor(inputMul);
-
+    
     renderer = new GameRenderer(this);
     sr = new ShapeRenderer();
     am = new AssetManager();
     am.setLoader(Level.class, new LevelLoader(new InternalFileHandleResolver()));
     am.setLoader(BitmapFont.class, new FontLoader(new InternalFileHandleResolver()));
-
-		setCurrentState(new LoadingState(this));
-	}
+    
+    setCurrentState(new LoadingState(this));
+  }
 
   public float getDensity() {
     if (isAndroid()) {
@@ -103,12 +104,12 @@ public class Game extends ApplicationAdapter {
     GameTweenManager.get().update(STEP_SECONDS);
   }
 
-	@Override
-	public void render () {
-		if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
-			Gdx.app.exit();
-			return;
-		}
+  @Override
+  public void render () {
+    if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
+      Gdx.app.exit();
+      return;
+    }
 
     long start = TimeUtils.millis();
     if (lastUpdateTime == -1) {
@@ -130,12 +131,12 @@ public class Game extends ApplicationAdapter {
     }
 
     currentState.render();
-	}
+  }
 
   @Override
   public void dispose() {
     currentState.dispose();
     renderer.dispose();
-    com.habboi.tns.level.Models.dispose();
+    Models.dispose();
   }
 }

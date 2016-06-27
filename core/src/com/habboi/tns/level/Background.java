@@ -98,9 +98,9 @@ public class Background implements Disposable {
     return planeModel = mb.end();
   }
 
-  public void update(Ship ship, float dt) {
-    center.set(ship.pos);
-    offset = -ship.vel.z * dt * 2;
+  public void update(Vector3 shipPos, float vel, float dt) {
+    center.set(shipPos);
+    offset = vel * dt * 2;
   }
 
   public void render(GameRenderer renderer) {

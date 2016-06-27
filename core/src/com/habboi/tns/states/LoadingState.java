@@ -64,7 +64,8 @@ public class LoadingState extends GameState {
     AssetManager am = game.getAssetManager();
 
     if (am.update()) {
-      game.setCurrentState(new InGameState(game));
+      game.setCurrentState(new MenuState(game));
+      //game.setCurrentState(new InGameState(game));
     }
 
     percent = Interpolation.linear.apply(percent, am.getProgress(), 0.1f);

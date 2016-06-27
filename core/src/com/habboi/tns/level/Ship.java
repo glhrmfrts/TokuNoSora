@@ -43,6 +43,7 @@ public class Ship {
   ShipController controller;
   Sun sun;
   Sound bounceSound;
+  Sound explosionSound;
   int floorCollisions;
   float dSlide;
   float steerAccul;
@@ -76,6 +77,7 @@ public class Ship {
     attr.color.set(OUTLINE_COLOR);
 
     bounceSound = game.getAssetManager().get("audio/bounce.wav");
+    explosionSound = game.getAssetManager().get("audio/explosion.wav");
   }
 
   public Sun getSun() {
@@ -173,6 +175,9 @@ public class Ship {
     }
 
     if (c.normal.z == 1 && -vel.z > MAX_VEL/2) {
+      if (state == State.PLAYABLE) {
+        explosionSound.play();
+      }
       state = State.EXPLODED;
       return true;
     }
