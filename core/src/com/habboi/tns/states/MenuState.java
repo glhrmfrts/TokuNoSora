@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Vector3;
 import com.habboi.tns.Game;
 import com.habboi.tns.level.Background;
@@ -12,6 +11,7 @@ import com.habboi.tns.level.Level;
 import com.habboi.tns.rendering.GameRenderer;
 import com.habboi.tns.ui.GameTweenManager;
 import com.habboi.tns.ui.Text;
+import com.habboi.tns.utils.FontManager;
 
 import java.util.ArrayList;
 
@@ -40,13 +40,24 @@ public class MenuState extends FadeState {
   }
 
   @Override
+  public void onFadeInComplete() {
+
+  }
+
+  @Override
+  public void onFadeOutComplete() {
+
+  }
+
+  @Override
   public void create() {
     super.create();
     state = InternalState.TITLE;
     AssetManager am = game.getAssetManager();
+    FontManager fm = game.getFontManager();
 
     titleText = new Text(
-            (BitmapFont) am.get("mine.ttf"),
+            fm.getFont("Neon.ttf", (int)(64 * game.getDensity())),
             "TAIHO",
             null,
             Color.WHITE

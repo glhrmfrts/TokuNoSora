@@ -31,7 +31,7 @@ public class FontLoader extends AsynchronousAssetLoader<BitmapFont, FontLoader.F
     FreeTypeFontGenerator.FreeTypeFontParameter params =
             new FreeTypeFontGenerator.FreeTypeFontParameter();
     params.size = parameter.size;
-    font = gen.generateFont(params);
+    font = parameter.font = gen.generateFont(params);
     gen.dispose();
     return font;
   }
@@ -43,6 +43,7 @@ public class FontLoader extends AsynchronousAssetLoader<BitmapFont, FontLoader.F
 
   public static class FontParameter extends AssetLoaderParameters<BitmapFont> {
     int size;
+    BitmapFont font;
 
     public FontParameter(int size) {
       this.size = size;

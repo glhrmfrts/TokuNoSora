@@ -10,9 +10,12 @@ import aurelienribon.tweenengine.Tween;
 /**
  * A generic state with fade in and out transitions.
  */
-public class FadeState extends GameState {
+public abstract class FadeState extends GameState {
   GameTweenManager gtm;
   Rect screenRect;
+
+  public abstract void onFadeInComplete();
+  public abstract void onFadeOutComplete();
 
   public FadeState(Game g) {
     super(g);
@@ -27,14 +30,6 @@ public class FadeState extends GameState {
     gtm.start("fadeOut");
   }
 
-  public boolean isFadingIn() {
-    return gtm.isActive("fadeIn");
-  }
-
-  public boolean isFadingOut() {
-    return gtm.isActive("fadeOut");
-  }
-
   @Override
   public void create() {
     screenRect = new Rect(new Rectangle(0, 0, game.getWidth(), game.getHeight()));
@@ -46,7 +41,7 @@ public class FadeState extends GameState {
 
       @Override
       public void onComplete() {
-
+        onFadeInComplete();
       }
     }).register("fadeOut", new GameTweenManager.GameTween() {
       @Override
@@ -56,7 +51,7 @@ public class FadeState extends GameState {
 
       @Override
       public void onComplete() {
-
+        onFadeOutComplete();
       }
     });
   }

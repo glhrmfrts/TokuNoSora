@@ -17,7 +17,9 @@ import com.habboi.tns.level.Models;
 import com.habboi.tns.states.*;
 import com.habboi.tns.rendering.GameRenderer;
 import com.habboi.tns.ui.GameTweenManager;
+import com.habboi.tns.utils.FontFileHandleResolver;
 import com.habboi.tns.utils.FontLoader;
+import com.habboi.tns.utils.FontManager;
 
 public class Game extends ApplicationAdapter {
   static final float STEP_SECONDS = 0.016f;
@@ -33,6 +35,7 @@ public class Game extends ApplicationAdapter {
   boolean stateChanged;
 
   AssetManager am;
+  FontManager fm;
   Application.ApplicationType appType;
   int width;
   int height;
@@ -50,7 +53,8 @@ public class Game extends ApplicationAdapter {
     sr = new ShapeRenderer();
     am = new AssetManager();
     am.setLoader(Level.class, new LevelLoader(new InternalFileHandleResolver()));
-    am.setLoader(BitmapFont.class, new FontLoader(new InternalFileHandleResolver()));
+    am.setLoader(BitmapFont.class, new FontLoader(new FontFileHandleResolver()));
+    fm = new FontManager(am);
     
     setCurrentState(new LoadingState(this));
   }
@@ -84,6 +88,10 @@ public class Game extends ApplicationAdapter {
 
   public AssetManager getAssetManager() {
     return am;
+  }
+
+  public FontManager getFontManager() {
+    return fm;
   }
 
   public void setCurrentState(GameState state) {

@@ -19,6 +19,7 @@ import com.habboi.tns.level.Level;
 import com.habboi.tns.rendering.GameRenderer;
 import com.habboi.tns.ui.Rect;
 import com.habboi.tns.ui.Text;
+import com.habboi.tns.utils.FontManager;
 
 import java.util.ArrayList;
 
@@ -65,7 +66,8 @@ public class InGameState extends GameState {
     ArrayList<Color> colors = level.getColors();
     background = new Background(colors.get(0), colors.get(1), 30);
 
-    levelCompleteText = new Text(game.getAssetManager().get("mine.ttf", BitmapFont.class),
+    FontManager fm = game.getFontManager();
+    levelCompleteText = new Text(fm.getFont("Neon.ttf", (int)(24 * game.getDensity())),
             "LEVEL COMPLETE", null, Color.WHITE);
     levelCompleteText.getPos().set(game.getWidth() / 2, game.getHeight() / 2);
     levelCompleteText.getColor().a = 0;
@@ -152,7 +154,6 @@ public class InGameState extends GameState {
       tempCamInput.update();
       gr.begin(tempCamInput.camera);
     }
-
     background.render(gr);
     level.render(gr);
     ship.render(gr);

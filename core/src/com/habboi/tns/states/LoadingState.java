@@ -5,14 +5,13 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Rectangle;
 import com.habboi.tns.Game;
 import com.habboi.tns.level.Level;
 import com.habboi.tns.ui.Rect;
-import com.habboi.tns.utils.FontLoader;
+import com.habboi.tns.utils.FontManager;
 
 /**
  * The state for the loading screen.
@@ -42,10 +41,12 @@ public class LoadingState extends GameState {
     border = new Rect(new Rectangle(x - padding, y - padding, w + padding*2, h + padding*2), Color.WHITE);
 
     AssetManager am = game.getAssetManager();
+    FontManager fm = game.getFontManager();
     am.load("audio/bounce.wav", Sound.class);
     am.load("audio/explosion.wav", Sound.class);
     am.load("audio/select.wav", Sound.class);
-    am.load("mine.ttf", BitmapFont.class, new FontLoader.FontParameter((int)(32 * game.getDensity())));
+    fm.loadFont("Neon.ttf", (int) (64 * game.getDensity()));
+    fm.loadFont("Neon.ttf", (int) (24 * game.getDensity()));
     for (int i = 1; i < 7; i++) {
       am.load("map" + i + ".json", Level.class);
     }
