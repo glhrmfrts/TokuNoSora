@@ -66,7 +66,7 @@ public class InGameState extends GameState {
     ArrayList<Color> colors = level.getColors();
     background = new Background(colors.get(0), colors.get(1), 30);
 
-    FontManager fm = game.getFontManager();
+    FontManager fm = FontManager.get();
     levelCompleteText = new Text(fm.getFont("Neon.ttf", (int)(24 * game.getDensity())),
             "LEVEL COMPLETE", null, Color.WHITE);
     levelCompleteText.getPos().set(game.getWidth() / 2, game.getHeight() / 2);

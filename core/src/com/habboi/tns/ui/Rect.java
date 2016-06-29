@@ -35,6 +35,10 @@ public class Rect {
     return rect;
   }
 
+  public Color getColor() {
+    return color;
+  }
+
   public Tween getEnterFromLeftTween(int width, float time) {
     return Tween.to(this, Accessor.TWEEN_WIDTH, time)
             .target(width)
@@ -49,10 +53,14 @@ public class Rect {
   }
 
   public void draw(ShapeRenderer sr) {
-    draw(sr, ShapeRenderer.ShapeType.Filled);
+    draw(sr, false);
   }
 
-  public void draw(ShapeRenderer sr, ShapeRenderer.ShapeType type) {
+  public void draw(ShapeRenderer sr, boolean center) {
+    draw(sr, ShapeRenderer.ShapeType.Filled, center);
+  }
+
+  public void draw(ShapeRenderer sr, ShapeRenderer.ShapeType type, boolean center) {
     if (color.a == 0) return;
 
     Gdx.gl.glEnable(GL20.GL_BLEND);
@@ -60,7 +68,13 @@ public class Rect {
 
     sr.begin(type);
     sr.setColor(color);
-    sr.rect(rect.x, rect.y, rect.width, rect.height);
+    float x = rect.x;
+    float y = rect.y;
+    if (center) {
+      x -= rect.width/2;
+      y -= rect.height/2;
+    }
+    sr.rect(x, y, rect.width, rect.height);
     sr.end();
 
     Gdx.gl.glDisable(GL20.GL_BLEND);
@@ -70,6 +84,7 @@ public class Rect {
 
     public static final int TWEEN_WIDTH = 0;
     public static final int TWEEN_ALPHA = 1;
+    public static final int TWEEN_HEIGHT = 2;
 
     @Override
     public int getValues(Rect backgroundRect, int i, float[] floats) {
@@ -78,6 +93,9 @@ public class Rect {
         return 1;
       } else if (i == TWEEN_ALPHA) {
         floats[0] = backgroundRect.color.a;
+        return 1;
+      } else if (i == TWEEN_HEIGHT) {
+        floats[0] = backgroundRect.rect.height;
         return 1;
       }
       return 0;
@@ -89,6 +107,8 @@ public class Rect {
         backgroundRect.rect.width = floats[0];
       } else if (i == TWEEN_ALPHA) {
         backgroundRect.color.a = floats[0];
+      } else if (i == TWEEN_HEIGHT) {
+        backgroundRect.rect.height = floats[0];
       }
     }
   }

@@ -20,7 +20,7 @@ public class GameTweenManager {
   private static GameTweenManager instance;
 
   private HashMap<String, GameTween> tweens;
-  private HashMap<String, GameTween> active;
+  private HashMap<String, Tween> active;
   private TweenManager tm;
 
   public static GameTweenManager get() {
@@ -66,7 +66,15 @@ public class GameTweenManager {
     });
     tween.start(tm);
     gt.played = true;
-    active.put(name, gt);
+    active.put(name, tween);
+  }
+
+  public void restart(final String name) {
+    if (isActive(name)) {
+      active.get(name).start(tm);
+    } else {
+      start(name);
+    }
   }
 
   public void update(float dt) {

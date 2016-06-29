@@ -10,13 +10,14 @@ import com.habboi.tns.level.Background;
 import com.habboi.tns.level.Level;
 import com.habboi.tns.rendering.GameRenderer;
 import com.habboi.tns.ui.GameTweenManager;
+import com.habboi.tns.ui.MainMenu;
 import com.habboi.tns.ui.Text;
 import com.habboi.tns.utils.FontManager;
 
 import java.util.ArrayList;
 
 /**
- * Handles the menu state.
+ * Handles the menu screen state.
  */
 public class MenuState extends FadeState {
   private enum InternalState {
@@ -34,6 +35,7 @@ public class MenuState extends FadeState {
   PerspectiveCamera cam;
   InternalState state;
   Text titleText;
+  MainMenu mainMenu;
 
   public MenuState(Game g) {
     super(g);
@@ -52,9 +54,10 @@ public class MenuState extends FadeState {
   @Override
   public void create() {
     super.create();
+    mainMenu = new MainMenu(game);
     state = InternalState.TITLE;
     AssetManager am = game.getAssetManager();
-    FontManager fm = game.getFontManager();
+    FontManager fm = FontManager.get();
 
     titleText = new Text(
             fm.getFont("Neon.ttf", (int)(64 * game.getDensity())),
@@ -86,6 +89,7 @@ public class MenuState extends FadeState {
     bgPos.set(cam.position);
     bgPos.y -= CAM_LOOKAT_Y;
     background.update(bgPos, VEL, dt);
+    mainMenu.update(dt);
   }
 
   @Override
@@ -99,6 +103,8 @@ public class MenuState extends FadeState {
     gr.beginOrtho();
     titleText.draw(gr.getSpriteBatch(), true);
     gr.endOrtho();
+
+    mainMenu.render();
 
     super.render();
   }

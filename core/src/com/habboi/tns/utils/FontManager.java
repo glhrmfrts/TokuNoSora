@@ -11,11 +11,19 @@ import java.util.HashMap;
  */
 public class FontManager {
   private AssetManager am;
-  private HashMap<String, FontLoader.FontParameter> fontParams;
+  private HashMap<String, FontLoader.FontParameter> fontParams = new HashMap<>();
 
-  public FontManager(AssetManager am) {
+  private static FontManager instance;
+
+  public static FontManager get() {
+    if (instance == null) {
+      instance = new FontManager();
+    }
+    return instance;
+  }
+
+  public void setAssetManager(AssetManager am) {
     this.am = am;
-    this.fontParams = new HashMap<>();
   }
 
   public void loadFont(String file, int size) {

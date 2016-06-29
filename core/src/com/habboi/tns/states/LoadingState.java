@@ -41,7 +41,7 @@ public class LoadingState extends GameState {
     border = new Rect(new Rectangle(x - padding, y - padding, w + padding*2, h + padding*2), Color.WHITE);
 
     AssetManager am = game.getAssetManager();
-    FontManager fm = game.getFontManager();
+    FontManager fm = FontManager.get();
     am.load("audio/bounce.wav", Sound.class);
     am.load("audio/explosion.wav", Sound.class);
     am.load("audio/select.wav", Sound.class);
@@ -73,8 +73,8 @@ public class LoadingState extends GameState {
 
     float w = loadingBarTotalWidth * percent;
     loadingBar.getRectangle().setWidth(w);
-    loadingBar.draw(sr, ShapeRenderer.ShapeType.Filled);
-    border.draw(sr, ShapeRenderer.ShapeType.Line);
+    loadingBar.draw(sr, ShapeRenderer.ShapeType.Filled, false);
+    border.draw(sr, ShapeRenderer.ShapeType.Line, false);
   }
 
   @Override

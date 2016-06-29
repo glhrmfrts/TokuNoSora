@@ -35,7 +35,6 @@ public class Game extends ApplicationAdapter {
   boolean stateChanged;
 
   AssetManager am;
-  FontManager fm;
   Application.ApplicationType appType;
   int width;
   int height;
@@ -54,7 +53,7 @@ public class Game extends ApplicationAdapter {
     am = new AssetManager();
     am.setLoader(Level.class, new LevelLoader(new InternalFileHandleResolver()));
     am.setLoader(BitmapFont.class, new FontLoader(new FontFileHandleResolver()));
-    fm = new FontManager(am);
+    FontManager.get().setAssetManager(am);
     
     setCurrentState(new LoadingState(this));
   }
@@ -88,10 +87,6 @@ public class Game extends ApplicationAdapter {
 
   public AssetManager getAssetManager() {
     return am;
-  }
-
-  public FontManager getFontManager() {
-    return fm;
   }
 
   public void setCurrentState(GameState state) {
