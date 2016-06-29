@@ -15,6 +15,7 @@ import aurelienribon.tweenengine.TweenEquations;
  * The main menu.
  */
 public class MainMenu extends Menu implements Disposable {
+  static final float MENU_HEIGHT_PERCENT = 0.33f;
 
   float top;
   float itemHeight;
@@ -28,9 +29,9 @@ public class MainMenu extends Menu implements Disposable {
     sr = game.getShapeRenderer();
     sb = game.getRenderer().getSpriteBatch();
 
-    float y = top = game.getHeight() * 0.66f;
+    float y = top = game.getHeight()/2 + (game.getHeight() * MENU_HEIGHT_PERCENT)/2;
     float width = game.getWidth()*1.1f;
-    float height = itemHeight = game.getHeight() * 0.33f / 4;
+    float height = itemHeight = (game.getHeight() * MENU_HEIGHT_PERCENT) / 4;
     float cor = (width - game.getWidth())/2;
     Rectangle bounds = new Rectangle(width/2-cor, 0, width, height);
     highlight = new Rect(bounds);
@@ -55,7 +56,7 @@ public class MainMenu extends Menu implements Disposable {
         highlight.getRectangle().height = 0;
         return Tween.to(highlight, Rect.Accessor.TWEEN_HEIGHT, 0.25f)
                     .target(itemHeight)
-                .ease(TweenEquations.easeOutQuad);
+                    .ease(TweenEquations.easeOutQuad);
       }
 
       @Override
