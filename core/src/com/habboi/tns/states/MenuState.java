@@ -6,24 +6,22 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.math.Vector3;
 import com.habboi.tns.Game;
-import com.habboi.tns.level.Background;
 import com.habboi.tns.level.Level;
+import com.habboi.tns.level.worlds.Universe;
+import com.habboi.tns.level.worlds.World;
 import com.habboi.tns.rendering.GameRenderer;
 import com.habboi.tns.ui.GameTweenManager;
 import com.habboi.tns.ui.MainMenu;
+import com.habboi.tns.ui.Menu;
 import com.habboi.tns.ui.Text;
 import com.habboi.tns.utils.FontManager;
 
-import java.util.ArrayList;
+import java.util.Stack;
 
 /**
  * Handles the menu screen state.
  */
 public class MenuState extends FadeState {
-  private enum InternalState {
-    TITLE
-  }
-
   static final float VEL = 10;
   static final float CAM_DIST = 20;
   static final float CAM_Y = 10;
@@ -31,11 +29,10 @@ public class MenuState extends FadeState {
 
   Vector3 bgPos = new Vector3();
   GameTweenManager gtm;
-  Background background;
+  World world;
   PerspectiveCamera cam;
-  InternalState state;
   Text titleText;
-  MainMenu mainMenu;
+  Stack<Menu> menuStack = new Stack<>();
 
   public MenuState(Game g) {
     super(g);
@@ -54,8 +51,7 @@ public class MenuState extends FadeState {
   @Override
   public void create() {
     super.create();
-    mainMenu = new MainMenu(game);
-    state = InternalState.TITLE;
+    addMenu(new MainMenu(this, game));
     AssetManager am = game.getAssetManager();
     FontManager fm = FontManager.get();
 
@@ -66,10 +62,7 @@ public class MenuState extends FadeState {
             Color.WHITE
     );
     titleText.getPos().set(game.getWidth()/2, game.getHeight()*0.9f);
-
-    Level firstLevel = am.get("map1.json");
-    ArrayList<Color> colors = firstLevel.getColors();
-    background = new Background(colors.get(0), colors.get(1), 40);
+    world = Universe.get().worlds.get(0);
 
     cam = new PerspectiveCamera(45, game.getWidth(), game.getHeight());
     cam.near = 0.01f;
@@ -81,6 +74,20 @@ public class MenuState extends FadeState {
     fadeIn();
   }
 
+  public void addMenu(Menu menu) {
+    menuStack.add(menu);
+  }
+
+  public Menu popMenu() {
+    return menuStack.pop();
+  }
+
+  public Menu setMenu(Menu menu) {
+    Menu m = menuStack.pop();
+    menuStack.add(menu);
+    return m;
+  }
+
   @Override
   public void update(float dt) {
     super.update(dt);
@@ -88,8 +95,8 @@ public class MenuState extends FadeState {
     cam.lookAt(0, CAM_LOOKAT_Y, cam.position.z - CAM_DIST);
     bgPos.set(cam.position);
     bgPos.y -= CAM_LOOKAT_Y;
-    background.update(bgPos, VEL, dt);
-    mainMenu.update(dt);
+    world.update(bgPos, VEL, dt);
+    menuStack.peek().update(dt);
   }
 
   @Override
@@ -97,21 +104,17 @@ public class MenuState extends FadeState {
     GameRenderer gr = game.getRenderer();
     cam.update();
     gr.begin(cam);
-    background.render(gr);
+    world.render(gr);
     gr.end();
-
     gr.beginOrtho();
     titleText.draw(gr.getSpriteBatch(), true);
     gr.endOrtho();
-
-    mainMenu.render();
-
+    menuStack.peek().render();
     super.render();
   }
 
   @Override
   public void dispose() {
     super.dispose();
-    background.dispose();
   }
 }

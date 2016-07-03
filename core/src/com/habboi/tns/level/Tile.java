@@ -3,6 +3,7 @@ package com.habboi.tns.level;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Vector3;
+import com.habboi.tns.level.worlds.World;
 import com.habboi.tns.rendering.GameRenderer;
 
 /**
@@ -18,7 +19,7 @@ public class Tile extends Cell {
   ModelInstance outlineInstance;
   final Color outlineColor = new Color();
 
-  public Tile(Vector3 pos, Vector3 size, Color outlineColor, TouchEffect effect, int preset) {
+  public Tile(Vector3 pos, Vector3 size, Color outlineColor, TouchEffect effect, int preset, World world) {
     size.x *= TILE_WIDTH;
     size.y *= TILE_HEIGHT;
     size.z *= TILE_DEPTH;
@@ -32,7 +33,7 @@ public class Tile extends Cell {
     this.effect = effect;
     this.outlineColor.set(outlineColor);
 
-    modelInstance = new ModelInstance(Models.getTileModel(preset));
+    modelInstance = new ModelInstance(world.getTileModel(preset));
     modelInstance.transform.setToScaling(size.x, size.y, size.z);
 
     outlineInstance = new ModelInstance(Models.getTileOutlineModel());

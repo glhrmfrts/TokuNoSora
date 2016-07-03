@@ -13,6 +13,8 @@ public abstract class Menu implements InputProcessor {
   Array<MenuItem> items = new Array<>();
 
   public abstract boolean onChange(int delta);
+  public abstract void update(float dt);
+  public abstract void render();
 
   private boolean checkHover(int screenX, int screenY) {
     float x = (float)screenX;

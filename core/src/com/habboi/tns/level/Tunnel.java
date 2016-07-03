@@ -3,6 +3,7 @@ package com.habboi.tns.level;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.habboi.tns.level.worlds.World;
 import com.habboi.tns.rendering.GameRenderer;
 
 /**
@@ -23,7 +24,7 @@ public class Tunnel extends Cell {
   Vector3 closest = new Vector3();
   Vector2 n = new Vector2();
 
-  public Tunnel(Vector3 pos, float depth, int preset) {
+  public Tunnel(Vector3 pos, float depth, int preset, World world) {
     this.depth = depth;
 
     half.set(TUNNEL_WIDTH/2, TUNNEL_HEIGHT/2, (depth*Tile.TILE_DEPTH)/2);
@@ -32,7 +33,7 @@ public class Tunnel extends Cell {
     float z = -(pos.z*Tile.TILE_DEPTH + half.z);
     this.pos.set(x, y, z);
 
-    modelInstance = new ModelInstance(Models.getTunnelModel(preset));
+    modelInstance = new ModelInstance(world.getTunnelModel(preset));
     modelInstance.transform.setToScaling(TUNNEL_WIDTH, TUNNEL_HEIGHT, depth*Tile.TILE_DEPTH);
 
     outlineInstance = new ModelInstance(Models.getTunnelOutlineModel());

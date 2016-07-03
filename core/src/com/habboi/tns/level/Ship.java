@@ -21,6 +21,7 @@ public class Ship {
   public Vector3 vel = new Vector3();
   public Vector3 half = new Vector3();
   public boolean readyToEnd;
+  public float raceTime;
 
   static final float BODY_WIDTH = 0.75f;
   static final float BODY_HEIGHT = 0.3f;
@@ -31,6 +32,7 @@ public class Ship {
   static final float MAX_STEER_ACCUL = 300;
   static final float JUMP_VEL = 8;
   static final float MIN_BOUNCE_VEL = 0.4f;
+  static final float MIN_BOUNCE_SOUND_INTERVAL = 0.15f;
   static final float BOUNCE_FACTOR = 0.35f;
   static final Color COLOR = new Color(0xff);
   //static final Color OUTLINE_COLOR = new Color(0x1A0E74<<8 | 0xFF);
@@ -46,6 +48,7 @@ public class Ship {
   Sound explosionSound;
   int floorCollisions;
   float dSlide;
+  float dBounce;
   float steerAccul;
 
   public Ship(Game game, Vector3 pos, ShipController controller) {
@@ -94,6 +97,7 @@ public class Ship {
   }
 
   public void reset() {
+    raceTime = 0;
     state = State.WAITING;
     pos.set(spawnPos);
     vel.set(0, 0, 0);
@@ -101,7 +105,6 @@ public class Ship {
 
   public void update(float dt) {
     if (state == State.WAITING || state == State.ENDED) {
-      vel.set(0, 0, 0);
       return;
     }
     if (controller.isDown(ShipController.Key.UP)) {
@@ -151,6 +154,8 @@ public class Ship {
     floorCollisions = 0;
     dSlide = 0;
     controller.update(dt);
+    raceTime += dt;
+    dBounce += dt;
   }
 
   public void render(GameRenderer renderer) {
@@ -165,7 +170,6 @@ public class Ship {
 
   public boolean handleCollision(Cell cell) {
     Cell.CollisionInfo c = cell.collisionInfo;
-
     if (cell.effect == Cell.TouchEffect.END) {
       if (readyToEnd) {
         state = State.ENDED;
@@ -173,7 +177,6 @@ public class Ship {
       }
       return false;
     }
-
     if (c.normal.z == 1 && -vel.z > MAX_VEL/2) {
       if (state == State.PLAYABLE) {
         explosionSound.play();
@@ -181,24 +184,20 @@ public class Ship {
       state = State.EXPLODED;
       return true;
     }
-
     if (c.normal.y == 1) {
       floorCollisions++;
 
       if (vel.y < -MIN_BOUNCE_VEL) {
         vel.y = -vel.y * BOUNCE_FACTOR;
-        bounceSound.play();
+        playBounceSound();
       }
     }
-
     if (Math.abs(c.normal.x) == 1 && Math.abs(vel.x) > MIN_BOUNCE_VEL) {
-      bounceSound.play();
+      playBounceSound();
     }
-
     if (Math.abs(c.normal.z) == 1 && Math.abs(vel.z) > MIN_BOUNCE_VEL) {
-      bounceSound.play();
+      playBounceSound();
     }
-
     if (c.slide != 0) {
       float dx = Math.copySign(1, vel.x);
       float ds = Math.copySign(1, c.slide);
@@ -208,5 +207,12 @@ public class Ship {
       }
     }
     return true;
+  }
+
+  private void playBounceSound() {
+    if (dBounce > MIN_BOUNCE_SOUND_INTERVAL) {
+      bounceSound.play();
+      dBounce = 0;
+    }
   }
 }

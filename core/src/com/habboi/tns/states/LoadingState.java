@@ -2,6 +2,7 @@ package com.habboi.tns.states;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -10,6 +11,9 @@ import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Rectangle;
 import com.habboi.tns.Game;
 import com.habboi.tns.level.Level;
+import com.habboi.tns.level.LevelLoader;
+import com.habboi.tns.level.worlds.Universe;
+import com.habboi.tns.level.worlds.World;
 import com.habboi.tns.ui.Rect;
 import com.habboi.tns.utils.FontManager;
 
@@ -36,19 +40,22 @@ public class LoadingState extends GameState {
     float x = game.getWidth()/2 - w/2;
     float y = game.getHeight()/2 - h/2;
     loadingBarTotalWidth = w;
-
     loadingBar = new Rect(new Rectangle(x, y, 0, h), Color.WHITE);
     border = new Rect(new Rectangle(x - padding, y - padding, w + padding*2, h + padding*2), Color.WHITE);
 
+    Universe.get().createWorlds();
     AssetManager am = game.getAssetManager();
     FontManager fm = FontManager.get();
     am.load("audio/bounce.wav", Sound.class);
     am.load("audio/explosion.wav", Sound.class);
     am.load("audio/select.wav", Sound.class);
     fm.loadFont("Neon.ttf", (int) (64 * game.getDensity()));
+    fm.loadFont("Neon.ttf", (int) (48 * game.getDensity()));
+    fm.loadFont("Neon.ttf", (int) (36 * game.getDensity()));
     fm.loadFont("Neon.ttf", (int) (24 * game.getDensity()));
-    for (int i = 1; i < 7; i++) {
-      am.load("map" + i + ".json", Level.class);
+    ((LevelLoader) am.getLoader(Level.class)).loadAllLevels(am);
+    for (World world : Universe.get().worlds) {
+      //am.load("audio/" + world.music, Music.class);
     }
   }
 

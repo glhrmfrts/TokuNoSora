@@ -24,17 +24,14 @@ public final class Models {
 
   private static Model sunModel;
   private static Model shipModel;
+  private static Model planeModel;
   private static Model shipOutlineModel;
   private static Model tileOutlineModel;
   private static Model tunnelOutlineModel;
-  private static ArrayList<Model> tileModels;
-  private static ArrayList<Model> tunnelModels;
 
   private static ModelBuilder mb;
 
   static {
-    tileModels = new ArrayList<>();
-    tunnelModels = new ArrayList<>();
     mb = new ModelBuilder();
   }
 
@@ -434,18 +431,18 @@ public final class Models {
     return tunnelOutlineModel = mb.end();
   }
 
-  public static void createTileModel(ArrayList<Color> colors, ArrayList<int[]> colorsIndices) {
+  public static Model createTileModel(ArrayList<Color> colors, int[][] colorsIndices) {
     MeshPartBuilder partBuilder;
     VertexInfo v1, v2, v3, v4;
 
     final Material material = new Material(new BlendingAttribute(true, GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA, 0.75f));
 
-    int[] bottomColors = colorsIndices.get(0);
-    int[] topColors = colorsIndices.get(1);
-    int[] leftColors = colorsIndices.get(2);
-    int[] rightColors = colorsIndices.get(3);
-    int[] frontColors = colorsIndices.get(4);
-    int[] backColors = colorsIndices.get(5);
+    int[] bottomColors = colorsIndices[0];
+    int[] topColors = colorsIndices[1];
+    int[] leftColors = colorsIndices[2];
+    int[] rightColors = colorsIndices[3];
+    int[] frontColors = colorsIndices[4];
+    int[] backColors = colorsIndices[5];
 
     mb.begin();
 
@@ -515,10 +512,10 @@ public final class Models {
     v4 = new VertexInfo().setPos(0, 1, 0).setNor(0, 0, 1).setCol(colors.get(backColors[3]));
     partBuilder.rect(v1, v2, v3, v4);
 
-    tileModels.add(mb.end());
+    return mb.end();
   }
 
-  public static void createTunnelModel(ArrayList<Color> colors, int[] colorsIndices) {
+  public static Model createTunnelModel(ArrayList<Color> colors, int[] colorsIndices) {
     MeshPartBuilder partBuilder;
     VertexInfo v1, v2, v3, v4;
     mb.begin();
@@ -614,15 +611,47 @@ public final class Models {
       y = ny;
     }
 
-    tunnelModels.add(mb.end());
+    return mb.end();
   }
 
-  public static Model getTileModel(int index) {
-    return tileModels.get(index);
+  public static Model createLineModel(Color color, int[] vs) {
+    mb.begin();
+
+    final Material material = new Material(ColorAttribute.createDiffuse(color));
+    MeshPartBuilder partBuilder = mb.part("line", GL20.GL_LINES,
+            VertexAttributes.Usage.Position | VertexAttributes.Usage.ColorPacked,
+            material);
+
+    partBuilder.setColor(Color.WHITE);
+    partBuilder.line(vs[0], vs[1], vs[2], vs[3], vs[4], vs[5]);
+
+    return mb.end();
   }
 
-  public static Model getTunnelModel(int index) {
-    return tunnelModels.get(index);
+  public static Model createPlaneModel(Color color) {
+    if (planeModel != null) return planeModel;
+
+    VertexInfo v1, v2, v3, v4;
+    mb.begin();
+
+    color = color.cpy();
+    color.a = 0.75f;
+    final Material material = new Material(ColorAttribute.createDiffuse(color));
+    material.set(new BlendingAttribute(1));
+
+    MeshPartBuilder partBuilder = mb.part("line", GL20.GL_TRIANGLES,
+            VertexAttributes.Usage.Position | VertexAttributes.Usage.ColorPacked,
+            material);
+
+    v1 = new VertexInfo().setPos(-1, 0, -1);
+    v2 = new VertexInfo().setPos(-1, 0, 1);
+    v3 = new VertexInfo().setPos(1, 0, 1);
+    v4 = new VertexInfo().setPos(1, 0, -1);
+
+    partBuilder.setColor(Color.WHITE);
+    partBuilder.rect(v1, v2, v3, v4);
+
+    return planeModel = mb.end();
   }
 
   public static void dispose() {
@@ -631,12 +660,6 @@ public final class Models {
     disposeModel(shipOutlineModel);
     disposeModel(tileOutlineModel);
     disposeModel(tunnelOutlineModel);
-    for (Model model : tileModels) {
-      model.dispose();
-    }
-    for (Model model : tunnelModels) {
-      model.dispose();
-    }
   }
 
   private static void disposeModel(Model model) {

@@ -41,6 +41,10 @@ public class Text {
     return color;
   }
 
+  public Vector2 getBounds() {
+    return new Vector2(bounds.width, bounds.height);
+  }
+
   public void setValue(String value) {
     this.value = value;
   }

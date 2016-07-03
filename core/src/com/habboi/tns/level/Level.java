@@ -2,6 +2,8 @@ package com.habboi.tns.level;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
+import com.habboi.tns.level.worlds.Universe;
+import com.habboi.tns.level.worlds.World;
 import com.habboi.tns.rendering.GameRenderer;
 
 import java.util.ArrayList;
@@ -14,53 +16,44 @@ public class Level {
   static final float GRAVITY = -9.87f;
 
   String name;
-  String music;
-  int gravityLevel;
-  int fuelFactor;
+  int number;
+  World world;
   Vector3 shipPos;
-  ArrayList<Color> colors;
 
   ArrayList<Cell> cells = new ArrayList<>();
   LinkedList<Cell> collisions = new LinkedList<>();
   ArrayList<Tunnel> endTunnels = new ArrayList<>();
 
-  public Level(String name, String music, int gravityLevel, int fuelFactor,
-               Vector3 shipPos, ArrayList<Color> colors, ArrayList<ArrayList<int[]>> presets,
-               ArrayList<int[]> tunnelPresets) {
+  public Level(String name, int number, int worldIndex, Vector3 shipPos) {
     this.name = name;
-    this.music = music;
-    this.gravityLevel = gravityLevel;
-    this.fuelFactor = fuelFactor;
+    this.number = number;
     this.shipPos = shipPos;
-    this.colors = colors;
+    this.world = Universe.get().worlds.get(worldIndex);
+  }
 
-    for (ArrayList<int[]> preset : presets) {
-      Models.createTileModel(colors, preset);
-    }
-    for (int[] preset : tunnelPresets) {
-      Models.createTunnelModel(colors, preset);
-    }
+  public String getName() {
+    return name;
   }
 
   public Vector3 getShipPos() {
     return shipPos;
   }
 
-  public ArrayList<Color> getColors() {
-    return colors;
+  public World getWorld() {
+    return world;
   }
 
   public void addTile(Vector3 pos, Vector3 size, int outline, Tile.TouchEffect effect, int preset) {
     Color outlineColor = Color.WHITE;
     if (outline != -1) {
-      outlineColor = colors.get(outline);
+      outlineColor = world.colors.get(outline);
     }
-    Tile tile = new Tile(pos, size, outlineColor, effect, preset);
+    Tile tile = new Tile(pos, size, outlineColor, effect, preset, world);
     cells.add(tile);
   }
 
   public void addTunnel(Vector3 pos, float depth, int preset, boolean end) {
-    Tunnel tunnel = new Tunnel(pos, depth, preset);
+    Tunnel tunnel = new Tunnel(pos, depth, preset, world);
     if (end) {
       endTunnels.add(tunnel);
     }
@@ -73,7 +66,9 @@ public class Level {
   }
 
   private void updatePhysics(Ship ship, float dt) {
-    ship.vel.y += (GRAVITY * gravityLevel) * dt;
+    if (ship.state != Ship.State.ENDED) {
+      ship.vel.y += (GRAVITY * world.gravityLevel) * dt;
+    }
     for (Cell cell : cells) {
       if (cell.checkCollision(ship)) {
         collisions.add(cell);
@@ -108,6 +103,7 @@ public class Level {
 
   public void update(Ship ship, float dt) {
     updatePhysics(ship, dt);
+    world.update(ship.pos, -ship.vel.z, dt);
 
     boolean readyToEnd = ship.readyToEnd;
     for (Tunnel t : endTunnels) {
@@ -122,6 +118,7 @@ public class Level {
   }
 
   public void render(GameRenderer renderer) {
+    world.render(renderer);
     for (Cell cell : cells) {
       cell.render(renderer);
     }

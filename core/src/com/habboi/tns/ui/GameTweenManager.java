@@ -13,6 +13,14 @@ import aurelienribon.tweenengine.TweenManager;
 public class GameTweenManager {
   public static abstract class GameTween {
     boolean played;
+    String[] friends;
+
+    public GameTween() {
+    }
+
+    public GameTween(String[] friends) {
+      this.friends = friends;
+    }
 
     public abstract Tween tween();
     public abstract void onComplete();
@@ -67,6 +75,11 @@ public class GameTweenManager {
     tween.start(tm);
     gt.played = true;
     active.put(name, tween);
+    if (gt.friends != null) {
+      for (String friend : gt.friends) {
+        start(friend);
+      }
+    }
   }
 
   public void restart(final String name) {

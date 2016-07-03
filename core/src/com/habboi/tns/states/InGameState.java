@@ -5,11 +5,9 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
-import com.habboi.tns.level.Background;
 import com.habboi.tns.Game;
 import com.habboi.tns.ui.GameTweenManager;
 import com.habboi.tns.level.Ship;
@@ -21,6 +19,7 @@ import com.habboi.tns.ui.Rect;
 import com.habboi.tns.ui.Text;
 import com.habboi.tns.utils.FontManager;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import aurelienribon.tweenengine.Tween;
@@ -31,25 +30,31 @@ import aurelienribon.tweenengine.Tween;
 public class InGameState extends GameState {
   int debugCam;
 
+  String levelName;
   OrthographicCamera orthoCam;
   CameraInputController tempCamInput;
   Level level;
   Ship ship;
   ShipCamera shipCam;
-  Background background;
   Text levelCompleteText;
+  Text raceTimeText;
   GameTweenManager gtm;
   Rect screenRect;
 
   public InGameState(Game g) {
+    this(g, "map1.tl");
+  }
+
+  public InGameState(Game g, String levelName) {
     super(g);
+    this.levelName = levelName;
   }
 
   @Override
   public void create() {
     orthoCam = new OrthographicCamera();
     orthoCam.setToOrtho(false, game.getWidth(), game.getHeight());
-    level = game.getAssetManager().get("map1.json");
+    level = game.getAssetManager().get(levelName);
 
     ShipController sc = new ShipController(false);
     game.addInput(sc);
@@ -63,15 +68,14 @@ public class InGameState extends GameState {
     tempCamInput = new CameraInputController(cam);
     game.addInput(tempCamInput);
 
-    ArrayList<Color> colors = level.getColors();
-    background = new Background(colors.get(0), colors.get(1), 30);
-
     FontManager fm = FontManager.get();
     levelCompleteText = new Text(fm.getFont("Neon.ttf", (int)(24 * game.getDensity())),
             "LEVEL COMPLETE", null, Color.WHITE);
     levelCompleteText.getPos().set(game.getWidth() / 2, game.getHeight() / 2);
     levelCompleteText.getColor().a = 0;
-
+    raceTimeText = new Text(fm.getFont("Neon.ttf", 24), "", null, Color.WHITE);
+    raceTimeText.getPos().set(game.getWidth() / 2, game.getHeight() / 2 - 40);
+    raceTimeText.getColor().a = 0;
     screenRect = new Rect(new Rectangle(0, 0, game.getWidth(), game.getHeight()));
 
     gtm = GameTweenManager.get();
@@ -85,11 +89,22 @@ public class InGameState extends GameState {
       public void onComplete() {
         ship.state = Ship.State.PLAYABLE;
       }
-    }).register("level_complete", new GameTweenManager.GameTween() {
+    }).register("level_complete", new GameTweenManager.GameTween(new String[]{"race_time_text"}) {
 
       @Override
       public Tween tween() {
         return Tween.to(levelCompleteText, Text.Accessor.TWEEN_ALPHA, 1f)
+                .target(1);
+      }
+
+      @Override
+      public void onComplete() {
+
+      }
+    }).register("race_time_text", new GameTweenManager.GameTween() {
+      @Override
+      public Tween tween() {
+        return Tween.to(raceTimeText, Text.Accessor.TWEEN_ALPHA, 1f)
                 .target(1);
       }
 
@@ -124,6 +139,12 @@ public class InGameState extends GameState {
   public void update(float dt) {
     if (ship.state == Ship.State.ENDED) {
       if (!gtm.played("level_complete")) {
+        float sec = (int)ship.raceTime;
+        float mil = ship.raceTime - sec;
+        DecimalFormat format = new DecimalFormat("00");
+        String str = format.format(sec);
+        String str2 = format.format(mil);
+        raceTimeText.setValue("TIME " + str + ":" + str2, true);
         gtm.start("level_complete");
       }
     } else if (ship.state == Ship.State.FELL) {
@@ -133,7 +154,6 @@ public class InGameState extends GameState {
     }
 
     level.update(ship, dt);
-    background.update(ship.pos, -ship.vel.z, dt);
     ship.update(dt);
 
     if (debugCam == 0) {
@@ -154,7 +174,6 @@ public class InGameState extends GameState {
       tempCamInput.update();
       gr.begin(tempCamInput.camera);
     }
-    background.render(gr);
     level.render(gr);
     ship.render(gr);
     gr.end();
@@ -162,6 +181,7 @@ public class InGameState extends GameState {
     orthoCam.update();
     gr.beginOrtho(orthoCam.combined);
     levelCompleteText.draw(gr.getSpriteBatch(), true);
+    raceTimeText.draw(gr.getSpriteBatch(), true);
     gr.endOrtho();
 
     ShapeRenderer sr = game.getShapeRenderer();

@@ -14,6 +14,7 @@ import com.badlogic.gdx.utils.TimeUtils;
 import com.habboi.tns.level.Level;
 import com.habboi.tns.level.LevelLoader;
 import com.habboi.tns.level.Models;
+import com.habboi.tns.level.worlds.Universe;
 import com.habboi.tns.states.*;
 import com.habboi.tns.rendering.GameRenderer;
 import com.habboi.tns.ui.GameTweenManager;
@@ -22,6 +23,8 @@ import com.habboi.tns.utils.FontLoader;
 import com.habboi.tns.utils.FontManager;
 
 public class Game extends ApplicationAdapter {
+  public static final String MAIN_FONT = "Neon.ttf";
+
   static final float STEP_SECONDS = 0.016f;
   static final float STEP	  = STEP_SECONDS * 1000f;
 
@@ -102,6 +105,8 @@ public class Game extends ApplicationAdapter {
     inputMul.addProcessor(input);
   }
 
+  public void removeInput(InputProcessor input) { inputMul.removeProcessor(input); }
+
   public void update() {
     currentState.update(STEP_SECONDS);
     GameTweenManager.get().update(STEP_SECONDS);
@@ -141,5 +146,6 @@ public class Game extends ApplicationAdapter {
     currentState.dispose();
     renderer.dispose();
     Models.dispose();
+    Universe.get().dispose();
   }
 }

@@ -6,6 +6,8 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Disposable;
 import com.habboi.tns.Game;
+import com.habboi.tns.states.InGameState;
+import com.habboi.tns.states.MenuState;
 import com.habboi.tns.utils.FontManager;
 
 import aurelienribon.tweenengine.Tween;
@@ -24,7 +26,7 @@ public class MainMenu extends Menu implements Disposable {
   ShapeRenderer sr;
   SpriteBatch sb;
 
-  public MainMenu(Game game) {
+  public MainMenu(final MenuState state, final Game game) {
     game.addInput(this);
     sr = game.getShapeRenderer();
     sb = game.getRenderer().getSpriteBatch();
@@ -39,7 +41,13 @@ public class MainMenu extends Menu implements Disposable {
     highlightBorder = new Rect(bounds, Color.WHITE);
     bounds.x -= width/2;
     bounds.y = top - height - height/4;
-    items.add(new MainMenuItem("PLAY", width/2-cor, y-height/2, bounds));
+    items.add(new MainMenuItem("PLAY", width/2-cor, y-height/2, bounds).setAction(new MenuItemAction() {
+      @Override
+      public void doAction() {
+        game.removeInput(MainMenu.this);
+        state.addMenu(new LevelsMenu(state, game));
+      }
+    }));
     y -= height;
     bounds.y = y - height - height/4;
     items.add(new MainMenuItem("OPTIONS", width/2-cor, y-height/2, bounds));
@@ -95,10 +103,12 @@ public class MainMenu extends Menu implements Disposable {
     highlightBorder.getRectangle().setY(item.text.getPos().y - itemHeight/4);
   }
 
+  @Override
   public void update(float dt) {
 
   }
 
+  @Override
   public void render() {
     highlight.draw(sr, true);
     highlightBorder.draw(sr, ShapeRenderer.ShapeType.Line, true);

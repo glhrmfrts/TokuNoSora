@@ -17,7 +17,8 @@ public abstract class MenuItem {
     this.bounds.set(x, y, w, h);
   }
 
-  public void setAction(MenuItemAction action) {
+  public MenuItem setAction(MenuItemAction action) {
     this.action = action;
+    return this;
   }
 }
