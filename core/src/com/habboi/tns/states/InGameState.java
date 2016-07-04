@@ -20,7 +20,6 @@ import com.habboi.tns.ui.Text;
 import com.habboi.tns.utils.FontManager;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 
 import aurelienribon.tweenengine.Tween;
 
@@ -69,12 +68,12 @@ public class InGameState extends GameState {
     game.addInput(tempCamInput);
 
     FontManager fm = FontManager.get();
-    levelCompleteText = new Text(fm.getFont("Neon.ttf", (int)(24 * game.getDensity())),
-            "LEVEL COMPLETE", null, Color.WHITE);
-    levelCompleteText.getPos().set(game.getWidth() / 2, game.getHeight() / 2);
+    levelCompleteText = new Text(fm.getFont("Neon.ttf", 36),
+            "level complete", null, Color.WHITE);
+    levelCompleteText.getPos().set(game.getWidth() / 2, game.getHeight() / 2 + 36/2 + 10);
     levelCompleteText.getColor().a = 0;
-    raceTimeText = new Text(fm.getFont("Neon.ttf", 24), "", null, Color.WHITE);
-    raceTimeText.getPos().set(game.getWidth() / 2, game.getHeight() / 2 - 40);
+    raceTimeText = new Text(fm.getFont("Neon.ttf", 36), "", null, Color.WHITE);
+    raceTimeText.getPos().set(game.getWidth() / 2, game.getHeight() / 2 - 36/2 - 10);
     raceTimeText.getColor().a = 0;
     screenRect = new Rect(new Rectangle(0, 0, game.getWidth(), game.getHeight()));
 
@@ -141,10 +140,10 @@ public class InGameState extends GameState {
       if (!gtm.played("level_complete")) {
         float sec = (int)ship.raceTime;
         float mil = ship.raceTime - sec;
-        DecimalFormat format = new DecimalFormat("00");
+        DecimalFormat format = new DecimalFormat("##");
         String str = format.format(sec);
         String str2 = format.format(mil);
-        raceTimeText.setValue("TIME " + str + ":" + str2, true);
+        raceTimeText.setValue("time " + str + ":" + str2, true);
         gtm.start("level_complete");
       }
     } else if (ship.state == Ship.State.FELL) {
@@ -177,13 +176,13 @@ public class InGameState extends GameState {
     level.render(gr);
     ship.render(gr);
     gr.end();
-
     orthoCam.update();
-    gr.beginOrtho(orthoCam.combined);
-    levelCompleteText.draw(gr.getSpriteBatch(), true);
-    raceTimeText.draw(gr.getSpriteBatch(), true);
-    gr.endOrtho();
-
+    if (ship.state == Ship.State.ENDED) {
+      gr.beginOrtho(orthoCam.combined);
+      levelCompleteText.draw(gr.getSpriteBatch(), true);
+      raceTimeText.draw(gr.getSpriteBatch(), true);
+      gr.endOrtho();
+    }
     ShapeRenderer sr = game.getShapeRenderer();
     screenRect.draw(sr);
   }

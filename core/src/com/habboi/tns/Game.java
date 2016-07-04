@@ -10,6 +10,7 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.habboi.tns.level.Level;
 import com.habboi.tns.level.LevelLoader;
@@ -18,9 +19,12 @@ import com.habboi.tns.level.worlds.Universe;
 import com.habboi.tns.states.*;
 import com.habboi.tns.rendering.GameRenderer;
 import com.habboi.tns.ui.GameTweenManager;
+import com.habboi.tns.ui.Rect;
 import com.habboi.tns.utils.FontFileHandleResolver;
 import com.habboi.tns.utils.FontLoader;
 import com.habboi.tns.utils.FontManager;
+
+import aurelienribon.tweenengine.Tween;
 
 public class Game extends ApplicationAdapter {
   public static final String MAIN_FONT = "Neon.ttf";
@@ -34,8 +38,10 @@ public class Game extends ApplicationAdapter {
   InputMultiplexer inputMul;
   GameRenderer renderer;
   ShapeRenderer sr;
+  Rect exitingRect;
   GameState currentState;
   boolean stateChanged;
+  boolean exiting;
 
   AssetManager am;
   Application.ApplicationType appType;
@@ -47,6 +53,7 @@ public class Game extends ApplicationAdapter {
     appType = Gdx.app.getType();
     width = Gdx.graphics.getWidth();
     height = Gdx.graphics.getHeight();
+    exitingRect = new Rect(new Rectangle(0, 0, width, height));
 
     inputMul = new InputMultiplexer();
     Gdx.input.setInputProcessor(inputMul);
@@ -57,7 +64,17 @@ public class Game extends ApplicationAdapter {
     am.setLoader(Level.class, new LevelLoader(new InternalFileHandleResolver()));
     am.setLoader(BitmapFont.class, new FontLoader(new FontFileHandleResolver()));
     FontManager.get().setAssetManager(am);
-    
+    GameTweenManager.get().register("game_fade_out", new GameTweenManager.GameTween() {
+      @Override
+      public Tween tween() {
+        return exitingRect.getFadeTween(0, 1, 1);
+      }
+
+      @Override
+      public void onComplete() {
+        Gdx.app.exit();
+      }
+    });
     setCurrentState(new LoadingState(this));
   }
 
@@ -107,6 +124,11 @@ public class Game extends ApplicationAdapter {
 
   public void removeInput(InputProcessor input) { inputMul.removeProcessor(input); }
 
+  public void exit() {
+    exiting = true;
+    GameTweenManager.get().start("game_fade_out");
+  }
+
   public void update() {
     currentState.update(STEP_SECONDS);
     GameTweenManager.get().update(STEP_SECONDS);
@@ -114,11 +136,6 @@ public class Game extends ApplicationAdapter {
 
   @Override
   public void render () {
-    if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
-      Gdx.app.exit();
-      return;
-    }
-
     long start = TimeUtils.millis();
     if (lastUpdateTime == -1) {
       lastUpdateTime = start;
@@ -139,6 +156,9 @@ public class Game extends ApplicationAdapter {
     }
 
     currentState.render();
+    if (exiting) {
+      exitingRect.draw(sr, false);
+    }
   }
 
   @Override

@@ -1,12 +1,12 @@
 package com.habboi.tns.ui;
 
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Disposable;
 import com.habboi.tns.Game;
-import com.habboi.tns.states.InGameState;
 import com.habboi.tns.states.MenuState;
 import com.habboi.tns.utils.FontManager;
 
@@ -16,7 +16,7 @@ import aurelienribon.tweenengine.TweenEquations;
 /**
  * The main menu.
  */
-public class MainMenu extends Menu implements Disposable {
+public class MainMenu extends BaseMenu implements Disposable {
   static final float MENU_HEIGHT_PERCENT = 0.33f;
 
   float top;
@@ -25,9 +25,10 @@ public class MainMenu extends Menu implements Disposable {
   Rect highlightBorder;
   ShapeRenderer sr;
   SpriteBatch sb;
+  MenuState menuState;
 
   public MainMenu(final MenuState state, final Game game) {
-    game.addInput(this);
+    menuState = state;
     sr = game.getShapeRenderer();
     sb = game.getRenderer().getSpriteBatch();
 
@@ -41,7 +42,7 @@ public class MainMenu extends Menu implements Disposable {
     highlightBorder = new Rect(bounds, Color.WHITE);
     bounds.x -= width/2;
     bounds.y = top - height - height/4;
-    items.add(new MainMenuItem("PLAY", width/2-cor, y-height/2, bounds).setAction(new MenuItemAction() {
+    items.add(new MainMenuItem("play", width/2-cor, y-height/2, bounds).setAction(new MenuItemAction() {
       @Override
       public void doAction() {
         game.removeInput(MainMenu.this);
@@ -50,13 +51,13 @@ public class MainMenu extends Menu implements Disposable {
     }));
     y -= height;
     bounds.y = y - height - height/4;
-    items.add(new MainMenuItem("OPTIONS", width/2-cor, y-height/2, bounds));
+    items.add(new MainMenuItem("options", width/2-cor, y-height/2, bounds));
     y -= height;
     bounds.y = y - height - height/4;
-    items.add(new MainMenuItem("CREDITS", width/2-cor, y-height/2, bounds));
+    items.add(new MainMenuItem("credits", width/2-cor, y-height/2, bounds));
     y -= height;
     bounds.y = y - height - height/4;
-    items.add(new MainMenuItem("QUIT", width/2-cor, y-height/2, bounds));
+    items.add(new MainMenuItem("quit", width/2-cor, y-height/2, bounds));
 
     GameTweenManager.get().register("main_menu_select_menu", new GameTweenManager.GameTween() {
       @Override
@@ -99,8 +100,8 @@ public class MainMenu extends Menu implements Disposable {
 
   private void setHighlight() {
     MainMenuItem item = (MainMenuItem) items.get(activeIndex);
-    highlight.getRectangle().setY(item.text.getPos().y - itemHeight/4);
-    highlightBorder.getRectangle().setY(item.text.getPos().y - itemHeight/4);
+    highlight.getRectangle().setY(item.text.getPos().y - itemHeight / 4);
+    highlightBorder.getRectangle().setY(item.text.getPos().y - itemHeight / 4);
   }
 
   @Override
@@ -121,6 +122,14 @@ public class MainMenu extends Menu implements Disposable {
     sb.end();
   }
 
+  @Override
+  public boolean keyDown(int keycode) {
+    if (keycode == Input.Keys.ESCAPE) {
+      menuState.getGame().exit();
+    }
+    return super.keyDown(keycode);
+  }
+
   public void dispose() {
     GameTweenManager.get().remove("main_menu_select_menu");
     GameTweenManager.get().remove("main_menu_select_menu_border");
@@ -131,7 +140,7 @@ public class MainMenu extends Menu implements Disposable {
 
     public MainMenuItem(String textValue, float textX, float textY, Rectangle bounds) {
       super(bounds);
-      text = new Text(FontManager.get().getFont("Neon.ttf", 24), textValue, null, Color.WHITE);
+      text = new Text(FontManager.get().getFont("Neon.ttf", 36), textValue, null, Color.WHITE);
       text.getPos().set(textX, textY);
     }
   }

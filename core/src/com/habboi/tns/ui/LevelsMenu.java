@@ -1,12 +1,12 @@
 package com.habboi.tns.ui;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.utils.Disposable;
 import com.habboi.tns.Game;
 import com.habboi.tns.level.Level;
 import com.habboi.tns.level.LevelLoader;
@@ -25,15 +25,17 @@ import aurelienribon.tweenengine.TweenEquations;
 /**
  * Created by w7 on 02/07/2016.
  */
-public class LevelsMenu extends Menu {
+public class LevelsMenu implements Menu, Disposable {
   static final float MENU_HEIGHT_PERCENT = 0.33f;
 
+  int activeItemIndex;
   int activeWorldIndex;
   int prevActiveWorldIndex;
   float top;
   float itemHeight;
   Rect highlight;
   Rect highlightBorder;
+  Rect background;
   Text worldText;
   ShapeRenderer sr;
   SpriteBatch sb;
@@ -44,9 +46,10 @@ public class LevelsMenu extends Menu {
     menuState = state;
     sr = game.getShapeRenderer();
     sb = game.getRenderer().getSpriteBatch();
-    createItems(game);
-
-    GameTweenManager.get().register("main_menu_select_menu", new GameTweenManager.GameTween() {
+    background = new Rect(new Rectangle(0, 0, game.getWidth(), game.getHeight()));
+    background.getColor().a = 0;
+    final GameTweenManager gtm = GameTweenManager.get();
+    gtm.register("main_menu_select_menu", new GameTweenManager.GameTween() {
       @Override
       public Tween tween() {
         highlight.getRectangle().height = 0;
@@ -72,10 +75,31 @@ public class LevelsMenu extends Menu {
       public void onComplete() {
 
       }
-    });
+    }).register("change_world_in", new GameTweenManager.GameTween() {
+      @Override
+      public Tween tween() {
+        return background.getFadeTween(0, 1, 0.15f);
+      }
 
+      @Override
+      public void onComplete() {
+        World world = Universe.get().worlds.get(activeWorldIndex);
+        menuState.setWorld(world);
+        gtm.start("change_world_out");
+      }
+    }).register("change_world_out", new GameTweenManager.GameTween() {
+      @Override
+      public Tween tween() {
+        return background.getFadeTween(1, 0, 0.15f);
+      }
+
+      @Override
+      public void onComplete() {
+
+      }
+    });
+    createItems(game);
     setHighlight();
-    game.addInput(this);
   }
 
   private void createItems(final Game game) {
@@ -92,10 +116,15 @@ public class LevelsMenu extends Menu {
     highlightBorder = new Rect(bounds, Color.WHITE);
     bounds.x -= width/2;
     bounds.y = top - height - height/4;
+    World lastWorld = null;
     for (final String str : l.getLevelsNames()) {
       Level level = am.get(str);
-      final String name = level.getName();
-      LevelMenuItem item = new LevelMenuItem(name.toUpperCase(), width/2-cor, y-height/2, bounds);
+      World world = level.getWorld();
+      if (world != lastWorld) {
+        y = top;
+        lastWorld = world;
+      }
+      LevelMenuItem item = new LevelMenuItem(level.getName(), width/2-cor, y-height/2, bounds);
       item.setAction(new MenuItemAction() {
         @Override
         public void doAction() {
@@ -103,21 +132,20 @@ public class LevelsMenu extends Menu {
           game.setCurrentState(new InGameState(game, str));
         }
       });
-      items.add(item);
-      ArrayList<LevelMenuItem> itemGroup = itemGroups.get(level.getWorld());
+      ArrayList<LevelMenuItem> itemGroup = itemGroups.get(world);
       if (itemGroup == null) {
         itemGroup = new ArrayList<>();
-        itemGroups.put(level.getWorld(), itemGroup);
+        itemGroups.put(world, itemGroup);
       }
       itemGroup.add(item);
-      y = y - (height * itemGroup.size());
+      y = top - (height * itemGroup.size());
       bounds.y = y - height - height/4;
     }
     activeWorldIndex = 0;
     World activeWorld = Universe.get().worlds.get(activeWorldIndex);
     worldText = new Text(FontManager.get().getFont(Game.MAIN_FONT, 36), "", null, Color.WHITE);
-    worldText.setValue(activeWorld.name.toUpperCase(), true);
-    worldText.getPos().set(game.getWidth()*0.05f, top + 36/2);
+    worldText.setValue(activeWorld.name, true);
+    worldText.getPos().set(game.getWidth()*0.05f, top + 36/1.5f);
   }
 
   @Override
@@ -129,29 +157,21 @@ public class LevelsMenu extends Menu {
   }
 
   private void setHighlight() {
-    LevelMenuItem item = (LevelMenuItem) items.get(activeIndex);
+    World world = Universe.get().worlds.get(activeWorldIndex);
+    LevelMenuItem item = itemGroups.get(world).get(activeItemIndex);
     highlight.getRectangle().setY(item.text.getPos().y - itemHeight / 4);
     highlightBorder.getRectangle().setY(item.text.getPos().y - itemHeight / 4);
   }
 
-  @Override
-  public void update(float dt) {
-    if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) {
-      if (activeWorldIndex < Universe.get().worlds.size() - 1) {
-        prevActiveWorldIndex = activeWorldIndex;
-        activeWorldIndex++;
-      }
-    }
-    if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) {
-      if (activeWorldIndex > 0) {
-        prevActiveWorldIndex = activeWorldIndex;
-        activeWorldIndex--;
-      }
-    }
+  private void changeGroup() {
+    World world = Universe.get().worlds.get(activeWorldIndex);
+    worldText.setValue(world.name, true);
+    GameTweenManager.get().start("change_world_in");
   }
 
   @Override
   public void render() {
+    background.draw(sr, false);
     highlight.draw(sr, true);
     highlightBorder.draw(sr, ShapeRenderer.ShapeType.Line, true);
     sb.begin();
@@ -159,11 +179,6 @@ public class LevelsMenu extends Menu {
     World world = Universe.get().worlds.get(activeWorldIndex);
     ArrayList<LevelMenuItem> group = itemGroups.get(world);
     renderGroup(group);
-    if (activeWorldIndex != prevActiveWorldIndex) {
-      world = Universe.get().worlds.get(prevActiveWorldIndex);
-      group = itemGroups.get(world);
-      renderGroup(group);
-    }
     sb.end();
   }
 
@@ -171,7 +186,7 @@ public class LevelsMenu extends Menu {
     for (int i = 0; i < group.size(); i++) {
       LevelMenuItem item = group.get(i);
       item.text.draw(sb, false);
-      if (activeIndex == i) {
+      if (activeItemIndex == i) {
         item.completedText.draw(sb, false);
         item.timeText.draw(sb, false);
       }
@@ -181,6 +196,8 @@ public class LevelsMenu extends Menu {
   public void dispose() {
     GameTweenManager.get().remove("main_menu_select_menu");
     GameTweenManager.get().remove("main_menu_select_menu_border");
+    GameTweenManager.get().remove("change_world_in");
+    GameTweenManager.get().remove("change_world_out");
   }
 
   static class LevelMenuItem extends MenuItem {
@@ -193,10 +210,94 @@ public class LevelsMenu extends Menu {
       float quarter = bounds.width * .40f;
       text = new Text(FontManager.get().getFont("Neon.ttf", 24), textValue, null, Color.WHITE);
       text.getPos().set(textX - quarter, textY);
-      completedText = new Text(FontManager.get().getFont("Neon.ttf", 24), "COMPLETED: 2", null, Color.WHITE);
+      completedText = new Text(FontManager.get().getFont("Neon.ttf", 24), "completed: 2", null, Color.WHITE);
       completedText.getPos().set(textX + (quarter - completedText.getBounds().x), textY);
-      timeText = new Text(FontManager.get().getFont("Neon.ttf", 24), "TIME: 25.04", null, Color.WHITE);
+      timeText = new Text(FontManager.get().getFont("Neon.ttf", 24), "time: 25.04", null, Color.WHITE);
       timeText.getPos().set(textX + (quarter - completedText.getBounds().x - timeText.getBounds().x - 20), textY);
     }
+  }
+
+  @Override
+  public boolean keyDown(int keycode) {
+    World world = Universe.get().worlds.get(activeWorldIndex);
+    ArrayList<LevelMenuItem> currentGroup = itemGroups.get(world);
+    boolean ret = false;
+    if (keycode == Input.Keys.RIGHT) {
+      if (activeWorldIndex < Universe.get().worlds.size() - 1) {
+        prevActiveWorldIndex = activeWorldIndex;
+        activeWorldIndex++;
+        changeGroup();
+        activeItemIndex = 0;
+        ret = onChange(0);
+      }
+    } else if (keycode == Input.Keys.LEFT) {
+      if (activeWorldIndex > 0) {
+        prevActiveWorldIndex = activeWorldIndex;
+        activeWorldIndex--;
+        changeGroup();
+        activeItemIndex = 0;
+        ret = onChange(0);
+      }
+    } else if (keycode == Input.Keys.UP) {
+      if (activeItemIndex > 0) {
+        activeItemIndex--;
+        ret = onChange(-1);
+      } else if (activeWorldIndex > 0) {
+        activeWorldIndex--;
+        activeItemIndex = currentGroup.size() - 1;
+        changeGroup();
+        ret = onChange(0);
+      }
+    } else if (keycode == Input.Keys.DOWN) {
+      if (activeItemIndex < currentGroup.size() - 1) {
+        activeItemIndex++;
+        ret = onChange(1);
+      } else if (activeWorldIndex < Universe.get().worlds.size() - 1) {
+        activeWorldIndex++;
+        activeItemIndex = 0;
+        changeGroup();
+        ret = onChange(0);
+      }
+    } else if (keycode == Input.Keys.ENTER) {
+      currentGroup.get(activeItemIndex).action.doAction();
+    } else if (keycode == Input.Keys.ESCAPE) {
+      menuState.popMenu();
+    }
+    return ret;
+  }
+
+  @Override
+  public boolean keyUp(int keycode) {
+    return false;
+  }
+
+  @Override
+  public boolean keyTyped(char character) {
+    return false;
+  }
+
+  @Override
+  public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+    return false;
+  }
+
+  @Override
+  public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+    return false;
+  }
+
+  @Override
+  public boolean touchDragged(int screenX, int screenY, int pointer) {
+    return false;
+  }
+
+  @Override
+  public boolean mouseMoved(int screenX, int screenY) {
+    return false;
+  }
+
+  @Override
+  public boolean scrolled(int amount) {
+    return false;
   }
 }

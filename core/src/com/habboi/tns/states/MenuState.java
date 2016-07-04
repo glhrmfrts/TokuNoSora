@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.math.Vector3;
 import com.habboi.tns.Game;
-import com.habboi.tns.level.Level;
 import com.habboi.tns.level.worlds.Universe;
 import com.habboi.tns.level.worlds.World;
 import com.habboi.tns.rendering.GameRenderer;
@@ -74,17 +73,25 @@ public class MenuState extends FadeState {
     fadeIn();
   }
 
+  public void setWorld(World newWorld) {
+    world = newWorld;
+  }
+
   public void addMenu(Menu menu) {
     menuStack.add(menu);
+    game.addInput(menu);
   }
 
   public Menu popMenu() {
-    return menuStack.pop();
+    Menu m = menuStack.pop();
+    game.removeInput(m);
+    game.addInput(menuStack.peek());
+    return m;
   }
 
   public Menu setMenu(Menu menu) {
-    Menu m = menuStack.pop();
-    menuStack.add(menu);
+    Menu m = popMenu();
+    addMenu(menu);
     return m;
   }
 
@@ -96,7 +103,6 @@ public class MenuState extends FadeState {
     bgPos.set(cam.position);
     bgPos.y -= CAM_LOOKAT_Y;
     world.update(bgPos, VEL, dt);
-    menuStack.peek().update(dt);
   }
 
   @Override
@@ -106,10 +112,10 @@ public class MenuState extends FadeState {
     gr.begin(cam);
     world.render(gr);
     gr.end();
+    menuStack.peek().render();
     gr.beginOrtho();
     titleText.draw(gr.getSpriteBatch(), true);
     gr.endOrtho();
-    menuStack.peek().render();
     super.render();
   }
 

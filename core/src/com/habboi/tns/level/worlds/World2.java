@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.Disposable;
 import com.habboi.tns.level.Models;
 import com.habboi.tns.rendering.GameRenderer;
 
@@ -14,7 +13,7 @@ import java.util.ArrayList;
 /**
  * Created by w7 on 03/07/2016.
  */
-public class World1 extends World {
+public class World2 extends World {
   static class Line {
     float zOffset;
     ModelInstance instance;
@@ -32,13 +31,13 @@ public class World1 extends World {
   ModelInstance planeInstance;
   ArrayList<Line> lines = new ArrayList<>();
 
-  public World1() {
-    super(2, 2, "The Beginning of An End", "nice.ogg");
-    addColor(0x370737);
-    addColor(0xf540ef);
-    addColor(0x5678e3);
+  public World2() {
+    super(2, 2, "Andromeda", "nice.ogg");
+    addColor(0x64f7f7);
+    addColor(0x458696);
+    addColor(0x989822);
     addColor(0x1a37f5);
-    addColor(0x5a67c7);
+    addColor(0x440bad);
     addTileModel(new int[][]{
             new int[]{0, 0, 0, 0}, new int[]{1, 0, 0, 1}, new int[]{0, 0, 0, 0},
             new int[]{0, 0, 0, 0}, new int[]{0, 0, 0, 0}, new int[]{0, 0, 0, 0}

@@ -24,6 +24,7 @@ public class Universe implements Disposable {
   public void createWorlds() {
     // The beggining of an end
     worlds.add(new World1());
+    worlds.add(new World2());
   }
 
   @Override
