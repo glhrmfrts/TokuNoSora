@@ -628,6 +628,22 @@ public final class Models {
     return mb.end();
   }
 
+  public static Model createLineRectModel(Color color) {
+    mb.begin();
+    final Material material = new Material(ColorAttribute.createDiffuse(color));
+    MeshPartBuilder partBuilder = mb.part("rect", GL20.GL_LINES,
+            VertexAttributes.Usage.Position | VertexAttributes.Usage.ColorPacked,
+            material);
+
+    partBuilder.setColor(Color.WHITE);
+    partBuilder.line(-1, -1, 0, 1, -1, 0);
+    partBuilder.line(1, -1, 0, 1, 1, 0);
+    partBuilder.line(1, 1, 0, -1, 1, 0);
+    partBuilder.line(-1, 1, 0, -1, -1, 0);
+
+    return mb.end();
+  }
+
   public static Model createPlaneModel(Color color) {
     if (planeModel != null) return planeModel;
 

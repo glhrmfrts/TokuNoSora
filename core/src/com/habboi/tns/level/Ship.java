@@ -87,6 +87,10 @@ public class Ship {
     return sun;
   }
 
+  public ShipController getController() {
+    return controller;
+  }
+
   private static float steer(float c, float t, float a, float dt) {
     if (c == t) {
       return t;

@@ -49,6 +49,7 @@ public abstract class World implements Disposable {
     return tunnelModels.get(i);
   }
 
+  public abstract void reset();
   public abstract void update(Vector3 shipPos, float vel, float dt);
   public abstract void render(GameRenderer renderer);
 }

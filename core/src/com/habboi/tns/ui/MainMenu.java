@@ -45,7 +45,6 @@ public class MainMenu extends BaseMenu implements Disposable {
     items.add(new MainMenuItem("play", width/2-cor, y-height/2, bounds).setAction(new MenuItemAction() {
       @Override
       public void doAction() {
-        game.removeInput(MainMenu.this);
         state.addMenu(new LevelsMenu(state, game));
       }
     }));
@@ -57,7 +56,12 @@ public class MainMenu extends BaseMenu implements Disposable {
     items.add(new MainMenuItem("credits", width/2-cor, y-height/2, bounds));
     y -= height;
     bounds.y = y - height - height/4;
-    items.add(new MainMenuItem("quit", width/2-cor, y-height/2, bounds));
+    items.add(new MainMenuItem("quit", width/2-cor, y-height/2, bounds).setAction(new MenuItemAction() {
+      @Override
+      public void doAction() {
+        game.exit();
+      }
+    }));
 
     GameTweenManager.get().register("main_menu_select_menu", new GameTweenManager.GameTween() {
       @Override

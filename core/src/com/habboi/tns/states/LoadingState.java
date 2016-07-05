@@ -72,12 +72,10 @@ public class LoadingState extends GameState {
     AssetManager am = game.getAssetManager();
 
     if (am.update()) {
-      game.setCurrentState(new MenuState(game));
-      //game.setCurrentState(new InGameState(game));
+      game.setState(new MenuState(game));
     }
 
     percent = Interpolation.linear.apply(percent, am.getProgress(), 0.1f);
-
     float w = loadingBarTotalWidth * percent;
     loadingBar.getRectangle().setWidth(w);
     loadingBar.draw(sr, ShapeRenderer.ShapeType.Filled, false);

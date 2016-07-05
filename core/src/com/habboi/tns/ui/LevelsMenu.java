@@ -128,8 +128,7 @@ public class LevelsMenu implements Menu, Disposable {
       item.setAction(new MenuItemAction() {
         @Override
         public void doAction() {
-          game.removeInput(LevelsMenu.this);
-          game.setCurrentState(new InGameState(game, str));
+          game.addState(new InGameState(game, str));
         }
       });
       ArrayList<LevelMenuItem> itemGroup = itemGroups.get(world);
@@ -264,40 +263,5 @@ public class LevelsMenu implements Menu, Disposable {
       menuState.popMenu();
     }
     return ret;
-  }
-
-  @Override
-  public boolean keyUp(int keycode) {
-    return false;
-  }
-
-  @Override
-  public boolean keyTyped(char character) {
-    return false;
-  }
-
-  @Override
-  public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-    return false;
-  }
-
-  @Override
-  public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-    return false;
-  }
-
-  @Override
-  public boolean touchDragged(int screenX, int screenY, int pointer) {
-    return false;
-  }
-
-  @Override
-  public boolean mouseMoved(int screenX, int screenY) {
-    return false;
-  }
-
-  @Override
-  public boolean scrolled(int amount) {
-    return false;
   }
 }

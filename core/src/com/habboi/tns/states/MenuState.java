@@ -79,13 +79,10 @@ public class MenuState extends FadeState {
 
   public void addMenu(Menu menu) {
     menuStack.add(menu);
-    game.addInput(menu);
   }
 
   public Menu popMenu() {
     Menu m = menuStack.pop();
-    game.removeInput(m);
-    game.addInput(menuStack.peek());
     return m;
   }
 
@@ -93,6 +90,11 @@ public class MenuState extends FadeState {
     Menu m = popMenu();
     addMenu(menu);
     return m;
+  }
+
+  @Override
+  public boolean keyDown(int keycode) {
+    return menuStack.peek().keyDown(keycode);
   }
 
   @Override

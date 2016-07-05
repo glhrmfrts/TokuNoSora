@@ -3,7 +3,6 @@ package com.habboi.tns;
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.assets.AssetManager;
@@ -24,6 +23,8 @@ import com.habboi.tns.utils.FontFileHandleResolver;
 import com.habboi.tns.utils.FontLoader;
 import com.habboi.tns.utils.FontManager;
 
+import java.util.Stack;
+
 import aurelienribon.tweenengine.Tween;
 
 public class Game extends ApplicationAdapter {
@@ -40,6 +41,7 @@ public class Game extends ApplicationAdapter {
   ShapeRenderer sr;
   Rect exitingRect;
   GameState currentState;
+  Stack<GameState> stateStack;
   boolean stateChanged;
   boolean exiting;
 
@@ -75,7 +77,9 @@ public class Game extends ApplicationAdapter {
         Gdx.app.exit();
       }
     });
-    setCurrentState(new LoadingState(this));
+
+    stateStack = new Stack<>();
+    addState(new LoadingState(this));
   }
 
   public float getDensity() {
@@ -109,13 +113,37 @@ public class Game extends ApplicationAdapter {
     return am;
   }
 
-  public void setCurrentState(GameState state) {
-    if (currentState != null) {
-      currentState.dispose();
-      stateChanged = true;
+  public GameState setState(GameState state) {
+    GameState prev = popState();
+    addState(state);
+    return prev;
+  }
+
+  public void addState(GameState state) {
+    if (stateStack.size() > 0) {
+      removeInput(stateStack.peek());
     }
-    currentState = state;
-    currentState.create();
+    state.create();
+    stateStack.add(state);
+    currentState = stateStack.peek();
+    stateChanged = true;
+    addInput(state);
+  }
+
+  public GameState popState() {
+    GameState state = stateStack.pop();
+    removeInput(state);
+    if (state != null) {
+      state.dispose();
+    }
+    if (stateStack.size() > 0) {
+      currentState = stateStack.peek();
+      addInput(currentState);
+    } else {
+      currentState = null;
+    }
+    stateChanged = true;
+    return state;
   }
 
   public void addInput(InputProcessor input) {

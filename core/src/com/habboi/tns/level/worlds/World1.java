@@ -22,7 +22,7 @@ public class World1 extends World {
 
   static final float DEPTH = 800f;
   static final float WIDTH = 400f;
-  static final float DISTANCE_Y = -5;
+  static final float DISTANCE_Y = -10;
 
   float offset;
   float spread;
@@ -69,6 +69,11 @@ public class World1 extends World {
 
     // the texture would be loaded synchronously anyway, so :)
     backgroundTexture = new Texture(Gdx.files.internal("background.jpg"));
+  }
+
+  @Override
+  public void reset() {
+    offset = 0;
   }
 
   @Override

@@ -20,6 +20,7 @@ public class ShipController implements InputProcessor {
   int[] prevKeys = new int[NUM_KEYS];
   boolean recording;
   float time;
+  int anyKey;
 
   public ShipController(boolean record) {
     recording = record;
@@ -33,16 +34,22 @@ public class ShipController implements InputProcessor {
     return isDown(key) && !(prevKeys[key.ordinal()] > 0);
   }
 
+  public boolean isAnyKeyDown() {
+    return anyKey > 0;
+  }
+
   public void update(float dt) {
     if (recording) {
       time += dt;
     }
 
     System.arraycopy(keys, 0, prevKeys, 0, keys.length);
+    anyKey = 0;
   }
 
   @Override
   public boolean keyDown(int keycode) {
+    anyKey++;
     switch (keycode) {
       case Input.Keys.LEFT:
         keys[Key.LEFT.ordinal()]++;
@@ -69,6 +76,7 @@ public class ShipController implements InputProcessor {
 
   @Override
   public boolean keyUp(int keycode) {
+    anyKey--;
     switch (keycode) {
       case Input.Keys.LEFT:
         keys[Key.LEFT.ordinal()] = 0;

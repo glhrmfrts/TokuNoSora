@@ -54,9 +54,9 @@ public class InGameState extends GameState {
     orthoCam = new OrthographicCamera();
     orthoCam.setToOrtho(false, game.getWidth(), game.getHeight());
     level = game.getAssetManager().get(levelName);
+    level.getWorld().reset();
 
     ShipController sc = new ShipController(false);
-    game.addInput(sc);
     ship = new Ship(game, level.getShipPos(), sc);
 
     PerspectiveCamera cam = new PerspectiveCamera(45, game.getWidth(), game.getHeight());
@@ -65,7 +65,6 @@ public class InGameState extends GameState {
 
     shipCam = new ShipCamera(ship, cam);
     tempCamInput = new CameraInputController(cam);
-    game.addInput(tempCamInput);
 
     FontManager fm = FontManager.get();
     levelCompleteText = new Text(fm.getFont("Neon.ttf", 36),
@@ -131,20 +130,31 @@ public class InGameState extends GameState {
     ship.reset();
     shipCam.reset();
     level.reset();
+    level.getWorld().reset();
     gtm.start("start");
+  }
+
+  @Override
+  public boolean keyDown(int keycode) {
+    return ship.getController().keyDown(keycode);
+  }
+
+  @Override
+  public boolean keyUp(int keycode) {
+    return ship.getController().keyUp(keycode);
   }
 
   @Override
   public void update(float dt) {
     if (ship.state == Ship.State.ENDED) {
       if (!gtm.played("level_complete")) {
-        float sec = (int)ship.raceTime;
-        float mil = ship.raceTime - sec;
-        DecimalFormat format = new DecimalFormat("##");
-        String str = format.format(sec);
-        String str2 = format.format(mil);
-        raceTimeText.setValue("time " + str + ":" + str2, true);
+        DecimalFormat format = new DecimalFormat("00.00");
+        raceTimeText.setValue("time " + format.format(ship.raceTime), true);
         gtm.start("level_complete");
+      } else if (!gtm.isActive("level_complete")) {
+        if (ship.getController().isAnyKeyDown()) {
+          game.popState();
+        }
       }
     } else if (ship.state == Ship.State.FELL) {
       if (!gtm.isActive("reset")) {
