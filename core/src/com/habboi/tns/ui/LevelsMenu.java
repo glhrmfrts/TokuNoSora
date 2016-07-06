@@ -3,7 +3,6 @@ package com.habboi.tns.ui;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Disposable;
@@ -25,21 +24,17 @@ import aurelienribon.tweenengine.TweenEquations;
 /**
  * Created by w7 on 02/07/2016.
  */
-public class LevelsMenu implements Menu, Disposable {
+public class LevelsMenu extends BaseMenu implements Disposable {
   static final float MENU_HEIGHT_PERCENT = 0.33f;
+  static final int FONT_SIZE = Game.MAIN_FONT_SIZE;
+  static final int WORLD_FONT_SIZE = Game.MEDIUM_FONT_SIZE;
 
+  Rect container;
+  Rect background;
+  Text worldText;
   int activeItemIndex;
   int activeWorldIndex;
   int prevActiveWorldIndex;
-  float top;
-  float itemHeight;
-  Rect highlight;
-  Rect highlightBorder;
-  Rect background;
-  Text worldText;
-  ShapeRenderer sr;
-  SpriteBatch sb;
-  MenuState menuState;
   HashMap<World, ArrayList<LevelMenuItem>> itemGroups = new HashMap<>();
 
   public LevelsMenu(final MenuState state, final Game game) {
@@ -49,12 +44,12 @@ public class LevelsMenu implements Menu, Disposable {
     background = new Rect(new Rectangle(0, 0, game.getWidth(), game.getHeight()));
     background.getColor().a = 0;
     final GameTweenManager gtm = GameTweenManager.get();
-    gtm.register("main_menu_select_menu", new GameTweenManager.GameTween() {
+    gtm.register("levels_menu_select_menu", new GameTweenManager.GameTween() {
       @Override
       public Tween tween() {
         highlight.getRectangle().height = 0;
         return Tween.to(highlight, Rect.Accessor.TWEEN_HEIGHT, 0.25f)
-                .target(itemHeight)
+                .target(itemBounds.height)
                 .ease(TweenEquations.easeOutQuad);
       }
 
@@ -62,12 +57,12 @@ public class LevelsMenu implements Menu, Disposable {
       public void onComplete() {
 
       }
-    }).register("main_menu_select_menu_border", new GameTweenManager.GameTween() {
+    }).register("levels_menu_select_menu_border", new GameTweenManager.GameTween() {
       @Override
       public Tween tween() {
         highlightBorder.getRectangle().height = 0;
         return Tween.to(highlightBorder, Rect.Accessor.TWEEN_HEIGHT, 0.25f)
-                .target(itemHeight)
+                .target(itemBounds.height)
                 .ease(TweenEquations.easeOutQuad);
       }
 
@@ -106,25 +101,22 @@ public class LevelsMenu implements Menu, Disposable {
     AssetManager am = game.getAssetManager();
     LevelLoader l = (LevelLoader) am.getLoader(Level.class);
     l.sortLevelsNames(am);
-    float y = top = game.getHeight()/2 + (game.getHeight() * MENU_HEIGHT_PERCENT)/2;
-    float width = game.getWidth()*1.1f;
-    float height = itemHeight = (game.getHeight() * MENU_HEIGHT_PERCENT) / 4;
-    float cor = (width - game.getWidth())/2;
-    Rectangle bounds = new Rectangle(width/2-cor, 0, width, height);
-    highlight = new Rect(bounds);
-    highlight.getColor().set(0, 0, 0, 0.75f);
-    highlightBorder = new Rect(bounds, Color.WHITE);
-    bounds.x -= width/2;
-    bounds.y = top - height - height/4;
+    setSize(game.getWidth() * 1.1f, FONT_SIZE * 4 + 20 * 4);
+    setItemSize(game.getWidth()*1.1f, FONT_SIZE + 20);
+    setCenter(game.getWidth() / 2, game.getHeight() / 2);
+    createHighlight();
+    float y = bounds.y + bounds.height/2 - itemBounds.height/2;
+    float x = bounds.x;
+    Rectangle bnds = new Rectangle(x, y, itemBounds.width, itemBounds.height);
     World lastWorld = null;
     for (final String str : l.getLevelsNames()) {
       Level level = am.get(str);
       World world = level.getWorld();
       if (world != lastWorld) {
-        y = top;
+        y = bnds.y = bounds.y + bounds.height/2 - itemBounds.height/2;
         lastWorld = world;
       }
-      LevelMenuItem item = new LevelMenuItem(level.getName(), width/2-cor, y-height/2, bounds);
+      LevelMenuItem item = new LevelMenuItem(level.getName(), x, y, bnds);
       item.setAction(new MenuItemAction() {
         @Override
         public void doAction() {
@@ -137,29 +129,25 @@ public class LevelsMenu implements Menu, Disposable {
         itemGroups.put(world, itemGroup);
       }
       itemGroup.add(item);
-      y = top - (height * itemGroup.size());
-      bounds.y = y - height - height/4;
+      y -= (bnds.height * itemGroup.size());
+      bnds.y -= (bnds.height * itemGroup.size());
     }
     activeWorldIndex = 0;
     World activeWorld = Universe.get().worlds.get(activeWorldIndex);
-    worldText = new Text(FontManager.get().getFont(Game.MAIN_FONT, 36), "", null, Color.WHITE);
+    worldText = new Text(FontManager.get().getFont(Game.MAIN_FONT, WORLD_FONT_SIZE), "", null, Color.WHITE);
     worldText.setValue(activeWorld.name, true);
-    worldText.getPos().set(game.getWidth()*0.05f, top + 36/1.5f);
+    float worldPadding = 20 * ((float) WORLD_FONT_SIZE / (float) FONT_SIZE);
+    worldText.getPos().set(game.getWidth() * 0.05f, bounds.y + bounds.height / 2 + (WORLD_FONT_SIZE / 2) + worldPadding);
+    container = new Rect(new Rectangle(bounds.x, bounds.y + worldText.getBounds().y/2, bounds.width, bounds.height+worldText.getBounds().y + worldPadding * 2));
+    container.getColor().a = 0.5f;
   }
 
   @Override
   public boolean onChange(int delta) {
     setHighlight();
-    GameTweenManager.get().restart("main_menu_select_menu");
-    GameTweenManager.get().restart("main_menu_select_menu_border");
+    GameTweenManager.get().restart("levels_menu_select_menu");
+    GameTweenManager.get().restart("levels_menu_select_menu_border");
     return true;
-  }
-
-  private void setHighlight() {
-    World world = Universe.get().worlds.get(activeWorldIndex);
-    LevelMenuItem item = itemGroups.get(world).get(activeItemIndex);
-    highlight.getRectangle().setY(item.text.getPos().y - itemHeight / 4);
-    highlightBorder.getRectangle().setY(item.text.getPos().y - itemHeight / 4);
   }
 
   private void changeGroup() {
@@ -169,8 +157,18 @@ public class LevelsMenu implements Menu, Disposable {
   }
 
   @Override
+  public void setHighlight() {
+    World world = Universe.get().worlds.get(activeWorldIndex);
+    ArrayList<LevelMenuItem> items = itemGroups.get(world);
+    MenuItem item = items.get(activeItemIndex);
+    highlight.getRectangle().setY(item.bounds.y - item.bounds.height/4);
+    highlightBorder.getRectangle().setY(item.bounds.y - item.bounds.height/4);
+  }
+
+  @Override
   public void render() {
     background.draw(sr, false);
+    container.draw(sr, true);
     highlight.draw(sr, true);
     highlightBorder.draw(sr, ShapeRenderer.ShapeType.Line, true);
     sb.begin();
@@ -193,8 +191,8 @@ public class LevelsMenu implements Menu, Disposable {
   }
 
   public void dispose() {
-    GameTweenManager.get().remove("main_menu_select_menu");
-    GameTweenManager.get().remove("main_menu_select_menu_border");
+    GameTweenManager.get().remove("levels_menu_select_menu");
+    GameTweenManager.get().remove("levels_menu_select_menu_border");
     GameTweenManager.get().remove("change_world_in");
     GameTweenManager.get().remove("change_world_out");
   }
@@ -207,11 +205,11 @@ public class LevelsMenu implements Menu, Disposable {
     public LevelMenuItem(String textValue, float textX, float textY, Rectangle bounds) {
       super(bounds);
       float quarter = bounds.width * .40f;
-      text = new Text(FontManager.get().getFont("Neon.ttf", 24), textValue, null, Color.WHITE);
+      text = new Text(FontManager.get().getFont(Game.MAIN_FONT, FONT_SIZE), textValue, null, Color.WHITE);
       text.getPos().set(textX - quarter, textY);
-      completedText = new Text(FontManager.get().getFont("Neon.ttf", 24), "completed: 2", null, Color.WHITE);
+      completedText = new Text(FontManager.get().getFont(Game.MAIN_FONT, FONT_SIZE), "completed: 2", null, Color.WHITE);
       completedText.getPos().set(textX + (quarter - completedText.getBounds().x), textY);
-      timeText = new Text(FontManager.get().getFont("Neon.ttf", 24), "time: 25.04", null, Color.WHITE);
+      timeText = new Text(FontManager.get().getFont(Game.MAIN_FONT, FONT_SIZE), "time: 25.04", null, Color.WHITE);
       timeText.getPos().set(textX + (quarter - completedText.getBounds().x - timeText.getBounds().x - 20), textY);
     }
   }

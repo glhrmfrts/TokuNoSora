@@ -55,7 +55,7 @@ public class MenuState extends FadeState {
     FontManager fm = FontManager.get();
 
     titleText = new Text(
-            fm.getFont("Neon.ttf", (int)(64 * game.getDensity())),
+            fm.getFont("Neon.ttf", Game.HUGE_FONT_SIZE),
             "TAIHO",
             null,
             Color.WHITE

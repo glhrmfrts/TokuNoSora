@@ -29,6 +29,11 @@ import aurelienribon.tweenengine.Tween;
 
 public class Game extends ApplicationAdapter {
   public static final String MAIN_FONT = "Neon.ttf";
+  public static final int HUGE_FONT_SIZE = 64;
+  public static final int BIG_FONT_SIZE = 52;
+  public static final int MEDIUM_FONT_SIZE = 40;
+  public static final int MAIN_FONT_SIZE = 28;
+  public static final int SMALL_FONT_SIZE = 16;
 
   static final float STEP_SECONDS = 0.016f;
   static final float STEP	  = STEP_SECONDS * 1000f;

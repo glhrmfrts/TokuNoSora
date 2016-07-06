@@ -18,45 +18,36 @@ import aurelienribon.tweenengine.TweenEquations;
  */
 public class MainMenu extends BaseMenu implements Disposable {
   static final float MENU_HEIGHT_PERCENT = 0.33f;
-
-  float top;
-  float itemHeight;
-  Rect highlight;
-  Rect highlightBorder;
-  ShapeRenderer sr;
-  SpriteBatch sb;
-  MenuState menuState;
+  static final int FONT_SIZE = Game.MAIN_FONT_SIZE;
 
   public MainMenu(final MenuState state, final Game game) {
     menuState = state;
     sr = game.getShapeRenderer();
     sb = game.getRenderer().getSpriteBatch();
 
-    float y = top = game.getHeight()/2 + (game.getHeight() * MENU_HEIGHT_PERCENT)/2;
-    float width = game.getWidth()*1.1f;
-    float height = itemHeight = (game.getHeight() * MENU_HEIGHT_PERCENT) / 4;
-    float cor = (width - game.getWidth())/2;
-    Rectangle bounds = new Rectangle(width/2-cor, 0, width, height);
-    highlight = new Rect(bounds);
-    highlight.getColor().set(0, 0, 0, 0.75f);
-    highlightBorder = new Rect(bounds, Color.WHITE);
-    bounds.x -= width/2;
-    bounds.y = top - height - height/4;
-    items.add(new MainMenuItem("play", width/2-cor, y-height/2, bounds).setAction(new MenuItemAction() {
+    setSize(game.getWidth() * 1.1f, FONT_SIZE * 4 + 20 * 4);
+    setItemSize(game.getWidth()*1.1f, FONT_SIZE + 20);
+    setCenter(game.getWidth() / 2, game.getHeight() / 2);
+    createHighlight();
+
+    float y = bounds.y + bounds.height/2 - itemBounds.height/2;
+    float x = bounds.x;
+    Rectangle bnds = new Rectangle(x, y, itemBounds.width, itemBounds.height);
+    items.add(new MainMenuItem("play", x, y, bnds).setAction(new MenuItemAction() {
       @Override
       public void doAction() {
         state.addMenu(new LevelsMenu(state, game));
       }
     }));
-    y -= height;
-    bounds.y = y - height - height/4;
-    items.add(new MainMenuItem("options", width/2-cor, y-height/2, bounds));
-    y -= height;
-    bounds.y = y - height - height/4;
-    items.add(new MainMenuItem("credits", width/2-cor, y-height/2, bounds));
-    y -= height;
-    bounds.y = y - height - height/4;
-    items.add(new MainMenuItem("quit", width/2-cor, y-height/2, bounds).setAction(new MenuItemAction() {
+    y -= bnds.height;
+    bnds.y -= bnds.height;
+    items.add(new MainMenuItem("options", x, y, bnds));
+    y -= bnds.height;
+    bnds.y -= bnds.height;
+    items.add(new MainMenuItem("credits", x, y, bnds));
+    y -= bnds.height;
+    bnds.y -= bnds.height;
+    items.add(new MainMenuItem("quit", x, y, bnds).setAction(new MenuItemAction() {
       @Override
       public void doAction() {
         game.exit();
@@ -68,7 +59,7 @@ public class MainMenu extends BaseMenu implements Disposable {
       public Tween tween() {
         highlight.getRectangle().height = 0;
         return Tween.to(highlight, Rect.Accessor.TWEEN_HEIGHT, 0.25f)
-                    .target(itemHeight)
+                .target(itemBounds.height)
                     .ease(TweenEquations.easeOutQuad);
       }
 
@@ -81,7 +72,7 @@ public class MainMenu extends BaseMenu implements Disposable {
       public Tween tween() {
         highlightBorder.getRectangle().height = 0;
         return Tween.to(highlightBorder, Rect.Accessor.TWEEN_HEIGHT, 0.25f)
-                .target(itemHeight)
+                .target(itemBounds.height)
                 .ease(TweenEquations.easeOutQuad);
       }
 
@@ -102,24 +93,13 @@ public class MainMenu extends BaseMenu implements Disposable {
     return true;
   }
 
-  private void setHighlight() {
-    MainMenuItem item = (MainMenuItem) items.get(activeIndex);
-    highlight.getRectangle().setY(item.text.getPos().y - itemHeight / 4);
-    highlightBorder.getRectangle().setY(item.text.getPos().y - itemHeight / 4);
-  }
-
-  @Override
-  public void update(float dt) {
-
-  }
-
   @Override
   public void render() {
     highlight.draw(sr, true);
     highlightBorder.draw(sr, ShapeRenderer.ShapeType.Line, true);
 
     sb.begin();
-    for (int i = 0; i < items.size; i++) {
+    for (int i = 0; i < items.size(); i++) {
       Text text = ((MainMenuItem) items.get(i)).text;
       text.draw(sb, true);
     }
@@ -144,7 +124,7 @@ public class MainMenu extends BaseMenu implements Disposable {
 
     public MainMenuItem(String textValue, float textX, float textY, Rectangle bounds) {
       super(bounds);
-      text = new Text(FontManager.get().getFont("Neon.ttf", 36), textValue, null, Color.WHITE);
+      text = new Text(FontManager.get().getFont(Game.MAIN_FONT, FONT_SIZE), textValue, null, Color.WHITE);
       text.getPos().set(textX, textY);
     }
   }

@@ -49,10 +49,11 @@ public class LoadingState extends GameState {
     am.load("audio/bounce.wav", Sound.class);
     am.load("audio/explosion.wav", Sound.class);
     am.load("audio/select.wav", Sound.class);
-    fm.loadFont("Neon.ttf", (int) (64 * game.getDensity()));
-    fm.loadFont("Neon.ttf", (int) (48 * game.getDensity()));
-    fm.loadFont("Neon.ttf", (int) (36 * game.getDensity()));
-    fm.loadFont("Neon.ttf", (int) (24 * game.getDensity()));
+    fm.loadFont(Game.MAIN_FONT, Game.MAIN_FONT_SIZE);
+    fm.loadFont(Game.MAIN_FONT, Game.HUGE_FONT_SIZE);
+    fm.loadFont(Game.MAIN_FONT, Game.BIG_FONT_SIZE);
+    fm.loadFont(Game.MAIN_FONT, Game.MEDIUM_FONT_SIZE);
+    fm.loadFont(Game.MAIN_FONT, Game.SMALL_FONT_SIZE);
     ((LevelLoader) am.getLoader(Level.class)).loadAllLevels(am);
     for (World world : Universe.get().worlds) {
       //am.load("audio/" + world.music, Music.class);
