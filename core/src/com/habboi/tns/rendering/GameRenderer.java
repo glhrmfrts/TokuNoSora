@@ -79,7 +79,6 @@ public class GameRenderer implements Disposable {
     screenSurface = new ModelInstance(createScreenSurfaceModel());
 
     Gdx.gl.glLineWidth(2);
-    Gdx.gl.glClearColor(0, 0, 0, 1);
   }
 
   private Model createScreenSurfaceModel() {
@@ -107,13 +106,15 @@ public class GameRenderer implements Disposable {
 
   public void begin(Camera cam) {
     this.cam = cam;
-
     occludingInstances.clear();
     glowingInstances.clear();
     fboDefault.begin();
-    Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
-
     batch.begin(cam);
+  }
+
+  public void clear(Color c) {
+    Gdx.gl.glClearColor(c.r, c.g, c.b, c.a);
+    Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
   }
 
   public void end() {

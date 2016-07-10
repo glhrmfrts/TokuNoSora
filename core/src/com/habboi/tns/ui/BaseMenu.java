@@ -20,9 +20,11 @@ public abstract class BaseMenu implements Menu {
   Rect highlightBorder;
   ShapeRenderer sr;
   SpriteBatch sb;
-  MenuState menuState;
   Rectangle bounds = new Rectangle();
   Rectangle itemBounds = new Rectangle();
+
+  public void resume() {
+  }
 
   public void setSize(float x, float y) {
     bounds.setSize(x, y);

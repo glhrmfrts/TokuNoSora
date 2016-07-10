@@ -9,12 +9,14 @@ import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.habboi.tns.Game;
+import com.habboi.tns.level.LevelScore;
 import com.habboi.tns.ui.GameTweenManager;
 import com.habboi.tns.level.Ship;
 import com.habboi.tns.level.ShipCamera;
 import com.habboi.tns.level.ShipController;
 import com.habboi.tns.level.Level;
 import com.habboi.tns.rendering.GameRenderer;
+import com.habboi.tns.ui.PauseMenu;
 import com.habboi.tns.ui.Rect;
 import com.habboi.tns.ui.Text;
 import com.habboi.tns.utils.FontManager;
@@ -39,6 +41,11 @@ public class InGameState extends GameState {
   Text raceTimeText;
   GameTweenManager gtm;
   Rect screenRect;
+  PauseMenu pauseMenu;
+  float bestTimeForLevel;
+  int timesLevelCompleted;
+  boolean paused;
+  boolean quitFromMenu;
 
   public InGameState(Game g) {
     this(g, "map1.tl");
@@ -67,14 +74,15 @@ public class InGameState extends GameState {
     tempCamInput = new CameraInputController(cam);
 
     FontManager fm = FontManager.get();
-    levelCompleteText = new Text(fm.getFont("Neon.ttf", 36),
+    levelCompleteText = new Text(fm.getFont("Neon.ttf", Game.MAIN_FONT_SIZE),
             "level complete", null, Color.WHITE);
-    levelCompleteText.getPos().set(game.getWidth() / 2, game.getHeight() / 2 + 36/2 + 10);
+    levelCompleteText.getPos().set(game.getWidth() / 2, game.getHeight() / 2 + Game.MAIN_FONT_SIZE/2 + 10);
     levelCompleteText.getColor().a = 0;
-    raceTimeText = new Text(fm.getFont("Neon.ttf", 36), "", null, Color.WHITE);
-    raceTimeText.getPos().set(game.getWidth() / 2, game.getHeight() / 2 - 36/2 - 10);
+    raceTimeText = new Text(fm.getFont("Neon.ttf", Game.MAIN_FONT_SIZE), "", null, Color.WHITE);
+    raceTimeText.getPos().set(game.getWidth() / 2, game.getHeight() / 2 - Game.MAIN_FONT_SIZE/2 - 10);
     raceTimeText.getColor().a = 0;
     screenRect = new Rect(new Rectangle(0, 0, game.getWidth(), game.getHeight()));
+    pauseMenu = new PauseMenu(this, game);
 
     gtm = GameTweenManager.get();
     gtm.register("start", new GameTweenManager.GameTween() {
@@ -121,12 +129,40 @@ public class InGameState extends GameState {
       public void onComplete() {
         reset();
       }
+    }).register("level_complete_end", new GameTweenManager.GameTween() {
+      @Override
+      public Tween tween() {
+        return screenRect.getFadeTween(0, 1, 0.5f);
+      }
+
+      @Override
+      public void onComplete() {
+        if (ship.raceTime < bestTimeForLevel || bestTimeForLevel == 0) {
+          LevelScore.get().setBestTime(level.getName(), ship.raceTime);
+        }
+        LevelScore.get().setTimesCompleted(level.getName(), timesLevelCompleted + 1);
+        LevelScore.get().flush();
+        game.popState();
+      }
     });
 
     gtm.start("start");
+    reset();
   }
 
-  private void reset() {
+  public void resume(boolean quitFromMenu) {
+    this.quitFromMenu = quitFromMenu;
+  }
+
+  @Override
+  public void resume() {
+    paused = false;
+  }
+
+  public void reset() {
+    bestTimeForLevel = LevelScore.get().getBestTime(level.getName());
+    timesLevelCompleted = LevelScore.get().getTimesCompleted(level.getName());
+    paused = false;
     ship.reset();
     shipCam.reset();
     level.reset();
@@ -136,7 +172,11 @@ public class InGameState extends GameState {
 
   @Override
   public boolean keyDown(int keycode) {
-    return ship.getController().keyDown(keycode);
+    if (keycode == Input.Keys.ESCAPE) {
+      paused = !paused;
+      return true;
+    }
+    return (paused) ? pauseMenu.keyDown(keycode) : ship.getController().keyDown(keycode);
   }
 
   @Override
@@ -146,6 +186,14 @@ public class InGameState extends GameState {
 
   @Override
   public void update(float dt) {
+    if (quitFromMenu) {
+      if (!gtm.played("level_complete_end")) {
+        gtm.start("level_complete_end");
+      }
+    }
+    if (paused) {
+      return;
+    }
     if (ship.state == Ship.State.ENDED) {
       if (!gtm.played("level_complete")) {
         DecimalFormat format = new DecimalFormat("00.00");
@@ -153,7 +201,9 @@ public class InGameState extends GameState {
         gtm.start("level_complete");
       } else if (!gtm.isActive("level_complete")) {
         if (ship.getController().isAnyKeyDown()) {
-          game.popState();
+          if (!gtm.played("level_complete_end")) {
+            gtm.start("level_complete_end");
+          }
         }
       }
     } else if (ship.state == Ship.State.FELL) {
@@ -161,14 +211,11 @@ public class InGameState extends GameState {
         gtm.start("reset");
       }
     }
-
     level.update(ship, dt);
     ship.update(dt);
-
     if (debugCam == 0) {
       shipCam.update(dt);
     }
-
     if (Gdx.input.isKeyJustPressed(Input.Keys.X)) {
       debugCam = (debugCam == 0) ? 1 : 0;
     }
@@ -192,6 +239,9 @@ public class InGameState extends GameState {
       levelCompleteText.draw(gr.getSpriteBatch(), true);
       raceTimeText.draw(gr.getSpriteBatch(), true);
       gr.endOrtho();
+    }
+    if (paused) {
+      pauseMenu.render();
     }
     ShapeRenderer sr = game.getShapeRenderer();
     screenRect.draw(sr);

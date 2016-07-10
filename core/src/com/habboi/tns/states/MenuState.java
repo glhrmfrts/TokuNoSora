@@ -73,6 +73,12 @@ public class MenuState extends FadeState {
     fadeIn();
   }
 
+  @Override
+  public void resume() {
+    menuStack.peek().resume();
+    fadeIn();
+  }
+
   public void setWorld(World newWorld) {
     world = newWorld;
   }

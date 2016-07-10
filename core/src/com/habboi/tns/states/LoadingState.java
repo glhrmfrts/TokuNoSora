@@ -61,6 +61,11 @@ public class LoadingState extends GameState {
   }
 
   @Override
+  public void resume() {
+
+  }
+
+  @Override
   public void update(float dt) {
 
   }

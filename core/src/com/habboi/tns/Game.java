@@ -143,6 +143,7 @@ public class Game extends ApplicationAdapter {
     }
     if (stateStack.size() > 0) {
       currentState = stateStack.peek();
+      currentState.resume();
       addInput(currentState);
     } else {
       currentState = null;

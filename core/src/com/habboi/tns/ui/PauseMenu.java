@@ -2,73 +2,74 @@ package com.habboi.tns.ui;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.utils.Disposable;
 import com.habboi.tns.Game;
-import com.habboi.tns.states.MenuState;
+import com.habboi.tns.states.InGameState;
 import com.habboi.tns.utils.FontManager;
 
 import aurelienribon.tweenengine.Tween;
 import aurelienribon.tweenengine.TweenEquations;
 
 /**
- * The main menu.
+ * Created by w7 on 10/07/2016.
  */
-public class MainMenu extends BaseMenu implements Disposable {
+public class PauseMenu extends BaseMenu {
   static final int FONT_SIZE = Game.MAIN_FONT_SIZE;
 
-  MenuState menuState;
+  Rect container;
 
-  public MainMenu(final MenuState state, final Game game) {
-    menuState = state;
+  public PauseMenu(final InGameState state, final Game game) {
     sr = game.getShapeRenderer();
     sb = game.getRenderer().getSpriteBatch();
+    container = new Rect(new Rectangle(0, 0, game.getWidth(), game.getHeight()));
+    container.getColor().a = 0.30f;
 
-    setSize(game.getWidth() * 1.1f, FONT_SIZE * 4 + 20 * 4);
-    setItemSize(game.getWidth()*1.1f, FONT_SIZE + 20);
+    setSize(game.getWidth() * 1.1f, FONT_SIZE * 4 + 20 * 3);
+    setItemSize(game.getWidth() * 1.1f, FONT_SIZE + 20);
     setCenter(game.getWidth() / 2, game.getHeight() / 2);
     createHighlight();
 
-    float y = bounds.y + bounds.height/2 - itemBounds.height/2;
+    float y = bounds.y + bounds.height / 2 - itemBounds.height / 2;
     float x = bounds.x;
     Rectangle bnds = new Rectangle(x, y, itemBounds.width, itemBounds.height);
-    items.add(new MainMenuItem("play", x, y, bnds).setAction(new MenuItemAction() {
+    items.add(new MainMenuItem("resume", x, y, bnds).setAction(new MenuItemAction() {
       @Override
       public void doAction() {
-        state.addMenu(new LevelsMenu(state, game));
+        state.resume();
       }
     }));
     y -= bnds.height;
     bnds.y -= bnds.height;
-    items.add(new MainMenuItem("options", x, y, bnds));
-    y -= bnds.height;
-    bnds.y -= bnds.height;
-    items.add(new MainMenuItem("credits", x, y, bnds));
+    items.add(new MainMenuItem("restart", x, y, bnds).setAction(new MenuItemAction() {
+      @Override
+      public void doAction() {
+        state.reset();
+      }
+    }));
     y -= bnds.height;
     bnds.y -= bnds.height;
     items.add(new MainMenuItem("quit", x, y, bnds).setAction(new MenuItemAction() {
       @Override
       public void doAction() {
-        game.exit();
+        state.resume(true);
       }
     }));
 
-    GameTweenManager.get().register("main_menu_select_menu", new GameTweenManager.GameTween() {
+    GameTweenManager.get().register("pause_menu_select_menu", new GameTweenManager.GameTween() {
       @Override
       public Tween tween() {
         highlight.getRectangle().height = 0;
         return Tween.to(highlight, Rect.Accessor.TWEEN_HEIGHT, 0.25f)
                 .target(itemBounds.height)
-                    .ease(TweenEquations.easeOutQuad);
+                .ease(TweenEquations.easeOutQuad);
       }
 
       @Override
       public void onComplete() {
 
       }
-    }).register("main_menu_select_menu_border", new GameTweenManager.GameTween() {
+    }).register("pause_menu_select_menu_border", new GameTweenManager.GameTween() {
       @Override
       public Tween tween() {
         highlightBorder.getRectangle().height = 0;
@@ -89,13 +90,14 @@ public class MainMenu extends BaseMenu implements Disposable {
   @Override
   public boolean onChange(int delta) {
     setHighlight();
-    GameTweenManager.get().restart("main_menu_select_menu");
-    GameTweenManager.get().restart("main_menu_select_menu_border");
+    GameTweenManager.get().restart("pause_menu_select_menu");
+    GameTweenManager.get().restart("pause_menu_select_menu_border");
     return true;
   }
 
   @Override
   public void render() {
+    container.draw(sr, false);
     highlight.draw(sr, true);
     highlightBorder.draw(sr, ShapeRenderer.ShapeType.Line, true);
 
@@ -109,24 +111,21 @@ public class MainMenu extends BaseMenu implements Disposable {
 
   @Override
   public boolean keyDown(int keycode) {
-    if (keycode == Input.Keys.ESCAPE) {
-      menuState.getGame().exit();
-    }
     return super.keyDown(keycode);
   }
 
   public void dispose() {
-    GameTweenManager.get().remove("main_menu_select_menu");
-    GameTweenManager.get().remove("main_menu_select_menu_border");
+    GameTweenManager.get().remove("pause_menu_select_menu");
+    GameTweenManager.get().remove("pause_menu_select_menu_border");
   }
 
-  static class MainMenuItem extends MenuItem {
-    Text text;
+static class MainMenuItem extends MenuItem {
+  Text text;
 
-    public MainMenuItem(String textValue, float textX, float textY, Rectangle bounds) {
-      super(bounds);
-      text = new Text(FontManager.get().getFont(Game.MAIN_FONT, FONT_SIZE), textValue, null, Color.WHITE);
-      text.getPos().set(textX, textY);
-    }
+  public MainMenuItem(String textValue, float textX, float textY, Rectangle bounds) {
+    super(bounds);
+    text = new Text(FontManager.get().getFont(Game.MAIN_FONT, FONT_SIZE), textValue, null, Color.WHITE);
+    text.getPos().set(textX, textY);
   }
+}
 }

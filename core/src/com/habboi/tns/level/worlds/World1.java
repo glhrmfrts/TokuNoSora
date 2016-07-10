@@ -1,6 +1,7 @@
 package com.habboi.tns.level.worlds;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
@@ -84,6 +85,7 @@ public class World1 extends World {
 
   @Override
   public void render(GameRenderer renderer) {
+    renderer.clear(Color.BLACK);
     renderBackground(renderer);
     planeInstance.transform.setTranslation(center.x, center.y + DISTANCE_Y - 0.5f, center.z);
     renderer.render(planeInstance);

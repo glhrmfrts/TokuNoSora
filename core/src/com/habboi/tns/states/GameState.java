@@ -18,6 +18,7 @@ public abstract class GameState implements InputProcessor {
   }
 
   public abstract void create();
+  public abstract void resume();
   public abstract void update(float dt);
   public abstract void render();
   public abstract void dispose();

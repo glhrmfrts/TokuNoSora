@@ -9,14 +9,17 @@ import com.badlogic.gdx.utils.Disposable;
 import com.habboi.tns.Game;
 import com.habboi.tns.level.Level;
 import com.habboi.tns.level.LevelLoader;
+import com.habboi.tns.level.LevelScore;
 import com.habboi.tns.level.worlds.Universe;
 import com.habboi.tns.level.worlds.World;
 import com.habboi.tns.states.InGameState;
 import com.habboi.tns.states.MenuState;
 import com.habboi.tns.utils.FontManager;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import aurelienribon.tweenengine.Tween;
 import aurelienribon.tweenengine.TweenEquations;
@@ -25,13 +28,15 @@ import aurelienribon.tweenengine.TweenEquations;
  * Created by w7 on 02/07/2016.
  */
 public class LevelsMenu extends BaseMenu implements Disposable {
-  static final float MENU_HEIGHT_PERCENT = 0.33f;
   static final int FONT_SIZE = Game.MAIN_FONT_SIZE;
   static final int WORLD_FONT_SIZE = Game.MEDIUM_FONT_SIZE;
 
+  MenuState menuState;
   Rect container;
   Rect background;
   Text worldText;
+  Text btnRightText;
+  Text btnLeftText;
   int activeItemIndex;
   int activeWorldIndex;
   int prevActiveWorldIndex;
@@ -109,6 +114,7 @@ public class LevelsMenu extends BaseMenu implements Disposable {
     float x = bounds.x;
     Rectangle bnds = new Rectangle(x, y, itemBounds.width, itemBounds.height);
     World lastWorld = null;
+    float top = y;
     for (final String str : l.getLevelsNames()) {
       Level level = am.get(str);
       World world = level.getWorld();
@@ -116,7 +122,9 @@ public class LevelsMenu extends BaseMenu implements Disposable {
         y = bnds.y = bounds.y + bounds.height/2 - itemBounds.height/2;
         lastWorld = world;
       }
-      LevelMenuItem item = new LevelMenuItem(level.getName(), x, y, bnds);
+      int completed = LevelScore.get().getTimesCompleted(level.getName());
+      float bestTime = LevelScore.get().getBestTime(level.getName());
+      LevelMenuItem item = new LevelMenuItem(level.getName(), completed, bestTime, x, y, bnds);
       item.setAction(new MenuItemAction() {
         @Override
         public void doAction() {
@@ -129,8 +137,8 @@ public class LevelsMenu extends BaseMenu implements Disposable {
         itemGroups.put(world, itemGroup);
       }
       itemGroup.add(item);
-      y -= (bnds.height * itemGroup.size());
-      bnds.y -= (bnds.height * itemGroup.size());
+      y = top - (bnds.height * itemGroup.size());
+      bnds.y = top - (bnds.height * itemGroup.size());
     }
     activeWorldIndex = 0;
     World activeWorld = Universe.get().worlds.get(activeWorldIndex);
@@ -140,6 +148,25 @@ public class LevelsMenu extends BaseMenu implements Disposable {
     worldText.getPos().set(game.getWidth() * 0.05f, bounds.y + bounds.height / 2 + (WORLD_FONT_SIZE / 2) + worldPadding);
     container = new Rect(new Rectangle(bounds.x, bounds.y + worldText.getBounds().y/2, bounds.width, bounds.height+worldText.getBounds().y + worldPadding * 2));
     container.getColor().a = 0.5f;
+    btnLeftText = new Text(FontManager.get().getFont(Game.MAIN_FONT, Game.BIG_FONT_SIZE), "<", null, Color.WHITE);
+    btnLeftText.getPos().set(game.getWidth() / 2 - Game.BIG_FONT_SIZE/2, bounds.y - bounds.height/2 - 10 + itemBounds.height);
+    btnRightText = new Text(FontManager.get().getFont(Game.MAIN_FONT, Game.BIG_FONT_SIZE), ">", null, Color.WHITE);
+    btnRightText.getPos().set(game.getWidth() / 2 + Game.BIG_FONT_SIZE/2, bounds.y - bounds.height/2 - 10 + itemBounds.height);
+  }
+
+  @Override
+  public void resume() {
+    super.resume();
+    DecimalFormat format = new DecimalFormat("00.00");
+    for (Map.Entry<World, ArrayList<LevelMenuItem>> group : itemGroups.entrySet()) {
+      for (LevelMenuItem item : group.getValue()) {
+        String levelName = item.text.getValue();
+        int completed = LevelScore.get().getTimesCompleted(levelName);
+        float time = LevelScore.get().getBestTime(levelName);
+        item.completedText.setValue("completed: " + completed);
+        item.timeText.setValue("time: " + format.format(time));
+      }
+    }
   }
 
   @Override
@@ -160,19 +187,34 @@ public class LevelsMenu extends BaseMenu implements Disposable {
   public void setHighlight() {
     World world = Universe.get().worlds.get(activeWorldIndex);
     ArrayList<LevelMenuItem> items = itemGroups.get(world);
+    if (items == null) {
+      return;
+    }
     MenuItem item = items.get(activeItemIndex);
-    highlight.getRectangle().setY(item.bounds.y - item.bounds.height/4);
-    highlightBorder.getRectangle().setY(item.bounds.y - item.bounds.height/4);
+    highlight.getRectangle().setY(item.bounds.y - item.bounds.height / 4);
+    highlightBorder.getRectangle().setY(item.bounds.y - item.bounds.height / 4);
   }
 
   @Override
   public void render() {
+    if (activeWorldIndex == 0) {
+      btnLeftText.getColor().a = 0.3f;
+    } else {
+      btnLeftText.getColor().a = 1;
+    }
+    if (activeWorldIndex == Universe.get().worlds.size() - 1) {
+      btnRightText.getColor().a = 0.3f;
+    } else {
+      btnRightText.getColor().a = 1;
+    }
     background.draw(sr, false);
     container.draw(sr, true);
     highlight.draw(sr, true);
     highlightBorder.draw(sr, ShapeRenderer.ShapeType.Line, true);
     sb.begin();
     worldText.draw(sb, false);
+    btnLeftText.draw(sb, true);
+    btnRightText.draw(sb, true);
     World world = Universe.get().worlds.get(activeWorldIndex);
     ArrayList<LevelMenuItem> group = itemGroups.get(world);
     renderGroup(group);
@@ -180,6 +222,9 @@ public class LevelsMenu extends BaseMenu implements Disposable {
   }
 
   private void renderGroup(ArrayList<LevelMenuItem> group) {
+    if (group == null) {
+      return;
+    }
     for (int i = 0; i < group.size(); i++) {
       LevelMenuItem item = group.get(i);
       item.text.draw(sb, false);
@@ -202,14 +247,15 @@ public class LevelsMenu extends BaseMenu implements Disposable {
     Text completedText;
     Text timeText;
 
-    public LevelMenuItem(String textValue, float textX, float textY, Rectangle bounds) {
+    public LevelMenuItem(String textValue, int completed, float bestTime, float textX, float textY, Rectangle bounds) {
       super(bounds);
       float quarter = bounds.width * .40f;
       text = new Text(FontManager.get().getFont(Game.MAIN_FONT, FONT_SIZE), textValue, null, Color.WHITE);
       text.getPos().set(textX - quarter, textY);
-      completedText = new Text(FontManager.get().getFont(Game.MAIN_FONT, FONT_SIZE), "completed: 2", null, Color.WHITE);
+      completedText = new Text(FontManager.get().getFont(Game.MAIN_FONT, FONT_SIZE), "completed: " + completed, null, Color.WHITE);
       completedText.getPos().set(textX + (quarter - completedText.getBounds().x), textY);
-      timeText = new Text(FontManager.get().getFont(Game.MAIN_FONT, FONT_SIZE), "time: 25.04", null, Color.WHITE);
+      DecimalFormat format = new DecimalFormat("00.00");
+      timeText = new Text(FontManager.get().getFont(Game.MAIN_FONT, FONT_SIZE), "time: " + format.format(bestTime), null, Color.WHITE);
       timeText.getPos().set(textX + (quarter - completedText.getBounds().x - timeText.getBounds().x - 20), textY);
     }
   }
