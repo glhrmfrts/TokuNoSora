@@ -1,4 +1,4 @@
-package com.habboi.tns;
+package com.habboi.tns.level;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
@@ -7,19 +7,20 @@ import com.badlogic.gdx.InputProcessor;
  * Controls the ship, also record input.
  */
 public class ShipController implements InputProcessor {
-  int[] keys = new int[Key.NUM_KEYS.ordinal()];
-  int[] prevKeys = new int[Key.NUM_KEYS.ordinal()];
-  boolean recording;
-  float time;
-
   enum Key {
     LEFT,
     RIGHT,
     UP,
     DOWN,
-    JUMP,
-    NUM_KEYS
+    JUMP
   }
+  static final int NUM_KEYS = 5;
+
+  int[] keys = new int[NUM_KEYS];
+  int[] prevKeys = new int[NUM_KEYS];
+  boolean recording;
+  float time;
+  int anyKey;
 
   public ShipController(boolean record) {
     recording = record;
@@ -33,16 +34,22 @@ public class ShipController implements InputProcessor {
     return isDown(key) && !(prevKeys[key.ordinal()] > 0);
   }
 
+  public boolean isAnyKeyDown() {
+    return anyKey > 0;
+  }
+
   public void update(float dt) {
     if (recording) {
       time += dt;
     }
 
     System.arraycopy(keys, 0, prevKeys, 0, keys.length);
+    anyKey = 0;
   }
 
   @Override
   public boolean keyDown(int keycode) {
+    anyKey++;
     switch (keycode) {
       case Input.Keys.LEFT:
         keys[Key.LEFT.ordinal()]++;
@@ -69,6 +76,7 @@ public class ShipController implements InputProcessor {
 
   @Override
   public boolean keyUp(int keycode) {
+    anyKey--;
     switch (keycode) {
       case Input.Keys.LEFT:
         keys[Key.LEFT.ordinal()] = 0;

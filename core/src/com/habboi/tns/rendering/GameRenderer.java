@@ -1,11 +1,12 @@
 package com.habboi.tns.rendering;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.VertexAttributes;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
@@ -18,6 +19,8 @@ import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder.VertexInfo;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
 import com.habboi.tns.Game;
@@ -28,18 +31,20 @@ import java.util.ArrayList;
  * Encapsulates the rendering context.
  */
 public class GameRenderer implements Disposable {
-  static final int GLOWMAP_WIDTH = 256;
-  static final int GLOWMAP_HEIGHT = 256;
+  static final int GLOWMAP_WIDTH = 384;
+  static final int GLOWMAP_HEIGHT = 384;
 
   Game game;
+  Camera cam;
   Environment environment;
-  PerspectiveCamera cam;
   ModelBatch batch;
+  SpriteBatch sb;
   Renderable tmpRenderable = new Renderable();
   FrameBuffer fboDefault;
   FrameBuffer fboGlow;
   FrameBuffer fboBlur;
   BasicShader shaderBasic;
+  Basic2DShader shaderBasic2D;
   GlowShader shaderGlow;
   BlurShader shaderBlur;
   ModelInstance screenSurface;
@@ -53,20 +58,17 @@ public class GameRenderer implements Disposable {
     environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.4f, 0.4f, 0.4f, 1f));
     environment.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
 
-    cam = new PerspectiveCamera(45, game.getWidth(), game.getHeight());
-    cam.near = 0.1f;
-    cam.far = 1000f;
-    cam.position.set(0, 10f, 10f);
-    cam.lookAt(0, 0, 0);
-
     batch = new ModelBatch();
+    sb = new SpriteBatch();
     fboDefault = new FrameBuffer(Pixmap.Format.RGB888, game.getWidth(), game.getHeight(), true);
     fboGlow = new FrameBuffer(Pixmap.Format.RGBA8888, GLOWMAP_WIDTH, GLOWMAP_HEIGHT, true);
     fboBlur = new FrameBuffer(Pixmap.Format.RGBA8888, GLOWMAP_WIDTH, GLOWMAP_HEIGHT, false);
 
+    shaderBasic2D = new Basic2DShader();
     shaderBasic = new BasicShader();
     shaderBlur = new BlurShader();
     shaderGlow = new GlowShader();
+    shaderBasic2D.init();
     shaderBasic.init();
     shaderBlur.init();
     shaderGlow.init();
@@ -77,7 +79,6 @@ public class GameRenderer implements Disposable {
     screenSurface = new ModelInstance(createScreenSurfaceModel());
 
     Gdx.gl.glLineWidth(2);
-    Gdx.gl.glClearColor(0, 0, 0, 1);
   }
 
   private Model createScreenSurfaceModel() {
@@ -99,17 +100,21 @@ public class GameRenderer implements Disposable {
     return mb.end();
   }
 
-  public PerspectiveCamera getCam() {
-    return cam;
+  public SpriteBatch getSpriteBatch() {
+    return sb;
   }
 
-  public void begin() {
+  public void begin(Camera cam) {
+    this.cam = cam;
     occludingInstances.clear();
     glowingInstances.clear();
     fboDefault.begin();
-    Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
-
     batch.begin(cam);
+  }
+
+  public void clear(Color c) {
+    Gdx.gl.glClearColor(c.r, c.g, c.b, c.a);
+    Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
   }
 
   public void end() {
@@ -120,6 +125,7 @@ public class GameRenderer implements Disposable {
       fboGlow.begin();
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
+        Gdx.gl.glDisable(GL20.GL_CULL_FACE);
         Gdx.gl.glColorMask(false, false, false, false);
         for (ModelInstance inst : occludingInstances) {
           inst.getRenderable(tmpRenderable);
@@ -131,6 +137,7 @@ public class GameRenderer implements Disposable {
           inst.getRenderable(tmpRenderable);
           shaderBasic.render(tmpRenderable);
         }
+        Gdx.gl.glEnable(GL20.GL_CULL_FACE);
     shaderBasic.end();
 
     // the only renderable used from here on is the screen surface
@@ -167,6 +174,7 @@ public class GameRenderer implements Disposable {
 
     // re-enable depth checks and writes
     Gdx.gl.glDepthMask(true);
+    Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
   }
 
   public void setDiffuseColor(ModelInstance instance, Color color) {
@@ -195,6 +203,21 @@ public class GameRenderer implements Disposable {
     setDiffuseColor(instance, color);
     batch.render(instance, environment);
     glowingInstances.add(instance);
+  }
+
+  public void beginOrtho() {
+    sb.begin();
+    sb.setShader(shaderBasic2D.getShaderProgram());
+  }
+
+  public void beginOrtho(Matrix4 projection) {
+    sb.begin();
+    sb.setProjectionMatrix(projection);
+    sb.setShader(shaderBasic2D.getShaderProgram());
+  }
+
+  public void endOrtho() {
+    sb.end();
   }
 
   @Override
