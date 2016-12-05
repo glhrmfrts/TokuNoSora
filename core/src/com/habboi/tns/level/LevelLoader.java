@@ -93,7 +93,7 @@ public class LevelLoader extends SynchronousAssetLoader<Level, LevelLoader.Level
     public void loadAllLevels(AssetManager am) {
         FileHandle handle = Gdx.files.internal(".");
         for (FileHandle fh : handle.list()) {
-            if (fh.extension().equals("tl")) {
+            if (fh.extension().equals("json")) {
                 am.load(fh.name(), Level.class);
                 levelsNames.add(fh.name());
             }
