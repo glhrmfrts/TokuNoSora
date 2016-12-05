@@ -87,7 +87,7 @@ public class Level {
                 Vector3 impulse = new Vector3(c.normal.x * j, c.normal.y * j, c.normal.z * j);
                 ship.vel.add(impulse);
 
-                float s = Math.max(c.depth - 0.05f, 0.0f);
+                float s = Math.max(c.depth, 0.0f);
                 Vector3 correction = new Vector3(c.normal.x * s, c.normal.y * s, c.normal.z * s);
                 ship.pos.add(correction);
             }
