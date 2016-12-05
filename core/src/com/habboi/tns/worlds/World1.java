@@ -17,7 +17,7 @@ import java.util.ArrayList;
  */
 public class World1 extends World {
     static class Line {
-        float zOffset;
+        float offset;
         ModelInstance instance;
     }
 
@@ -26,14 +26,17 @@ public class World1 extends World {
     static final float SUN_RADIUS = 150;
     static final float WIDTH = 400f;
 
-    float offset;
-    float spread;
-    int count;
     Texture backgroundTexture;
-    Vector3 center = new Vector3();
-    ModelInstance planeInstance;
-    ModelInstance sunInstance;
+    float centerX;
+    int count;
     ArrayList<Line> lines = new ArrayList<>();
+    float offset;
+    ModelInstance planeInstance;
+    Vector3 shipPos = new Vector3();
+    float spread;
+    ModelInstance sunInstance;
+    int verticalCount;
+    ArrayList<Line> verticalLines = new ArrayList<>();
 
     public World1() {
         super(2, 2, "The Beginning of An End", "nice.ogg");
@@ -61,13 +64,24 @@ public class World1 extends World {
         spread = DEPTH / count;
         planeInstance = new ModelInstance(Models.createPlaneModel(colors.get(0)));
         planeInstance.transform.setToScaling(WIDTH, 1, DEPTH);
+
         Model lineModel = Models.createLineModel(colors.get(1), new int[]{-1, 0, 0, 1, 0, 0});
         for (int i = 0; i < count; i++) {
             Line line = new Line();
-            line.zOffset = spread * i;
+            line.offset = spread * i;
             line.instance = new ModelInstance(lineModel);
             line.instance.transform.setToScaling(WIDTH, 1, 1);
             lines.add(line);
+        }
+
+        Model verticalLineModel = Models.createLineModel(colors.get(1), new int[]{0, 0, -1, 0, 0, 1});
+        verticalCount = (int)(WIDTH / (int)spread);
+        for (int i = 0; i < verticalCount; i++) {
+            Line line = new Line();
+            line.offset = spread * i;
+            line.instance = new ModelInstance(verticalLineModel);
+            line.instance.transform.setToScaling(1, 1, DEPTH);
+            verticalLines.add(line);
         }
 
         sunInstance = new ModelInstance(Models.getSunModel());
@@ -78,13 +92,18 @@ public class World1 extends World {
     }
 
     @Override
+    public void setCenterX(float cx) {
+        centerX = cx;
+    }
+
+    @Override
     public void reset() {
         offset = 0;
     }
 
     @Override
     public void update(Vector3 shipPos, float vel, float dt) {
-        center.set(shipPos);
+        this.shipPos.set(shipPos);
         offset = vel * dt * 2;
     }
 
@@ -93,19 +112,25 @@ public class World1 extends World {
         renderer.clear(Color.BLACK);
         renderBackground(renderer);
 
-        planeInstance.transform.setTranslation(center.x, center.y + DISTANCE_Y - 0.5f, center.z);
+        planeInstance.transform.setTranslation(centerX, DISTANCE_Y - 0.5f, shipPos.z);
         renderer.render(planeInstance);
 
-        final float base = center.z - DEPTH/1.1f;
+        final float base = shipPos.z - DEPTH/1.1f;
         for (int i = 0; i < count; i++) {
             Line line = lines.get(i);
-            line.zOffset += offset;
-            line.zOffset %= DEPTH;
-            line.instance.transform.setTranslation(center.x, center.y + DISTANCE_Y, base + line.zOffset);
+            line.offset += offset;
+            line.offset %= DEPTH;
+            line.instance.transform.setTranslation(centerX, DISTANCE_Y, base + line.offset);
             renderer.renderGlow(line.instance);
         }
 
-        sunInstance.transform.setTranslation(center.x, center.y - DISTANCE_Y, center.z - DEPTH);
+        for (int i = 0; i < verticalCount; i++) {
+            Line line = verticalLines.get(i);
+            line.instance.transform.setTranslation(centerX - (WIDTH * 0.5f) + line.offset, DISTANCE_Y, shipPos.z + DEPTH * 0.25f);
+            renderer.renderGlow(line.instance);
+        }
+
+        sunInstance.transform.setTranslation(centerX, DISTANCE_Y, shipPos.z - DEPTH);
         renderer.renderGlowOnly(sunInstance);
 
         offset = 0;

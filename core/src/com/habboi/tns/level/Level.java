@@ -18,16 +18,18 @@ public class Level {
     String name;
     int number;
     World world;
+    float centerX;
     Vector3 shipPos;
 
     ArrayList<Cell> cells = new ArrayList<>();
     LinkedList<Cell> collisions = new LinkedList<>();
     ArrayList<Tunnel> endTunnels = new ArrayList<>();
 
-    public Level(String name, int number, int worldIndex, Vector3 shipPos) {
+    public Level(String name, int number, int worldIndex, float centerX, Vector3 shipPos) {
         this.name = name;
         this.number = number;
         this.shipPos = shipPos;
+        this.centerX = centerX;
         this.world = Universe.get().worlds.get(worldIndex);
     }
 
@@ -103,6 +105,8 @@ public class Level {
 
     public void update(Ship ship, float dt) {
         updatePhysics(ship, dt);
+
+        world.setCenterX(this.centerX);
         world.update(ship.pos, -ship.vel.z, dt);
 
         boolean readyToEnd = ship.readyToEnd;

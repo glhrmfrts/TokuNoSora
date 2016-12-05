@@ -43,8 +43,14 @@ public class LevelLoader extends SynchronousAssetLoader<Level, LevelLoader.Level
         String name = root.getString("name");
         int number = root.getInt("number");
         int worldIndex = root.getInt("world_index");
+        float centerX = 0;
+
+        try {
+            centerX = root.getFloat("center_x");
+        } catch (Exception e) {}
+
         Vector3 shipPos = parseVector3(root.getString("ship_pos"));
-        level = new Level(name, number, worldIndex, shipPos);
+        level = new Level(name, number, worldIndex, centerX, shipPos);
         JsonValue cells = root.get("cells");
         for (JsonValue cell : cells.iterator()) {
             if (cell.has("tile")) {

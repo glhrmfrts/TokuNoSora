@@ -110,6 +110,7 @@ public class MenuState extends FadeState {
         cam.lookAt(0, CAM_LOOKAT_Y, cam.position.z - CAM_DIST);
         bgPos.set(cam.position);
         bgPos.y -= CAM_LOOKAT_Y;
+        world.setCenterX(0);
         world.update(bgPos, VEL, dt);
     }
 
