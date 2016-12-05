@@ -12,8 +12,8 @@ import com.badlogic.gdx.math.Rectangle;
 import com.habboi.tns.Game;
 import com.habboi.tns.level.Level;
 import com.habboi.tns.level.LevelLoader;
-import com.habboi.tns.level.worlds.Universe;
-import com.habboi.tns.level.worlds.World;
+import com.habboi.tns.worlds.Universe;
+import com.habboi.tns.worlds.World;
 import com.habboi.tns.ui.Rect;
 import com.habboi.tns.utils.FontManager;
 

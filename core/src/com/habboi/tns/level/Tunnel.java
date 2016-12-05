@@ -3,7 +3,7 @@ package com.habboi.tns.level;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.habboi.tns.level.worlds.World;
+import com.habboi.tns.worlds.World;
 import com.habboi.tns.rendering.GameRenderer;
 
 /**

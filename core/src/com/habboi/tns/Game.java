@@ -14,7 +14,7 @@ import com.badlogic.gdx.utils.TimeUtils;
 import com.habboi.tns.level.Level;
 import com.habboi.tns.level.LevelLoader;
 import com.habboi.tns.level.Models;
-import com.habboi.tns.level.worlds.Universe;
+import com.habboi.tns.worlds.Universe;
 import com.habboi.tns.states.*;
 import com.habboi.tns.rendering.GameRenderer;
 import com.habboi.tns.ui.GameTweenManager;
@@ -54,7 +54,7 @@ public class Game extends ApplicationAdapter {
   Application.ApplicationType appType;
   int width;
   int height;
-	
+
   @Override
   public void create () {
     appType = Gdx.app.getType();
@@ -64,7 +64,7 @@ public class Game extends ApplicationAdapter {
 
     inputMul = new InputMultiplexer();
     Gdx.input.setInputProcessor(inputMul);
-    
+
     renderer = new GameRenderer(this);
     sr = new ShapeRenderer();
     am = new AssetManager();
@@ -74,7 +74,7 @@ public class Game extends ApplicationAdapter {
     GameTweenManager.get().register("game_fade_out", new GameTweenManager.GameTween() {
       @Override
       public Tween tween() {
-        return exitingRect.getFadeTween(0, 1, 1);
+        return exitingRect.getFadeTween(0, 1, 0.5f);
       }
 
       @Override

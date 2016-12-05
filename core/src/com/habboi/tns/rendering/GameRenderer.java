@@ -31,203 +31,207 @@ import java.util.ArrayList;
  * Encapsulates the rendering context.
  */
 public class GameRenderer implements Disposable {
-  static final int GLOWMAP_WIDTH = 384;
-  static final int GLOWMAP_HEIGHT = 384;
+    static final int GLOWMAP_WIDTH = 384;
+    static final int GLOWMAP_HEIGHT = 384;
 
-  Game game;
-  Camera cam;
-  Environment environment;
-  ModelBatch batch;
-  SpriteBatch sb;
-  Renderable tmpRenderable = new Renderable();
-  FrameBuffer fboDefault;
-  FrameBuffer fboGlow;
-  FrameBuffer fboBlur;
-  BasicShader shaderBasic;
-  Basic2DShader shaderBasic2D;
-  GlowShader shaderGlow;
-  BlurShader shaderBlur;
-  ModelInstance screenSurface;
-  ArrayList<ModelInstance> occludingInstances = new ArrayList<>();
-  ArrayList<ModelInstance> glowingInstances = new ArrayList<>();
+    Game game;
+    Camera cam;
+    Environment environment;
+    ModelBatch batch;
+    SpriteBatch sb;
+    Renderable tmpRenderable = new Renderable();
+    FrameBuffer fboDefault;
+    FrameBuffer fboGlow;
+    FrameBuffer fboBlur;
+    BasicShader shaderBasic;
+    Basic2DShader shaderBasic2D;
+    GlowShader shaderGlow;
+    BlurShader shaderBlur;
+    ModelInstance screenSurface;
+    ArrayList<ModelInstance> occludingInstances = new ArrayList<>();
+    ArrayList<ModelInstance> glowingInstances = new ArrayList<>();
 
-  public GameRenderer(Game g) {
-    game = g;
+    public GameRenderer(Game g) {
+        game = g;
 
-    environment = new Environment();
-    environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.4f, 0.4f, 0.4f, 1f));
-    environment.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
+        environment = new Environment();
+        environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.4f, 0.4f, 0.4f, 1f));
+        environment.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
 
-    batch = new ModelBatch();
-    sb = new SpriteBatch();
-    fboDefault = new FrameBuffer(Pixmap.Format.RGB888, game.getWidth(), game.getHeight(), true);
-    fboGlow = new FrameBuffer(Pixmap.Format.RGBA8888, GLOWMAP_WIDTH, GLOWMAP_HEIGHT, true);
-    fboBlur = new FrameBuffer(Pixmap.Format.RGBA8888, GLOWMAP_WIDTH, GLOWMAP_HEIGHT, false);
+        batch = new ModelBatch();
+        sb = new SpriteBatch();
+        fboDefault = new FrameBuffer(Pixmap.Format.RGB888, game.getWidth(), game.getHeight(), true);
+        fboGlow = new FrameBuffer(Pixmap.Format.RGBA8888, GLOWMAP_WIDTH, GLOWMAP_HEIGHT, true);
+        fboBlur = new FrameBuffer(Pixmap.Format.RGBA8888, GLOWMAP_WIDTH, GLOWMAP_HEIGHT, false);
 
-    shaderBasic2D = new Basic2DShader();
-    shaderBasic = new BasicShader();
-    shaderBlur = new BlurShader();
-    shaderGlow = new GlowShader();
-    shaderBasic2D.init();
-    shaderBasic.init();
-    shaderBlur.init();
-    shaderGlow.init();
-    shaderBlur.begin(null, null);
-    shaderBlur.setImageSize(new Vector2(GLOWMAP_WIDTH, GLOWMAP_HEIGHT));
-    shaderBlur.end();
+        shaderBasic2D = new Basic2DShader();
+        shaderBasic = new BasicShader();
+        shaderBlur = new BlurShader();
+        shaderGlow = new GlowShader();
+        shaderBasic2D.init();
+        shaderBasic.init();
+        shaderBlur.init();
+        shaderGlow.init();
+        shaderBlur.begin(null, null);
+        shaderBlur.setImageSize(new Vector2(GLOWMAP_WIDTH, GLOWMAP_HEIGHT));
+        shaderBlur.end();
 
-    screenSurface = new ModelInstance(createScreenSurfaceModel());
+        screenSurface = new ModelInstance(createScreenSurfaceModel());
 
-    Gdx.gl.glLineWidth(2);
-  }
+        Gdx.gl.glLineWidth(2);
+    }
 
-  private Model createScreenSurfaceModel() {
-    ModelBuilder mb = new ModelBuilder();
-    MeshPartBuilder partBuilder;
-    VertexInfo v1, v2, v3, v4;
-    mb.begin();
+    private Model createScreenSurfaceModel() {
+        ModelBuilder mb = new ModelBuilder();
+        MeshPartBuilder partBuilder;
+        VertexInfo v1, v2, v3, v4;
+        mb.begin();
 
-    v1 = new VertexInfo().setPos(-1, -1, 0).setUV(0, 0);
-    v2 = new VertexInfo().setPos(1, -1, 0).setUV(1, 0);
-    v3 = new VertexInfo().setPos(1, 1, 0).setUV(1, 1);
-    v4 = new VertexInfo().setPos(-1, 1, 0).setUV(0, 1);
-    partBuilder = mb.part("surface", GL20.GL_TRIANGLES,
-            VertexAttributes.Usage.Position | VertexAttributes.Usage.TextureCoordinates,
-            new Material());
+        v1 = new VertexInfo().setPos(-1, -1, 0).setUV(0, 0);
+        v2 = new VertexInfo().setPos(1, -1, 0).setUV(1, 0);
+        v3 = new VertexInfo().setPos(1, 1, 0).setUV(1, 1);
+        v4 = new VertexInfo().setPos(-1, 1, 0).setUV(0, 1);
+        partBuilder = mb.part("surface", GL20.GL_TRIANGLES,
+                              VertexAttributes.Usage.Position | VertexAttributes.Usage.TextureCoordinates,
+                              new Material());
 
-    partBuilder.rect(v1, v2, v3, v4);
+        partBuilder.rect(v1, v2, v3, v4);
 
-    return mb.end();
-  }
+        return mb.end();
+    }
 
-  public SpriteBatch getSpriteBatch() {
-    return sb;
-  }
+    public SpriteBatch getSpriteBatch() {
+        return sb;
+    }
 
-  public void begin(Camera cam) {
-    this.cam = cam;
-    occludingInstances.clear();
-    glowingInstances.clear();
-    fboDefault.begin();
-    batch.begin(cam);
-  }
+    public void begin(Camera cam) {
+        this.cam = cam;
+        occludingInstances.clear();
+        glowingInstances.clear();
+        fboDefault.begin();
+        batch.begin(cam);
+    }
 
-  public void clear(Color c) {
-    Gdx.gl.glClearColor(c.r, c.g, c.b, c.a);
-    Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
-  }
+    public void clear(Color c) {
+        Gdx.gl.glClearColor(c.r, c.g, c.b, c.a);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
+    }
 
-  public void end() {
-    batch.end();
+    public void end() {
+        batch.end();
 
-    // draw glowing geometry
-    shaderBasic.begin(cam, null);
-      fboGlow.begin();
+        // draw glowing geometry
+        shaderBasic.begin(cam, null);
+        fboGlow.begin();
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
         Gdx.gl.glDisable(GL20.GL_CULL_FACE);
         Gdx.gl.glColorMask(false, false, false, false);
         for (ModelInstance inst : occludingInstances) {
-          inst.getRenderable(tmpRenderable);
-          shaderBasic.render(tmpRenderable);
+            inst.getRenderable(tmpRenderable);
+            shaderBasic.render(tmpRenderable);
         }
 
         Gdx.gl.glColorMask(true, true, true, true);
         for (ModelInstance inst : glowingInstances) {
-          inst.getRenderable(tmpRenderable);
-          shaderBasic.render(tmpRenderable);
+            inst.getRenderable(tmpRenderable);
+            shaderBasic.render(tmpRenderable);
         }
         Gdx.gl.glEnable(GL20.GL_CULL_FACE);
-    shaderBasic.end();
+        shaderBasic.end();
 
-    // the only renderable used from here on is the screen surface
-    screenSurface.getRenderable(tmpRenderable);
+        // the only renderable used from here on is the screen surface
+        screenSurface.getRenderable(tmpRenderable);
 
-    // blur the glowmap (disables depth checks and writes)
-    Gdx.gl.glDepthMask(false);
-    shaderBlur.begin(null, null);
-      fboBlur.begin();
+        // blur the glowmap (disables depth checks and writes)
+        Gdx.gl.glDepthMask(false);
+        shaderBlur.begin(null, null);
+        fboBlur.begin();
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         fboGlow.getColorBufferTexture().bind(0);
         shaderBlur.setOrientation(0);
         shaderBlur.render(tmpRenderable);
 
-      // mix with vertical blur
-      fboGlow.begin();
+        // mix with vertical blur
+        fboGlow.begin();
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         fboBlur.getColorBufferTexture().bind(0);
         shaderBlur.setOrientation(1);
         shaderBlur.render(tmpRenderable);
-      fboGlow.end();
-    shaderBlur.end();
+        fboGlow.end();
+        shaderBlur.end();
 
-    Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-    // blend the glowmap with the rendered scene
-    shaderGlow.begin(null, null);
-      fboDefault.getColorBufferTexture().bind(0);
-      fboGlow.getColorBufferTexture().bind(1);
-      shaderGlow.render(tmpRenderable);
-    shaderGlow.end();
+        // blend the glowmap with the rendered scene
+        shaderGlow.begin(null, null);
+        fboDefault.getColorBufferTexture().bind(0);
+        fboGlow.getColorBufferTexture().bind(1);
+        shaderGlow.render(tmpRenderable);
+        shaderGlow.end();
 
-    // re-enable depth checks and writes
-    Gdx.gl.glDepthMask(true);
-    Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
-  }
+        // re-enable depth checks and writes
+        Gdx.gl.glDepthMask(true);
+        Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
+    }
 
-  public void setDiffuseColor(ModelInstance instance, Color color) {
-    instance.getRenderable(tmpRenderable);
-    ColorAttribute colorAttribute = (ColorAttribute) tmpRenderable.material.get(ColorAttribute.Diffuse);
-    colorAttribute.color.set(color);
-  }
+    public void setDiffuseColor(ModelInstance instance, Color color) {
+        instance.getRenderable(tmpRenderable);
+        ColorAttribute colorAttribute = (ColorAttribute) tmpRenderable.material.get(ColorAttribute.Diffuse);
+        colorAttribute.color.set(color);
+    }
 
-  public void render(ModelInstance instance) {
-    batch.render(instance, environment);
-    occludingInstances.add(instance);
-  }
+    public void render(ModelInstance instance) {
+        batch.render(instance, environment);
+        occludingInstances.add(instance);
+    }
 
-  public void render(ModelInstance instance, Color color) {
-    setDiffuseColor(instance, color);
-    batch.render(instance, environment);
-    occludingInstances.add(instance);
-  }
+    public void render(ModelInstance instance, Color color) {
+        setDiffuseColor(instance, color);
+        batch.render(instance, environment);
+        occludingInstances.add(instance);
+    }
 
-  public void renderGlow(ModelInstance instance) {
-    batch.render(instance, environment);
-    glowingInstances.add(instance);
-  }
+    public void renderGlow(ModelInstance instance) {
+        batch.render(instance, environment);
+        glowingInstances.add(instance);
+    }
 
-  public void renderGlow(ModelInstance instance, Color color) {
-    setDiffuseColor(instance, color);
-    batch.render(instance, environment);
-    glowingInstances.add(instance);
-  }
+    public void renderGlow(ModelInstance instance, Color color) {
+        setDiffuseColor(instance, color);
+        batch.render(instance, environment);
+        glowingInstances.add(instance);
+    }
 
-  public void beginOrtho() {
-    sb.begin();
-    sb.setShader(shaderBasic2D.getShaderProgram());
-  }
+    public void renderGlowOnly(ModelInstance instance) {
+        glowingInstances.add(instance);
+    }
 
-  public void beginOrtho(Matrix4 projection) {
-    sb.begin();
-    sb.setProjectionMatrix(projection);
-    sb.setShader(shaderBasic2D.getShaderProgram());
-  }
+    public void beginOrtho() {
+        sb.begin();
+        sb.setShader(shaderBasic2D.getShaderProgram());
+    }
 
-  public void endOrtho() {
-    sb.end();
-  }
+    public void beginOrtho(Matrix4 projection) {
+        sb.begin();
+        sb.setProjectionMatrix(projection);
+        sb.setShader(shaderBasic2D.getShaderProgram());
+    }
 
-  @Override
-  public void dispose() {
-    batch.dispose();
-    shaderGlow.dispose();
-    shaderBlur.dispose();
-    shaderBasic.dispose();
-    fboGlow.dispose();
-    fboBlur.dispose();
-    fboDefault.dispose();
-  }
+    public void endOrtho() {
+        sb.end();
+    }
+
+    @Override
+    public void dispose() {
+        batch.dispose();
+        shaderGlow.dispose();
+        shaderBlur.dispose();
+        shaderBasic.dispose();
+        fboGlow.dispose();
+        fboBlur.dispose();
+        fboDefault.dispose();
+    }
 }

@@ -1,4 +1,4 @@
-package com.habboi.tns.level.worlds;
+package com.habboi.tns.worlds;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.Model;

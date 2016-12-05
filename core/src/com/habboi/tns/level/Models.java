@@ -20,7 +20,7 @@ import java.util.ArrayList;
  */
 public final class Models {
   private static int TUNNEL_SEGMENTS = 12;
-  private static int SUN_SEGMENTS = 24;
+  private static int SUN_SEGMENTS = 48;
 
   private static Model sunModel;
   private static Model shipModel;
@@ -46,6 +46,7 @@ public final class Models {
     final int segments = SUN_SEGMENTS;
     final float deltaTheta = 2*(float)Math.PI / segments;
     final Material material = new Material(IntAttribute.createCullFace(GL20.GL_NONE));
+    //material.set(new BlendingAttribute(true, GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA, 0.75f));
 
     float theta = 0;
     float x = 1;
