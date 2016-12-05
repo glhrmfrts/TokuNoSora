@@ -39,7 +39,7 @@ public class World1 extends World {
     ArrayList<Line> verticalLines = new ArrayList<>();
 
     public World1() {
-        super(2, 2, "The Beginning of An End", "nice.ogg");
+        super(2, 2, "Red Heat", "nice.ogg");
         addColor(0x370737);
         addColor(0xf540ef);
         addColor(0x5678e3);

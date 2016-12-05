@@ -137,11 +137,14 @@ public class InGameState extends GameState {
 
                 @Override
                 public void onComplete() {
-                    if (ship.raceTime < bestTimeForLevel || bestTimeForLevel == 0) {
-                        LevelScore.get().setBestTime(level.getName(), ship.raceTime);
+                    if (ship.state == Ship.State.ENDED) {
+                        if (ship.raceTime < bestTimeForLevel || bestTimeForLevel == 0) {
+                            LevelScore.get().setBestTime(level.getName(), ship.raceTime);
+                        }
+                        LevelScore.get().setTimesCompleted(level.getName(), timesLevelCompleted + 1);
+                        LevelScore.get().flush();
                     }
-                    LevelScore.get().setTimesCompleted(level.getName(), timesLevelCompleted + 1);
-                    LevelScore.get().flush();
+
                     game.popState();
                 }
         });
