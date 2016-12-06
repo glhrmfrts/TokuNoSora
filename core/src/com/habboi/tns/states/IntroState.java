@@ -3,6 +3,7 @@ package com.habboi.tns.states;
 import aurelienribon.tweenengine.Tween;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.math.Vector3;
 import com.habboi.tns.Game;
@@ -86,6 +87,11 @@ public class IntroState extends GameState {
 
         Gdx.gl.glClearColor(0, 0, 0, 0);
         gtm.start("intro_state_in");
+
+        Music introMusic = game.getAssetManager().get("audio/intro.mp3");
+        introMusic.setVolume(1);
+        introMusic.setLooping(true);
+        introMusic.play();
     }
 
     @Override

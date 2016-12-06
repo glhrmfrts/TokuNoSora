@@ -2,6 +2,7 @@ package com.habboi.tns.ui;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
@@ -15,6 +16,8 @@ import com.habboi.tns.worlds.World;
 import com.habboi.tns.states.InGameState;
 import com.habboi.tns.states.MenuState;
 import com.habboi.tns.utils.FontManager;
+import com.habboi.tns.utils.MusicAccessor;
+import com.habboi.tns.utils.MusicWrapper;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -34,6 +37,7 @@ public class LevelsMenu extends BaseMenu implements Disposable {
     MenuState menuState;
     Rect container;
     Rect background;
+    String levelToStart;
     Text worldText;
     Text btnRightText;
     Text btnLeftText;
@@ -62,42 +66,60 @@ public class LevelsMenu extends BaseMenu implements Disposable {
                 public void onComplete() {
 
                 }
-            }).register("levels_menu_select_menu_border", new GameTweenManager.GameTween() {
-                    @Override
-                    public Tween tween() {
-                        highlightBorder.getRectangle().height = 0;
-                        return Tween.to(highlightBorder, Rect.Accessor.TWEEN_HEIGHT, 0.25f)
-                            .target(itemBounds.height)
-                            .ease(TweenEquations.easeOutQuad);
-                    }
+            });
+        gtm.register("levels_menu_select_menu_border", new GameTweenManager.GameTween() {
+                @Override
+                public Tween tween() {
+                    highlightBorder.getRectangle().height = 0;
+                    return Tween.to(highlightBorder, Rect.Accessor.TWEEN_HEIGHT, 0.25f)
+                        .target(itemBounds.height)
+                        .ease(TweenEquations.easeOutQuad);
+                }
 
-                    @Override
-                    public void onComplete() {
+                @Override
+                public void onComplete() {
 
-                    }
-                }).register("change_world_in", new GameTweenManager.GameTween() {
-                        @Override
-                        public Tween tween() {
-                            return background.getFadeTween(0, 1, 0.15f);
-                        }
+                }
+            });
+        gtm.register("change_world_in", new GameTweenManager.GameTween() {
+                @Override
+                public Tween tween() {
+                    return background.getFadeTween(0, 1, 0.15f);
+                }
 
-                        @Override
-                        public void onComplete() {
-                            World world = Universe.get().worlds.get(activeWorldIndex);
-                            menuState.setWorld(world);
-                            gtm.start("change_world_out");
-                        }
-                    }).register("change_world_out", new GameTweenManager.GameTween() {
-                            @Override
-                            public Tween tween() {
-                                return background.getFadeTween(1, 0, 0.15f);
-                            }
+                @Override
+                public void onComplete() {
+                    World world = Universe.get().worlds.get(activeWorldIndex);
+                    menuState.setWorld(world);
+                    gtm.start("change_world_out");
+                }
+            });
+        gtm.register("change_world_out", new GameTweenManager.GameTween() {
+                @Override
+                public Tween tween() {
+                    return background.getFadeTween(1, 0, 0.15f);
+                }
 
-                            @Override
-                            public void onComplete() {
+                @Override
+                public void onComplete() {
 
-                            }
-                        });
+                }
+            });
+
+        final MusicWrapper introMusic = new MusicWrapper((Music)game.getAssetManager().get("audio/intro.mp3"));
+        gtm.register("levels_menu_start_level", new GameTweenManager.GameTween() {
+                @Override
+                public Tween tween() {
+                    return Tween.to(introMusic, MusicAccessor.TWEEN_VOLUME, 0.50f)
+                        .target(0);
+                }
+
+                @Override
+                public void onComplete() {
+                    introMusic.getMusic().stop();
+                    game.addState(new InGameState(game, levelToStart));
+                }
+            });
         createItems(game);
         setHighlight();
     }
@@ -128,7 +150,8 @@ public class LevelsMenu extends BaseMenu implements Disposable {
             item.setAction(new MenuItemAction() {
                     @Override
                     public void doAction() {
-                        game.addState(new InGameState(game, str));
+                        levelToStart = str;
+                        GameTweenManager.get().start("levels_menu_start_level");
                     }
                 });
             ArrayList<LevelMenuItem> itemGroup = itemGroups.get(world);
