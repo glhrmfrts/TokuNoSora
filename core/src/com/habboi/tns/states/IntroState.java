@@ -23,6 +23,7 @@ public class IntroState extends GameState {
     }
 
     Vector3 bgPos = new Vector3();
+    Music music;
     boolean running;
     Rect screenRect;
     InnerState state;
@@ -88,10 +89,10 @@ public class IntroState extends GameState {
         Gdx.gl.glClearColor(0, 0, 0, 0);
         gtm.start("intro_state_in");
 
-        Music introMusic = game.getAssetManager().get("audio/intro.mp3");
-        introMusic.setVolume(1);
-        introMusic.setLooping(true);
-        introMusic.play();
+        music = game.getAssetManager().get("audio/intro.mp3");
+        music.setVolume(1);
+        music.setLooping(true);
+        music.play();
     }
 
     @Override
@@ -124,7 +125,7 @@ public class IntroState extends GameState {
                     GameTweenManager.get().start("intro_state_title_text_in");
                     break;
                 case AFTER_TEXT:
-                    game.setState(new MenuState(game, titleText));
+                    game.setState(new MenuState(game, titleText, music));
                     break;
                 }
             }

@@ -3,6 +3,7 @@ package com.habboi.tns.states;
 import aurelienribon.tweenengine.Tween;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
@@ -17,6 +18,7 @@ import com.habboi.tns.ui.Menu;
 import com.habboi.tns.ui.Rect;
 import com.habboi.tns.ui.Text;
 import com.habboi.tns.utils.FontManager;
+import com.habboi.tns.utils.MusicWrapper;
 
 import java.util.Stack;
 
@@ -30,15 +32,17 @@ public class MenuState extends GameState {
     static final float CAM_LOOKAT_Y = 6;
 
     Vector3 bgPos = new Vector3();
+    MusicWrapper currentMusic = new MusicWrapper();
     World world;
     PerspectiveCamera worldCam;
     Text titleText;
     Stack<Menu> menuStack = new Stack<>();
     Rect screenRect;
 
-    public MenuState(Game g, Text t) {
+    public MenuState(Game g, Text t, Music m) {
         super(g);
         titleText = t;
+        currentMusic.setMusic(m);
     }
 
     @Override
@@ -66,6 +70,17 @@ public class MenuState extends GameState {
     public void resume() {
         menuStack.peek().resume();
         GameTweenManager.get().start("menu_state_in");
+        /*
+        Music menuMusic = game.getAssetManager().get("audio/menu.mp3");
+        menuMusic.setVolume(1);
+        menuMusic.setLooping(true);
+        menuMusic.play();
+
+        currentMusic.setMusic(menuMusic);*/
+    }
+
+    public MusicWrapper getCurrentMusic() {
+        return currentMusic;
     }
 
     public void setWorld(World newWorld) {

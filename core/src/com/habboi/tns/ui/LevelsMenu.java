@@ -94,6 +94,7 @@ public class LevelsMenu extends BaseMenu implements Disposable {
                     gtm.start("change_world_out");
                 }
             });
+
         gtm.register("change_world_out", new GameTweenManager.GameTween() {
                 @Override
                 public Tween tween() {
@@ -106,17 +107,16 @@ public class LevelsMenu extends BaseMenu implements Disposable {
                 }
             });
 
-        final MusicWrapper introMusic = new MusicWrapper((Music)game.getAssetManager().get("audio/intro.mp3"));
         gtm.register("levels_menu_start_level", new GameTweenManager.GameTween() {
                 @Override
                 public Tween tween() {
-                    return Tween.to(introMusic, MusicAccessor.TWEEN_VOLUME, 0.50f)
+                    return Tween.to(menuState.getCurrentMusic(), MusicAccessor.TWEEN_VOLUME, 0.50f)
                         .target(0);
                 }
 
                 @Override
                 public void onComplete() {
-                    introMusic.getMusic().stop();
+                    menuState.getCurrentMusic().getMusic().stop();
                     game.addState(new InGameState(game, levelToStart));
                 }
             });

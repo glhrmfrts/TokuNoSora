@@ -9,6 +9,10 @@ public class MusicWrapper {
 
     Music music;
 
+    public MusicWrapper() {
+        this(null);
+    }
+
     public MusicWrapper(Music music) {
         this.music = music;
         if (!registered) {
@@ -19,5 +23,9 @@ public class MusicWrapper {
 
     public Music getMusic() {
         return music;
+    }
+
+    public void setMusic(Music m) {
+        music = m;
     }
 }
