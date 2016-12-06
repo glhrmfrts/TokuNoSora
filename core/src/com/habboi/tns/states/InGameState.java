@@ -146,7 +146,7 @@ public class InGameState extends GameState {
         }).register("level_complete_end_music", new GameTweenManager.GameTween() {
                 @Override
                 public Tween tween() {
-                    return Tween.to(music, MusicAccessor.TWEEN_VOLUME, 0.25f)
+                    return Tween.to(music, MusicAccessor.TWEEN_VOLUME, 0.5f)
                         .target(0);
                 }
 
