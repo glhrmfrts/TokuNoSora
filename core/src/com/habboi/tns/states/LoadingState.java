@@ -49,8 +49,9 @@ public class LoadingState extends GameState {
         am.load("audio/bounce.wav", Sound.class);
         am.load("audio/explosion.wav", Sound.class);
         am.load("audio/select.wav", Sound.class);
-        am.load("audio/intro.mp3", Music.class);
-        //am.load("audio/world1.wav", Music.class);
+        am.load("audio/intro.ogg", Music.class);
+        am.load("audio/menu.ogg", Music.class);
+        am.load("audio/world1.ogg", Music.class);
 
         fm.loadFont(Game.MAIN_FONT, Game.MAIN_FONT_SIZE);
         fm.loadFont(Game.MAIN_FONT, Game.HUGE_FONT_SIZE);

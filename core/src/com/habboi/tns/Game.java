@@ -14,6 +14,8 @@ import com.badlogic.gdx.utils.TimeUtils;
 import com.habboi.tns.level.Level;
 import com.habboi.tns.level.LevelLoader;
 import com.habboi.tns.level.Models;
+import com.habboi.tns.states.MenuState;
+import com.habboi.tns.utils.MusicAccessor;
 import com.habboi.tns.worlds.Universe;
 import com.habboi.tns.states.*;
 import com.habboi.tns.rendering.GameRenderer;
@@ -71,7 +73,7 @@ public class Game extends ApplicationAdapter {
         am.setLoader(Level.class, new LevelLoader(new InternalFileHandleResolver()));
         am.setLoader(BitmapFont.class, new FontLoader(new FontFileHandleResolver()));
         FontManager.get().setAssetManager(am);
-        GameTweenManager.get().register("game_fade_out", new GameTweenManager.GameTween() {
+        GameTweenManager.get().register("game_fade_out", new GameTweenManager.GameTween(new String[]{"game_fade_out_music"}) {
                 @Override
                 public Tween tween() {
                     return exitingRect.getFadeTween(0, 1, 0.5f);
@@ -81,7 +83,20 @@ public class Game extends ApplicationAdapter {
                 public void onComplete() {
                     Gdx.app.exit();
                 }
-            });
+        }).register("game_fade_out_music", new GameTweenManager.GameTween() {
+                @Override
+                public Tween tween() {
+                    MenuState menuState = (MenuState)currentState;
+                    return Tween.to(menuState.getCurrentMusic(), MusicAccessor.TWEEN_VOLUME, 0.5f)
+                        .target(0);
+                }
+
+                @Override
+                public void onComplete() {
+                    MenuState menuState = (MenuState)currentState;
+                    menuState.getCurrentMusic().getMusic().stop();
+                }
+        });
 
         stateStack = new Stack<>();
         addState(new LoadingState(this));

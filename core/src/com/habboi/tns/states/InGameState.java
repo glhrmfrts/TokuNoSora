@@ -2,6 +2,7 @@ package com.habboi.tns.states;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
@@ -20,6 +21,8 @@ import com.habboi.tns.ui.PauseMenu;
 import com.habboi.tns.ui.Rect;
 import com.habboi.tns.ui.Text;
 import com.habboi.tns.utils.FontManager;
+import com.habboi.tns.utils.MusicAccessor;
+import com.habboi.tns.utils.MusicWrapper;
 
 import java.text.DecimalFormat;
 
@@ -44,6 +47,7 @@ public class InGameState extends GameState {
     int timesLevelCompleted;
     boolean paused;
     boolean quitFromMenu;
+    MusicWrapper music = new MusicWrapper();
 
     public InGameState(Game g) {
         this(g, "map1.tl");
@@ -121,7 +125,7 @@ public class InGameState extends GameState {
                 public void onComplete() {
                     reset();
                 }
-        }).register("level_complete_end", new GameTweenManager.GameTween() {
+        }).register("level_complete_end", new GameTweenManager.GameTween(new String[]{"level_complete_end_music"}) {
                 @Override
                 public Tween tween() {
                     return screenRect.getFadeTween(0, 1, 0.5f);
@@ -139,7 +143,25 @@ public class InGameState extends GameState {
 
                     game.popState();
                 }
+        }).register("level_complete_end_music", new GameTweenManager.GameTween() {
+                @Override
+                public Tween tween() {
+                    return Tween.to(music, MusicAccessor.TWEEN_VOLUME, 0.25f)
+                        .target(0);
+                }
+
+                @Override
+                public void onComplete() {
+                    music.getMusic().stop();
+                }
         });
+
+        Music worldMusic = game.getAssetManager().get(level.getWorld().music);
+        worldMusic.setVolume(1);
+        worldMusic.setLooping(true);
+        worldMusic.play();
+
+        music.setMusic(worldMusic);
 
         gtm.start("start");
         reset();

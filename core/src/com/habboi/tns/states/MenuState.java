@@ -70,13 +70,13 @@ public class MenuState extends GameState {
     public void resume() {
         menuStack.peek().resume();
         GameTweenManager.get().start("menu_state_in");
-        /*
-        Music menuMusic = game.getAssetManager().get("audio/menu.mp3");
+
+        Music menuMusic = game.getAssetManager().get("audio/menu.ogg");
         menuMusic.setVolume(1);
         menuMusic.setLooping(true);
         menuMusic.play();
 
-        currentMusic.setMusic(menuMusic);*/
+        currentMusic.setMusic(menuMusic);
     }
 
     public MusicWrapper getCurrentMusic() {

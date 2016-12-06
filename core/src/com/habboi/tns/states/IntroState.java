@@ -89,7 +89,7 @@ public class IntroState extends GameState {
         Gdx.gl.glClearColor(0, 0, 0, 0);
         gtm.start("intro_state_in");
 
-        music = game.getAssetManager().get("audio/intro.mp3");
+        music = game.getAssetManager().get("audio/intro.ogg");
         music.setVolume(1);
         music.setLooping(true);
         music.play();
