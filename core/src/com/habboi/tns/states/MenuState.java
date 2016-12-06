@@ -1,5 +1,7 @@
 package com.habboi.tns.states;
 
+import aurelienribon.tweenengine.Tween;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
@@ -12,6 +14,7 @@ import com.habboi.tns.rendering.GameRenderer;
 import com.habboi.tns.ui.GameTweenManager;
 import com.habboi.tns.ui.MainMenu;
 import com.habboi.tns.ui.Menu;
+import com.habboi.tns.ui.Rect;
 import com.habboi.tns.ui.Text;
 import com.habboi.tns.utils.FontManager;
 
@@ -20,63 +23,49 @@ import java.util.Stack;
 /**
  * Handles the menu screen state.
  */
-public class MenuState extends FadeState {
+public class MenuState extends GameState {
     static final float VEL = 10;
     static final float CAM_DIST = 20;
     static final float CAM_Y = 10;
     static final float CAM_LOOKAT_Y = 6;
 
     Vector3 bgPos = new Vector3();
-    GameTweenManager gtm;
     World world;
-    PerspectiveCamera cam;
+    PerspectiveCamera worldCam;
     Text titleText;
     Stack<Menu> menuStack = new Stack<>();
+    Rect screenRect;
 
-    public MenuState(Game g) {
+    public MenuState(Game g, Text t) {
         super(g);
-    }
-
-    @Override
-    public void onFadeInComplete() {
-
-    }
-
-    @Override
-    public void onFadeOutComplete() {
-
+        titleText = t;
     }
 
     @Override
     public void create() {
-        super.create();
         addMenu(new MainMenu(this, game));
-        AssetManager am = game.getAssetManager();
-        FontManager fm = FontManager.get();
 
-        titleText = new Text(
-                             fm.getFont("Neon.ttf", Game.HUGE_FONT_SIZE),
-                             "TAIHO",
-                             null,
-                             Color.WHITE
-                             );
-        titleText.getPos().set(game.getWidth()/2, game.getHeight()*0.9f);
         world = Universe.get().worlds.get(0);
+        worldCam = game.getRenderer().getWorldCam();
 
-        cam = new PerspectiveCamera(45, game.getWidth(), game.getHeight());
-        cam.near = 0.01f;
-        cam.far = 1000f;
-        cam.position.set(0, CAM_Y, 0);
-        cam.lookAt(0, CAM_LOOKAT_Y, -CAM_DIST);
+        screenRect = game.getRenderer().getScreenRect();
+        GameTweenManager.get().register("menu_state_in", new GameTweenManager.GameTween() {
+                @Override
+                public Tween tween() {
+                    return screenRect.getFadeTween(1, 0, 2);
+                }
 
-        Gdx.gl.glClearColor(0, 0, 0, 0);
-        fadeIn();
+                @Override
+                public void onComplete() {
+
+                }
+            });
     }
 
     @Override
     public void resume() {
         menuStack.peek().resume();
-        fadeIn();
+        GameTweenManager.get().start("menu_state_in");
     }
 
     public void setWorld(World newWorld) {
@@ -105,11 +94,14 @@ public class MenuState extends FadeState {
 
     @Override
     public void update(float dt) {
-        super.update(dt);
-        cam.position.z -= VEL * dt;
-        cam.lookAt(0, CAM_LOOKAT_Y, cam.position.z - CAM_DIST);
-        bgPos.set(cam.position);
+        worldCam.position.x = 0;
+        worldCam.position.y = CAM_Y;
+        worldCam.position.z -= VEL * dt;
+        worldCam.lookAt(0, CAM_LOOKAT_Y, worldCam.position.z - CAM_DIST);
+
+        bgPos.set(worldCam.position);
         bgPos.y -= CAM_LOOKAT_Y;
+
         world.setCenterX(0);
         world.update(bgPos, VEL, dt);
     }
@@ -117,19 +109,19 @@ public class MenuState extends FadeState {
     @Override
     public void render() {
         GameRenderer gr = game.getRenderer();
-        cam.update();
-        gr.begin(cam);
+        worldCam.update();
+        gr.begin();
         world.render(gr);
         gr.end();
         menuStack.peek().render();
         gr.beginOrtho();
         titleText.draw(gr.getSpriteBatch(), true);
         gr.endOrtho();
-        super.render();
+        screenRect.draw(game.getShapeRenderer());
     }
 
     @Override
     public void dispose() {
-        super.dispose();
+        GameTweenManager.get().remove("menu_state_in");
     }
 }

@@ -1,7 +1,7 @@
 package com.habboi.tns.rendering;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -21,9 +21,11 @@ import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
 import com.habboi.tns.Game;
+import com.habboi.tns.ui.Rect;
 
 import java.util.ArrayList;
 
@@ -31,11 +33,12 @@ import java.util.ArrayList;
  * Encapsulates the rendering context.
  */
 public class GameRenderer implements Disposable {
+    static final float FOV = 45f;
     static final int GLOWMAP_WIDTH = 384;
     static final int GLOWMAP_HEIGHT = 384;
 
     Game game;
-    Camera cam;
+    PerspectiveCamera worldCam;
     Environment environment;
     ModelBatch batch;
     SpriteBatch sb;
@@ -47,12 +50,17 @@ public class GameRenderer implements Disposable {
     Basic2DShader shaderBasic2D;
     GlowShader shaderGlow;
     BlurShader shaderBlur;
+    Rect screenRect;
     ModelInstance screenSurface;
     ArrayList<ModelInstance> occludingInstances = new ArrayList<>();
     ArrayList<ModelInstance> glowingInstances = new ArrayList<>();
 
     public GameRenderer(Game g) {
         game = g;
+
+        worldCam = new PerspectiveCamera(FOV, g.getWidth(), g.getHeight());
+        worldCam.near = 0.1f;
+        worldCam.far = 1000f;
 
         environment = new Environment();
         environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.4f, 0.4f, 0.4f, 1f));
@@ -76,6 +84,7 @@ public class GameRenderer implements Disposable {
         shaderBlur.setImageSize(new Vector2(GLOWMAP_WIDTH, GLOWMAP_HEIGHT));
         shaderBlur.end();
 
+        screenRect = new Rect(new Rectangle(0, 0, game.getWidth(), game.getHeight()));
         screenSurface = new ModelInstance(createScreenSurfaceModel());
 
         Gdx.gl.glLineWidth(2);
@@ -100,16 +109,23 @@ public class GameRenderer implements Disposable {
         return mb.end();
     }
 
+    public PerspectiveCamera getWorldCam() {
+        return worldCam;
+    }
+
+    public Rect getScreenRect() {
+        return screenRect;
+    }
+
     public SpriteBatch getSpriteBatch() {
         return sb;
     }
 
-    public void begin(Camera cam) {
-        this.cam = cam;
+    public void begin() {
         occludingInstances.clear();
         glowingInstances.clear();
         fboDefault.begin();
-        batch.begin(cam);
+        batch.begin(worldCam);
     }
 
     public void clear(Color c) {
@@ -121,7 +137,7 @@ public class GameRenderer implements Disposable {
         batch.end();
 
         // draw glowing geometry
-        shaderBasic.begin(cam, null);
+        shaderBasic.begin(worldCam, null);
         fboGlow.begin();
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 

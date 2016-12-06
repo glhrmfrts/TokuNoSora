@@ -29,11 +29,9 @@ import aurelienribon.tweenengine.Tween;
  * In-game state.
  */
 public class InGameState extends GameState {
-    int debugCam;
 
     String levelName;
     OrthographicCamera orthoCam;
-    CameraInputController tempCamInput;
     Level level;
     Ship ship;
     ShipCamera shipCam;
@@ -65,13 +63,7 @@ public class InGameState extends GameState {
 
         ShipController sc = new ShipController(false);
         ship = new Ship(game, level.getShipPos(), sc);
-
-        PerspectiveCamera cam = new PerspectiveCamera(45, game.getWidth(), game.getHeight());
-        cam.near = 0.1f;
-        cam.far = 1000f;
-
-        shipCam = new ShipCamera(ship, cam);
-        tempCamInput = new CameraInputController(cam);
+        shipCam = new ShipCamera(ship, game.getRenderer().getWorldCam());
 
         FontManager fm = FontManager.get();
         levelCompleteText = new Text(fm.getFont("Neon.ttf", Game.MAIN_FONT_SIZE),
@@ -216,18 +208,13 @@ public class InGameState extends GameState {
         }
         level.update(ship, dt);
         ship.update(dt);
-        if (debugCam == 0) {
-            shipCam.update(dt);
-        }
-        if (Gdx.input.isKeyJustPressed(Input.Keys.X)) {
-            debugCam = (debugCam == 0) ? 1 : 0;
-        }
+        shipCam.update(dt);
     }
 
     @Override
     public void render() {
         GameRenderer gr = game.getRenderer();
-        gr.begin(shipCam.getCam());
+        gr.begin();
         level.getWorld().render(gr);
         level.render(gr);
         ship.render(gr);
