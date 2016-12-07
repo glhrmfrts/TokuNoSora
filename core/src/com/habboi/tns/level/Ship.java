@@ -26,7 +26,7 @@ public class Ship {
     static final float BODY_WIDTH = 0.75f;
     static final float BODY_HEIGHT = 0.3f;
     static final float BODY_DEPTH = 2.5f;
-    static final float MAX_VEL = 50;
+    static final float MAX_VEL = 65;
     static final float STEER_VEL = 12;
     static final float STEER_ACCELERATION = 50;
     static final float MAX_STEER_ACCUL = 300;
@@ -85,7 +85,7 @@ public class Ship {
     }
 
     public boolean canReceiveInput() {
-        return state == State.PLAYABLE || state == State.WAITING;
+        return state == State.PLAYABLE || state == State.WAITING || state == State.ENDED;
     }
 
     public Finish getFinish() {
@@ -201,8 +201,6 @@ public class Ship {
             floorCollisions++;
 
             if (vel.y < -MIN_BOUNCE_VEL) {
-                System.out.println(c.toString());
-
                 vel.y = -vel.y * BOUNCE_FACTOR;
                 playBounceSound();
             }
