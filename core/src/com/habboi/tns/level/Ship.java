@@ -32,8 +32,8 @@ public class Ship {
     static final float MAX_STEER_ACCUL = 300;
     static final float JUMP_VEL = 8;
     static final float MAX_BOUNCE_JUMP_INTERVAL = 0.15f;
-    static final float MIN_BOUNCE_VEL = 0.4f;
-    static final float MIN_BOUNCE_SOUND_INTERVAL = 0.15f;
+    static final float MIN_BOUNCE_VEL = 1f;
+    static final float MIN_BOUNCE_SOUND_INTERVAL = 0.50f;
     static final float BOUNCE_FACTOR = 0.35f;
     static final Color COLOR = new Color(0xff);
     //static final Color OUTLINE_COLOR = new Color(0x1A0E74<<8 | 0xFF);
@@ -84,6 +84,10 @@ public class Ship {
         explosionSound = game.getAssetManager().get("audio/explosion.wav");
     }
 
+    public boolean canReceiveInput() {
+        return state == State.PLAYABLE || state == State.WAITING;
+    }
+
     public Finish getFinish() {
         return finish;
     }
@@ -106,6 +110,7 @@ public class Ship {
         state = State.WAITING;
         pos.set(spawnPos);
         vel.set(0, 0, 0);
+        controller.reset();
     }
 
     public void update(float dt) {
@@ -196,6 +201,8 @@ public class Ship {
             floorCollisions++;
 
             if (vel.y < -MIN_BOUNCE_VEL) {
+                System.out.println(c.toString());
+
                 vel.y = -vel.y * BOUNCE_FACTOR;
                 playBounceSound();
             }

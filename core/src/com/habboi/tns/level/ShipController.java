@@ -38,6 +38,13 @@ public class ShipController implements InputProcessor {
         return anyKey > 0;
     }
 
+    public void reset() {
+        for (int i = 0; i < NUM_KEYS; i++) {
+            keys[i] = 0;
+            prevKeys[i] = 0;
+        }
+    }
+
     public void update(float dt) {
         if (recording) {
             time += dt;

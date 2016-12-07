@@ -193,12 +193,23 @@ public class InGameState extends GameState {
             paused = !paused;
             return true;
         }
-        return (paused) ? pauseMenu.keyDown(keycode) : ship.getController().keyDown(keycode);
+
+        if (paused) {
+            return pauseMenu.keyDown(keycode);
+        }
+
+        if (ship.canReceiveInput()) {
+            return ship.getController().keyDown(keycode);
+        }
+        return false;
     }
 
     @Override
     public boolean keyUp(int keycode) {
-        return ship.getController().keyUp(keycode);
+        if (ship.canReceiveInput()) {
+            return ship.getController().keyUp(keycode);
+        }
+        return false;
     }
 
     @Override
@@ -223,7 +234,7 @@ public class InGameState extends GameState {
                     }
                 }
             }
-        } else if (ship.state == Ship.State.FELL) {
+        } else if (ship.state == Ship.State.FELL || ship.state == Ship.State.EXPLODED) {
             if (!gtm.isActive("reset")) {
                 gtm.start("reset");
             }

@@ -1,6 +1,7 @@
 package com.habboi.tns.states;
 
 import aurelienribon.tweenengine.Tween;
+import com.badlogic.gdx.graphics.Color;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
@@ -97,7 +98,10 @@ public class IntroState extends GameState {
 
     @Override
     public boolean keyDown(int keycode) {
-        timer = 0;
+        Color c = titleText.getColor();
+        c.a = 1;
+
+        game.setState(new MenuState(game, titleText, music));
         return true;
     }
 

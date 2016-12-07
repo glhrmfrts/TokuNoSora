@@ -150,6 +150,10 @@ public class LevelsMenu extends BaseMenu implements Disposable {
             item.setAction(new MenuItemAction() {
                     @Override
                     public void doAction() {
+                        if (levelToStart != null) {
+                            return;
+                        }
+
                         levelToStart = str;
                         GameTweenManager.get().start("levels_menu_start_level");
                     }
@@ -180,6 +184,8 @@ public class LevelsMenu extends BaseMenu implements Disposable {
     @Override
     public void resume() {
         super.resume();
+        levelToStart = null;
+
         DecimalFormat format = new DecimalFormat("00.00");
         for (Map.Entry<World, ArrayList<LevelMenuItem>> group : itemGroups.entrySet()) {
             for (LevelMenuItem item : group.getValue()) {
