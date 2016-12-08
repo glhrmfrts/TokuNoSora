@@ -8,36 +8,36 @@ import com.habboi.tns.rendering.GameRenderer;
  * Represents a cell in the level.
  */
 public abstract class Cell {
-  public enum TouchEffect {
-    NONE,
-    END
-  }
-
-  public static class CollisionInfo {
-    public Vector3 normal = new Vector3();
-    public float depth;
-    public float slide;
-
-    public void clear() {
-      normal.set(0, 0, 0);
-      depth = 0;
-      slide = 0;
+    public enum TouchEffect {
+        NONE,
+        END
     }
 
-    public String toString() {
-      String result = "{" + normal;
-      result += ", " + depth + ", " + slide + "}";
-      return result;
+    public static class CollisionInfo {
+        public Vector3 normal = new Vector3();
+        public float depth;
+        public float slide;
+
+        public void clear() {
+            normal.set(0, 0, 0);
+            depth = 0;
+            slide = 0;
+        }
+
+        public String toString() {
+            String result = "{" + normal;
+            result += ", " + depth + ", " + slide + "}";
+            return result;
+        }
     }
-  }
 
-  public CollisionInfo collisionInfo = new CollisionInfo();
-  public TouchEffect effect;
-  public Vector3 pos = new Vector3();
+    public CollisionInfo collisionInfo = new CollisionInfo();
+    public TouchEffect effect;
+    public Vector3 pos = new Vector3();
 
-  ModelInstance modelInstance;
+    ModelInstance modelInstance;
 
-  public abstract void reset();
-  public abstract void render(GameRenderer renderer);
-  public abstract boolean checkCollision(Ship ship);
+    public abstract void reset();
+    public abstract void render(GameRenderer renderer);
+    public abstract boolean checkCollision(Ship ship);
 }

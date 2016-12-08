@@ -13,8 +13,8 @@ import java.util.ArrayList;
  * Created by w7 on 03/07/2016.
  */
 public abstract class World implements Disposable {
-    public int gravityLevel;
-    public int oxygenFactor;
+    public float gravityFactor;
+    public float oxygenFactor;
     public String name;
     public String music;
     public ArrayList<Color> colors = new ArrayList<>();
@@ -22,8 +22,8 @@ public abstract class World implements Disposable {
     ArrayList<Model> tileModels = new ArrayList<>();
     ArrayList<Model> tunnelModels = new ArrayList<>();
 
-    public World(int gravityLevel, int oxygenFactor, String name, String music) {
-        this.gravityLevel = gravityLevel;
+    public World(float gravityFactor, float oxygenFactor, String name, String music) {
+        this.gravityFactor = gravityFactor;
         this.oxygenFactor = oxygenFactor;
         this.name = name;
         this.music = music;
