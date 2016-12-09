@@ -41,6 +41,11 @@ public abstract class World implements Disposable {
         return tileModels.get(i);
     }
 
+    public Model getTileWithTunnelsModel() {
+        // TODO: cache
+        return null;
+    }
+
     public void addTunnelModel(int[] model) {
         tunnelModels.add(Models.createTunnelModel(colors, model));
     }
