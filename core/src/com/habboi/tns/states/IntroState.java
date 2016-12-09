@@ -8,6 +8,7 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.math.Vector3;
 import com.habboi.tns.Game;
+import com.habboi.tns.GameConfig;
 import com.habboi.tns.rendering.GameRenderer;
 import com.habboi.tns.ui.GameTweenManager;
 import com.habboi.tns.ui.Rect;
@@ -91,7 +92,7 @@ public class IntroState extends GameState {
         gtm.start("intro_state_in");
 
         music = game.getAssetManager().get("audio/intro.ogg");
-        music.setVolume(1);
+        music.setVolume(GameConfig.get().getFloat("music_volume"));
         music.setLooping(true);
         music.play();
     }

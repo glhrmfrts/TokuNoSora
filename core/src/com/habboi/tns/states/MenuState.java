@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.math.Vector3;
 import com.habboi.tns.Game;
+import com.habboi.tns.GameConfig;
 import com.habboi.tns.worlds.Universe;
 import com.habboi.tns.worlds.World;
 import com.habboi.tns.rendering.GameRenderer;
@@ -72,7 +73,7 @@ public class MenuState extends GameState {
         GameTweenManager.get().start("menu_state_in");
 
         Music menuMusic = game.getAssetManager().get("audio/menu.ogg");
-        menuMusic.setVolume(1);
+        menuMusic.setVolume(GameConfig.get().getFloat("music_volume"));
         menuMusic.setLooping(true);
         menuMusic.play();
 

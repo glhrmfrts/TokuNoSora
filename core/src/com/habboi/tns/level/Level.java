@@ -45,13 +45,17 @@ public class Level {
         return world;
     }
 
-    public void addTile(Vector3 pos, Vector3 size, int outline, Tile.TouchEffect effect, int preset) {
-        Color outlineColor = Color.WHITE;
-        if (outline != -1) {
-            outlineColor = world.colors.get(outline);
+    public Color getOutlineColorForEffect(Tile.TouchEffect effect) {
+        switch (effect) {
+        case NONE:
+            return Color.WHITE;
+        default:
+            return null;
         }
-        Tile tile = new Tile(pos, size, outlineColor, effect, preset, world);
-        cells.add(tile);
+    }
+
+    public void addTile(Vector3 pos, Vector3 size, int preset, Tile.TouchEffect effect) {
+        cells.add(new Tile(pos, size, preset, getOutlineColorForEffect(effect), effect, world));
     }
 
     public void addTunnel(Vector3 pos, float depth, int preset, boolean end) {
@@ -60,6 +64,10 @@ public class Level {
             endTunnels.add(tunnel);
         }
         cells.add(tunnel);
+    }
+
+    public void addTileWithTunnels(Vector3 pos, Vector3 size, int preset, int[] tunnels, Tile.TouchEffect effect) {
+        cells.add(new TileWithTunnels(pos, size, preset, tunnels, getOutlineColorForEffect(effect), effect, world));
     }
 
     public void addFinish(Vector3 pos, float radius) {

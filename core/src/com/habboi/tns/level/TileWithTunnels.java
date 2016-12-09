@@ -12,7 +12,7 @@ import com.habboi.tns.rendering.GameRenderer;
  */
 public class TileWithTunnels extends Cell {
 
-    public TileWithTunnels(Vector3 pos, Vector3 size, Color outlineColor, TouchEffect effect, int preset, World world) {
+    public TileWithTunnels(Vector3 pos, Vector3 size, int preset, int[] tunnels, Color outlineColor, TouchEffect effect, World world) {
         size.x *= Tile.TILE_WIDTH;
         size.y *= Tile.TILE_HEIGHT;
         size.z *= Tile.TILE_DEPTH;
@@ -20,8 +20,8 @@ public class TileWithTunnels extends Cell {
         this.pos.set(pos);
         this.effect = effect;
 
-        modelInstance = new ModelInstance(world.getTileWithTunnelsModel(size, preset));
-        modelInstance.transform.setTranslation(pos.x, pos.y, pos.z);
+        modelInstance = new ModelInstance(world.getTileWithTunnelsModel(size, tunnels, preset));
+        modelInstance.transform.setTranslation(pos.x * Tile.TILE_WIDTH, pos.y * Tile.TILE_HEIGHT, -pos.z * Tile.TILE_DEPTH);
     }
 
     @Override

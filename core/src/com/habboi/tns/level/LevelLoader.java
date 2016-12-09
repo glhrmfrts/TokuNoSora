@@ -64,11 +64,7 @@ public class LevelLoader extends SynchronousAssetLoader<Level, LevelLoader.Level
                     effect = Tile.TouchEffect.values()[tile.getInt("effect")];
                 }
 
-                int outline = -1;
-                if (tile.has("outline")) {
-                    outline = tile.getInt("outline");
-                }
-                level.addTile(pos, size, outline, effect, preset);
+                level.addTile(pos, size, preset, effect);
             } else if (cell.has("finish")) {
                 JsonValue finish = cell.get("finish");
                 Vector3 pos = parseVector3(finish.getString("pos"));
@@ -86,6 +82,19 @@ public class LevelLoader extends SynchronousAssetLoader<Level, LevelLoader.Level
                 }
 
                 level.addTunnel(pos, depth, preset, end);
+            } else if (cell.has("twt")) {
+                JsonValue twt = cell.get("twt");
+                Vector3 pos = parseVector3(twt.getString("pos"));
+                Vector3 size = parseVector3(twt.getString("size"));
+                int preset = twt.getInt("preset");
+                int[] tunnels = twt.get("tunnels").asIntArray();
+
+                Cell.TouchEffect effect = Cell.TouchEffect.NONE;
+                if (twt.has("effect")) {
+                    effect = Tile.TouchEffect.values()[twt.getInt("effect")];
+                }
+
+                level.addTileWithTunnels(pos, size, preset, tunnels, effect);
             }
         }
         return level;

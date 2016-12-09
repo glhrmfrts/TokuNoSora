@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.habboi.tns.Game;
+import com.habboi.tns.GameConfig;
 import com.habboi.tns.level.LevelScore;
 import com.habboi.tns.ui.GameTweenManager;
 import com.habboi.tns.level.Ship;
@@ -157,7 +158,7 @@ public class InGameState extends GameState {
         });
 
         Music worldMusic = game.getAssetManager().get(level.getWorld().music);
-        worldMusic.setVolume(1);
+        worldMusic.setVolume(GameConfig.get().getFloat("music_volume"));
         worldMusic.setLooping(true);
         worldMusic.play();
 
