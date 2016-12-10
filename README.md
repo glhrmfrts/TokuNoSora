@@ -1,3 +1,15 @@
+### Running
+
+Desktop:
+`./gradlew desktop:run`
+
+or
+
+```sh
+./gradlew desktop:build
+java -jar desktop/build/desktop-1.0.jar
+```
+
 ### Soundtrack
 
 Intro:
