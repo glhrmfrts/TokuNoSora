@@ -24,7 +24,7 @@ public class ShipCamera {
     }
 
     public void reset() {
-        cam.position.set(ship.pos.x, ship.pos.y + DISTANCE_Y, ship.pos.z + DISTANCE_Z);
+        cam.position.set(ship.shape.pos.x, ship.shape.pos.y + DISTANCE_Y, ship.shape.pos.z + DISTANCE_Z);
     }
 
     private void setCameraPos(Vector3 pos, float dt) {
@@ -42,8 +42,8 @@ public class ShipCamera {
     }
 
     public void update(float dt) {
-        setCameraPos(ship.pos, dt);
-        cam.lookAt(cam.position.x, cam.position.y - 1, ship.pos.z);
+        setCameraPos(ship.shape.pos, dt);
+        cam.lookAt(cam.position.x, cam.position.y - 1, ship.shape.pos.z);
         cam.update();
     }
 

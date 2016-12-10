@@ -2,9 +2,10 @@ package com.habboi.tns.level;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
+import com.habboi.tns.rendering.GameRenderer;
+import com.habboi.tns.shapes.Shape;
 import com.habboi.tns.worlds.Universe;
 import com.habboi.tns.worlds.World;
-import com.habboi.tns.rendering.GameRenderer;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -80,7 +81,7 @@ public class Level {
             ship.vel.y += (GRAVITY * world.gravityFactor) * dt;
         }
         for (Cell cell : cells) {
-            if (cell.checkCollision(ship)) {
+            if (cell.getShape().checkCollision(ship.shape)) {
                 collisions.add(cell);
             }
         }
@@ -88,7 +89,7 @@ public class Level {
         Cell cell;
         while ((cell = collisions.pollFirst()) != null) {
             if (ship.handleCollision(cell)) {
-                Cell.CollisionInfo c = cell.collisionInfo;
+                Shape.CollisionInfo c = cell.getShape().getCollisionInfo();
 
                 float velNormal = ship.vel.dot(c.normal);
                 if (velNormal > 0.0f) continue;
@@ -99,10 +100,10 @@ public class Level {
 
                 float s = Math.max(c.depth - 0.01f, 0.0f);
                 Vector3 correction = new Vector3(c.normal.x * s, c.normal.y * s, c.normal.z * s);
-                ship.pos.add(correction);
+                ship.shape.pos.add(correction);
             }
         }
-        ship.pos.add(ship.vel.x * dt, ship.vel.y * dt, ship.vel.z * dt);
+        ship.shape.pos.add(ship.vel.x * dt, ship.vel.y * dt, ship.vel.z * dt);
     }
 
     public void reset() {
@@ -115,7 +116,7 @@ public class Level {
         updatePhysics(ship, dt);
 
         world.setCenterX(this.centerX);
-        world.update(ship.pos, -ship.vel.z, dt);
+        world.update(ship.shape.pos, -ship.vel.z, dt);
 
         boolean readyToEnd = ship.readyToEnd;
         for (Tunnel t : endTunnels) {

@@ -92,7 +92,7 @@ public class IntroState extends GameState {
         gtm.start("intro_state_in");
 
         music = game.getAssetManager().get("audio/intro.ogg");
-        music.setVolume(GameConfig.get().getFloat("music_volume"));
+        music.setVolume(GameConfig.get().getMusicVolume());
         music.setLooping(true);
         music.play();
     }

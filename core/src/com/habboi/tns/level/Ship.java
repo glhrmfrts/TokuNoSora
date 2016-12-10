@@ -7,7 +7,10 @@ import com.badlogic.gdx.graphics.g3d.Renderable;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.math.Vector3;
 import com.habboi.tns.Game;
+import com.habboi.tns.GameConfig;
 import com.habboi.tns.rendering.GameRenderer;
+import com.habboi.tns.shapes.Shape;
+import com.habboi.tns.shapes.TileShape;
 
 /**
  * My ship :).
@@ -17,11 +20,10 @@ public class Ship {
         WAITING, PLAYABLE, EXPLODED, FELL, ENDED
     }
     public State state = State.WAITING;
-    public Vector3 pos = new Vector3();
     public Vector3 vel = new Vector3();
-    public Vector3 half = new Vector3();
     public boolean readyToEnd;
     public float raceTime;
+    public TileShape shape;
 
     static final float BODY_WIDTH = 0.75f;
     static final float BODY_HEIGHT = 0.3f;
@@ -53,11 +55,13 @@ public class Ship {
     float steerAccul;
 
     public Ship(Game game, Vector3 pos, ShipController controller) {
-        half.set(BODY_WIDTH / 2f, BODY_HEIGHT / 2f, BODY_DEPTH / 2f);
+        shape = new TileShape(
+                              new Vector3(pos.x*TileShape.TILE_WIDTH, pos.y*TileShape.TILE_HEIGHT, -pos.z*TileShape.TILE_DEPTH),
+                              new Vector3(BODY_WIDTH, BODY_HEIGHT, BODY_DEPTH)
+                              );
+        shape.pos.z -= shape.half.z;
 
-        this.pos.set(pos.x*Tile.TILE_WIDTH, pos.y*Tile.TILE_HEIGHT, -pos.z*Tile.TILE_DEPTH);
-        this.pos.z -= half.z;
-        this.spawnPos.set(this.pos);
+        this.spawnPos.set(shape.pos);
         this.controller = controller;
         this.game = game;
 
@@ -108,7 +112,7 @@ public class Ship {
     public void reset() {
         raceTime = 0;
         state = State.WAITING;
-        pos.set(spawnPos);
+        shape.pos.set(spawnPos);
         vel.set(0, 0, 0);
         controller.reset();
     }
@@ -159,7 +163,7 @@ public class Ship {
             }
         }
 
-        if (pos.y < -5) {
+        if (shape.pos.y < -5) {
             state = Ship.State.FELL;
         }
 
@@ -175,14 +179,14 @@ public class Ship {
             return;
         }
 
-        bodyInstance.transform.setTranslation(pos);
+        bodyInstance.transform.setTranslation(shape.pos);
         renderer.render(bodyInstance);
-        outlineInstance.transform.setTranslation(pos);
+        outlineInstance.transform.setTranslation(shape.pos);
         renderer.renderGlow(outlineInstance);
     }
 
     public boolean handleCollision(Cell cell) {
-        Cell.CollisionInfo c = cell.collisionInfo;
+        Shape.CollisionInfo c = cell.getShape().getCollisionInfo();
         if (cell.effect == Cell.TouchEffect.END) {
             if (readyToEnd) {
                 state = State.ENDED;
@@ -192,7 +196,7 @@ public class Ship {
         }
         if (c.normal.z == 1 && -vel.z > MAX_VEL/2) {
             if (state == State.PLAYABLE) {
-                explosionSound.play();
+                explosionSound.play(GameConfig.get().getSfxVolume());
             }
             state = State.EXPLODED;
             return true;
@@ -224,7 +228,7 @@ public class Ship {
 
     private void playBounceSound() {
         if (dBounce > MIN_BOUNCE_SOUND_INTERVAL) {
-            bounceSound.play();
+            bounceSound.play(GameConfig.get().getSfxVolume());
             dBounce = 0;
         }
     }

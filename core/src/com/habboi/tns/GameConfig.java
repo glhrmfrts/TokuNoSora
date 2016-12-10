@@ -1,17 +1,17 @@
 package com.habboi.tns;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Preferences;
 
 public class GameConfig {
 
     private static GameConfig instance;
+    public static final String PREFERENCES_NAME = "taiho";
 
-    public Map<String, Object> values = new HashMap<>();
+    public Preferences prefs;
 
     private GameConfig() {
-        values.put("music_volume", (float)0.01f);
-        values.put("sfx_volume", (float)0.01f);
+        prefs = Gdx.app.getPreferences(PREFERENCES_NAME);
     }
 
     public static GameConfig get() {
@@ -21,7 +21,15 @@ public class GameConfig {
         return instance;
     }
 
-    public float getFloat(String key) {
-        return (float)values.get(key);
+    public Preferences getPrefs() {
+        return prefs;
+    }
+
+    public float getMusicVolume() {
+        return prefs.getFloat("music_volume", 0.5f);
+    }
+
+    public float getSfxVolume() {
+        return prefs.getFloat("sfx_volume", 0.5f);
     }
 }

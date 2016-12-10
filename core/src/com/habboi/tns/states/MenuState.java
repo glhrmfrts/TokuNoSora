@@ -73,7 +73,7 @@ public class MenuState extends GameState {
         GameTweenManager.get().start("menu_state_in");
 
         Music menuMusic = game.getAssetManager().get("audio/menu.ogg");
-        menuMusic.setVolume(GameConfig.get().getFloat("music_volume"));
+        menuMusic.setVolume(GameConfig.get().getMusicVolume());
         menuMusic.setLooping(true);
         menuMusic.play();
 

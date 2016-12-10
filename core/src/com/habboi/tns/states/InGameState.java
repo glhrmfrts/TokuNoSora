@@ -158,7 +158,7 @@ public class InGameState extends GameState {
         });
 
         Music worldMusic = game.getAssetManager().get(level.getWorld().music);
-        worldMusic.setVolume(GameConfig.get().getFloat("music_volume"));
+        worldMusic.setVolume(GameConfig.get().getMusicVolume());
         worldMusic.setLooping(true);
         worldMusic.play();
 
