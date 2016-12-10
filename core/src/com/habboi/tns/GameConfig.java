@@ -10,8 +10,8 @@ public class GameConfig {
     public Map<String, Object> values = new HashMap<>();
 
     private GameConfig() {
-        values.put("music_volume", (float)0.01f);
-        values.put("sfx_volume", (float)0.01f);
+        values.put("music_volume", (float)0.75f);
+        values.put("sfx_volume", (float)0.75f);
     }
 
     public static GameConfig get() {
