@@ -746,8 +746,8 @@ public final class Models {
 
             v1 = new VertexInfo().setPos(ix, iy, backZ).setCol(colors.get(backColor[0]));
             v2 = new VertexInfo().setPos(inx, iny, backZ).setCol(colors.get(backColor[1]));
-            v3 = new VertexInfo().setPos(inx, 1, backZ).setCol(colors.get(backColor[2]));
-            v4 = new VertexInfo().setPos(ix, 1, backZ).setCol(colors.get(backColor[3]));
+            v3 = new VertexInfo().setPos(inx, size.y*2, backZ).setCol(colors.get(backColor[2]));
+            v4 = new VertexInfo().setPos(ix, size.y*2, backZ).setCol(colors.get(backColor[3]));
             v1.setNor(0, 0, 1);
             v2.setNor(0, 0, 1);
             v3.setNor(0, 0, 1);
@@ -780,8 +780,8 @@ public final class Models {
 
             v1 = new VertexInfo().setPos(ix, iy, frontZ).setCol(colors.get(frontColor[0]));
             v2 = new VertexInfo().setPos(inx, iny, frontZ).setCol(colors.get(frontColor[1]));
-            v3 = new VertexInfo().setPos(inx, 1, frontZ).setCol(colors.get(frontColor[2]));
-            v4 = new VertexInfo().setPos(ix, 1, frontZ).setCol(colors.get(frontColor[3]));
+            v3 = new VertexInfo().setPos(inx, size.y*2, frontZ).setCol(colors.get(frontColor[2]));
+            v4 = new VertexInfo().setPos(ix, size.y*2, frontZ).setCol(colors.get(frontColor[3]));
             v1.setNor(0, 0, -1);
             v2.setNor(0, 0, -1);
             v3.setNor(0, 0, -1);
@@ -799,8 +799,8 @@ public final class Models {
                               material);
 
         v1 = new VertexInfo().setPos(-1, 0, backZ).setCol(colors.get(frontColor[0]));
-        v2 = new VertexInfo().setPos(-1, 1, backZ).setCol(colors.get(frontColor[1]));
-        v3 = new VertexInfo().setPos(-1 + TUNNEL_THICKNESS, 1, backZ).setCol(colors.get(frontColor[2]));
+        v2 = new VertexInfo().setPos(-1, size.y*2, backZ).setCol(colors.get(frontColor[1]));
+        v3 = new VertexInfo().setPos(-1 + TUNNEL_THICKNESS, size.y*2, backZ).setCol(colors.get(frontColor[2]));
         v4 = new VertexInfo().setPos(-1 + TUNNEL_THICKNESS, 0, backZ).setCol(colors.get(frontColor[3]));
         v1.setNor(0, 0, 1);
         v2.setNor(0, 0, 1);
@@ -815,8 +815,8 @@ public final class Models {
                               material);
 
         v1 = new VertexInfo().setPos(1 - TUNNEL_THICKNESS, 0, backZ).setCol(colors.get(frontColor[0]));
-        v2 = new VertexInfo().setPos(1 - TUNNEL_THICKNESS, 1, backZ).setCol(colors.get(frontColor[1]));
-        v3 = new VertexInfo().setPos(1, 1, backZ).setCol(colors.get(frontColor[2]));
+        v2 = new VertexInfo().setPos(1 - TUNNEL_THICKNESS, size.y*2, backZ).setCol(colors.get(frontColor[1]));
+        v3 = new VertexInfo().setPos(1, size.y*2, backZ).setCol(colors.get(frontColor[2]));
         v4 = new VertexInfo().setPos(1, 0, backZ).setCol(colors.get(frontColor[3]));
         v1.setNor(0, 0, 1);
         v2.setNor(0, 0, 1);
