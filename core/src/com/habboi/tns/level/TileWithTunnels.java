@@ -21,11 +21,15 @@ public class TileWithTunnels extends Cell {
         size.y *= TileShape.TILE_HEIGHT;
         size.z *= TileShape.TILE_DEPTH;
 
+        pos.x *= TileShape.TILE_WIDTH;
+        pos.y *= TileShape.TILE_HEIGHT;
+        pos.z *= -TileShape.TILE_DEPTH;
+
         this.shape = new TWTShape(pos, size, tunnels);
         this.effect = effect;
 
         modelInstance = new ModelInstance(world.getTileWithTunnelsModel(size, tunnels, preset));
-        modelInstance.transform.setTranslation(pos.x * TileShape.TILE_WIDTH, pos.y * TileShape.TILE_HEIGHT, -pos.z * TileShape.TILE_DEPTH);
+        modelInstance.transform.setTranslation(pos.x, pos.y, pos.z);
     }
 
     @Override

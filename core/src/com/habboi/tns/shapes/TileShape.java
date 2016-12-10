@@ -45,7 +45,7 @@ public class TileShape implements Shape {
 
         Shape.CollisionInfo c = collisionInfo;
         c.clear();
-        if (dx < dy && dx < dz && dy > 0.1f) {
+        if (dx < dy && dx < dz && dz > 1 && dy > 0.1f) {
             c.normal.x = Math.copySign(1, dif.x);
             c.depth = dx;
         } else if (dy < dz && dz > 1 || dy < 0.1f) {
