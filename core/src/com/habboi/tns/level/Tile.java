@@ -16,7 +16,7 @@ public class Tile extends Cell {
     Color outlineColor = new Color();
     TileShape shape;
 
-    public Tile(Vector3 pos, Vector3 size, int preset, Color outlineColor, TouchEffect effect, World world) {
+    public Tile(Vector3 pos, Vector3 size, int preset, TouchEffect effect, World world) {
         size.x *= TileShape.TILE_WIDTH;
         size.y *= TileShape.TILE_HEIGHT;
         size.z *= TileShape.TILE_DEPTH;
@@ -28,7 +28,8 @@ public class Tile extends Cell {
         shape.pos.z = -(shape.pos.z*TileShape.TILE_DEPTH + shape.half.z);
 
         this.effect = effect;
-        this.outlineColor.set(outlineColor);
+        this.effectRenderer = effect.getRenderer(this);
+        this.outlineColor.set(effect.getColor());
 
         modelInstance = new ModelInstance(world.getTileModel(preset));
         modelInstance.transform.setToScaling(size.x, size.y, size.z);

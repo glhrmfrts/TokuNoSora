@@ -34,8 +34,8 @@ import java.util.ArrayList;
  */
 public class GameRenderer implements Disposable {
     static final float FOV = 45f;
-    static final int GLOWMAP_WIDTH = 384;
-    static final int GLOWMAP_HEIGHT = 384;
+    static final int GLOWMAP_WIDTH = 512;
+    static final int GLOWMAP_HEIGHT = 512;
 
     Game game;
     PerspectiveCamera worldCam;

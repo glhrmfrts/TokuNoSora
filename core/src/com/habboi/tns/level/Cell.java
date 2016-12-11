@@ -9,11 +9,6 @@ import com.habboi.tns.shapes.Shape;
  * Represents a cell in the level.
  */
 public abstract class Cell {
-    public enum TouchEffect {
-        NONE,
-        END
-    }
-
     public TouchEffect effect;
     public Vector3 pos = new Vector3();
 

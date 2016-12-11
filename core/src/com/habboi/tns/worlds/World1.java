@@ -42,7 +42,7 @@ public class World1 extends World {
         super(2, 2, "Red Heat", "audio/world1.ogg");
         addColor(0x370737);
         addColor(0xf540ef);
-        addColor(0x5678e3);
+        addColor(0x00ff00);
         addColor(0x1a37f5);
         addColor(0x5a67c7);
         addTileModel(new int[][]{
@@ -56,6 +56,10 @@ public class World1 extends World {
         addTileModel(new int[][]{
                 new int[]{3, 3, 3, 3}, new int[]{3, 3, 3, 3}, new int[]{3, 3, 3, 3},
                 new int[]{3, 3, 3, 3}, new int[]{3, 3, 3, 3}, new int[]{3, 3, 3, 3}
+            });
+        addTileModel(new int[][]{
+                new int[]{2, 2, 2, 2}, new int[]{2, 2, 2, 2}, new int[]{2, 2, 2, 2},
+                new int[]{2, 2, 2, 2}, new int[]{2, 2, 2, 2}, new int[]{2, 2, 2, 2}
             });
         addTunnelModel(new int[]{1, 4});
 

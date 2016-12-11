@@ -23,13 +23,22 @@ import java.util.Comparator;
 public class LevelLoader extends SynchronousAssetLoader<Level, LevelLoader.LevelParameter> {
     ArrayList<String> levelsNames = new ArrayList<>();
 
-    private static Vector3 parseVector3(String str) {
+    private Vector3 parseVector3(String str) {
         String[] parts = str.split(",");
         float x = Float.parseFloat(parts[0].trim());
         float y = Float.parseFloat(parts[1].trim());
         float z = Float.parseFloat(parts[2].trim());
 
         return new Vector3(x, y, z);
+    }
+
+    private Cell.TouchEffect touchEffectFromName(String name) {
+        switch (name) {
+        case "boost":
+            return Cell.TouchEffect.BOOST;
+        default:
+            return Cell.TouchEffect.NONE;
+        }
     }
 
     public LevelLoader(FileHandleResolver resolver) {
@@ -58,11 +67,7 @@ public class LevelLoader extends SynchronousAssetLoader<Level, LevelLoader.Level
                 Vector3 pos = parseVector3(tile.getString("pos"));
                 Vector3 size = parseVector3(tile.getString("size"));
                 int preset = tile.getInt("preset");
-
-                Cell.TouchEffect effect = Cell.TouchEffect.NONE;
-                if (tile.has("effect")) {
-                    effect = Tile.TouchEffect.values()[tile.getInt("effect")];
-                }
+                Cell.TouchEffect effect = touchEffectFromName(tile.getString("effect", ""));
 
                 level.addTile(pos, size, preset, effect);
             } else if (cell.has("finish")) {
@@ -88,11 +93,7 @@ public class LevelLoader extends SynchronousAssetLoader<Level, LevelLoader.Level
                 Vector3 size = parseVector3(twt.getString("size"));
                 int preset = twt.getInt("preset");
                 int[] tunnels = twt.get("tunnels").asIntArray();
-
-                Cell.TouchEffect effect = Cell.TouchEffect.NONE;
-                if (twt.has("effect")) {
-                    effect = Tile.TouchEffect.values()[twt.getInt("effect")];
-                }
+                Cell.TouchEffect effect = touchEffectFromName(twt.getString("effect", ""));
 
                 level.addTileWithTunnels(pos, size, preset, tunnels, effect);
             }

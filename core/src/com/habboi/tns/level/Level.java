@@ -46,16 +46,18 @@ public class Level {
         return world;
     }
 
-    public Color getOutlineColorForEffect(Tile.TouchEffect effect) {
+    public Color getOutlineColorForEffect(Cell.TouchEffect effect) {
         switch (effect) {
         case NONE:
             return Color.WHITE;
+        case BOOST:
+            return Color.GREEN;
         default:
             return null;
         }
     }
 
-    public void addTile(Vector3 pos, Vector3 size, int preset, Tile.TouchEffect effect) {
+    public void addTile(Vector3 pos, Vector3 size, int preset, Cell.TouchEffect effect) {
         cells.add(new Tile(pos, size, preset, getOutlineColorForEffect(effect), effect, world));
     }
 
@@ -67,7 +69,7 @@ public class Level {
         cells.add(tunnel);
     }
 
-    public void addTileWithTunnels(Vector3 pos, Vector3 size, int preset, int[] tunnels, Tile.TouchEffect effect) {
+    public void addTileWithTunnels(Vector3 pos, Vector3 size, int preset, int[] tunnels, Cell.TouchEffect effect) {
         cells.add(new TileWithTunnels(pos, size, preset, tunnels, getOutlineColorForEffect(effect), effect, world));
     }
 

@@ -59,8 +59,8 @@ public class BlurShader implements Shader {
   public void begin(Camera camera, RenderContext context) {
     program.begin();
     program.setUniformi(u_sampler0, 0);
-    program.setUniformi(u_blurAmount, 8);
-    program.setUniformf(u_blurScale, 1.0f);
+    program.setUniformi(u_blurAmount, 10);
+    program.setUniformf(u_blurScale, 1f);
     program.setUniformf(u_blurStrength, 0.2f);
   }
 
