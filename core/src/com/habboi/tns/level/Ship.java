@@ -25,9 +25,9 @@ public class Ship {
     public float raceTime;
     public TileShape shape;
 
-    static final float BODY_WIDTH = 0.75f;
+    static final float BODY_WIDTH = 0.60f;
     static final float BODY_HEIGHT = 0.3f;
-    static final float BODY_DEPTH = 2.5f;
+    static final float BODY_DEPTH = 2.25f;
     static final float MAX_VEL = 65;
     static final float STEER_VEL = 12;
     static final float STEER_ACCELERATION = 50;

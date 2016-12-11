@@ -14,6 +14,7 @@ import com.habboi.tns.worlds.World;
  * A tile with one or more tunnels in it's body
  */
 public class TileWithTunnels extends Cell {
+    ModelInstance outlineInstance;
     TWTShape shape;
 
     public TileWithTunnels(Vector3 pos, Vector3 size, int preset, int[] tunnels, Color outlineColor, TouchEffect effect, World world) {
@@ -30,6 +31,9 @@ public class TileWithTunnels extends Cell {
 
         modelInstance = new ModelInstance(world.getTileWithTunnelsModel(size, tunnels, preset));
         modelInstance.transform.setTranslation(pos.x, pos.y, pos.z);
+
+        outlineInstance = new ModelInstance(world.getTileWithTunnelsOutlineModel(size, tunnels));
+        outlineInstance.transform.setTranslation(pos.x, pos.y, pos.z);
     }
 
     @Override
@@ -39,6 +43,7 @@ public class TileWithTunnels extends Cell {
     @Override
     public void render(GameRenderer renderer) {
         renderer.render(modelInstance);
+        renderer.renderGlow(outlineInstance);
     }
 
     @Override

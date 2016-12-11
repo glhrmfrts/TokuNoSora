@@ -25,6 +25,7 @@ public abstract class World implements Disposable {
     ArrayList<int[][]> tilePresets = new ArrayList<>();
     ArrayList<Model> tunnelModels = new ArrayList<>();
     Map<String, Model> tileWithTunnelsModels = new HashMap<>();
+    Map<String, Model> tileWithTunnelsOutlineModels = new HashMap<>();
 
     public World(float gravityFactor, float oxygenFactor, String name, String music) {
         this.gravityFactor = gravityFactor;
@@ -54,6 +55,17 @@ public abstract class World implements Disposable {
 
         Model model = Models.createTileWithTunnelsModel(colors, tilePresets.get(preset), size, tunnels);
         tileWithTunnelsModels.put(key, model);
+        return model;
+    }
+
+    public Model getTileWithTunnelsOutlineModel(Vector3 size, int[] tunnels) {
+        String key = size.toString() + tunnels.toString();
+        if (tileWithTunnelsOutlineModels.containsKey(key)) {
+            return tileWithTunnelsOutlineModels.get(key);
+        }
+
+        Model model = Models.createTileWithTunnelsOutlineModel(size, tunnels);
+        tileWithTunnelsOutlineModels.put(key, model);
         return model;
     }
 

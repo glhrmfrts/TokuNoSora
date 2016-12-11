@@ -7,8 +7,8 @@ import com.badlogic.gdx.math.Vector3;
  * Controls the camera of the ship.
  */
 public class ShipCamera {
-    static final float DISTANCE_Y = 2;
-    static final float DISTANCE_Z = 8;
+    static final float DISTANCE_Y = 1.75f;
+    static final float DISTANCE_Z = 8f;
     static final float LERP_X = 3;
     static final float LERP_Y = 3;
     static final float LERP_Z = 15;
