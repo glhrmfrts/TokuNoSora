@@ -86,6 +86,7 @@ public final class Models {
         final float front = 0.125f;
         final Material material = new Material(new BlendingAttribute(0.75f));
         material.set(ColorAttribute.createDiffuse(Color.WHITE));
+        material.set(IntAttribute.createCullFace(GL20.GL_NONE));
 
         mb.begin();
 
@@ -184,6 +185,7 @@ public final class Models {
         MeshPartBuilder partBuilder;
         final float front = 0.125f;
         final Material material = new Material(ColorAttribute.createDiffuse(Color.WHITE));
+        material.set(IntAttribute.createCullFace(GL20.GL_NONE));
 
         mb.begin();
 
@@ -257,6 +259,8 @@ public final class Models {
         mb.begin();
 
         final Material material = new Material(ColorAttribute.createDiffuse(Color.WHITE));
+        material.set(IntAttribute.createCullFace(GL20.GL_NONE));
+
         // create bottom part
         partBuilder = mb.part("bottom", GL20.GL_LINES,
                               VertexAttributes.Usage.Position | VertexAttributes.Usage.ColorPacked,
@@ -328,6 +332,7 @@ public final class Models {
         mb.begin();
 
         final Material material = new Material();
+        material.set(IntAttribute.createCullFace(GL20.GL_NONE));
 
         final int segments = TUNNEL_SEGMENTS;
         final float deltaTheta = (float)Math.PI / segments;
@@ -438,6 +443,7 @@ public final class Models {
         VertexInfo v1, v2, v3, v4;
 
         final Material material = new Material(new BlendingAttribute(true, GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA, 0.75f));
+        material.set(IntAttribute.createCullFace(GL20.GL_NONE));
 
         int[] bottomColors = colorsIndices[0];
         int[] topColors = colorsIndices[1];
@@ -621,6 +627,7 @@ public final class Models {
         VertexInfo v1, v2, v3, v4;
 
         final Material material = new Material(new BlendingAttribute(true, GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA, 0.75f));
+        material.set(IntAttribute.createCullFace(GL20.GL_NONE));
 
         int[] bottomColors = colorsIndices[0];
         int[] topColors = colorsIndices[1];
@@ -867,6 +874,7 @@ public final class Models {
         mb.begin();
 
         final Material material = new Material(ColorAttribute.createDiffuse(Color.WHITE));
+        material.set(IntAttribute.createCullFace(GL20.GL_NONE));
 
         int width = (int)size.x;
         for (int i = 0; i < width; i++) {
@@ -1028,6 +1036,8 @@ public final class Models {
         mb.begin();
 
         final Material material = new Material(ColorAttribute.createDiffuse(color));
+        material.set(IntAttribute.createCullFace(GL20.GL_NONE));
+
         MeshPartBuilder partBuilder = mb.part("line", GL20.GL_LINES,
                                               VertexAttributes.Usage.Position | VertexAttributes.Usage.ColorPacked,
                                               material);
@@ -1063,6 +1073,7 @@ public final class Models {
         color = color.cpy();
         color.a = 0.75f;
         final Material material = new Material(ColorAttribute.createDiffuse(color));
+        material.set(IntAttribute.createCullFace(GL20.GL_NONE));
         material.set(new BlendingAttribute(1));
 
         MeshPartBuilder partBuilder = mb.part("line", GL20.GL_TRIANGLES,
