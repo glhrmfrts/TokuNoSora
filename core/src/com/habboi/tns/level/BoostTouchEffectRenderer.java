@@ -42,7 +42,7 @@ public class BoostTouchEffectRenderer implements TouchEffectRenderer {
         for (int z = 0; z < depth; z++) {
             for (int x = 0; x < width; x++) {
                 Arrow arrow = new Arrow();
-                arrow.color = new Color(world.colors.get(1));
+                arrow.color = new Color(Color.GREEN);
                 arrow.instance = new ModelInstance(Models.getFloorArrowModel());
                 arrow.instance.transform.setToScaling(0.5f, 1, 1);
 

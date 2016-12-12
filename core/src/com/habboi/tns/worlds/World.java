@@ -38,6 +38,10 @@ public abstract class World implements Disposable {
         colors.add(new Color(hex<<8 | 0xff));
     }
 
+    public void addTileModel(int c) {
+        addTileModel(Models.solidTileIndices(c));
+    }
+
     public void addTileModel(int[][] model) {
         tilePresets.add(model);
         tileModels.add(Models.createTileModel(colors, model));

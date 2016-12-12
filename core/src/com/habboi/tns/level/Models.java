@@ -28,13 +28,21 @@ public final class Models {
     private static Model shipModel;
     private static Model planeModel;
     private static Model shipOutlineModel;
+    private static Model tileBoostModel;
     private static Model tileOutlineModel;
     private static Model tunnelOutlineModel;
 
     private static ModelBuilder mb;
+    private static ArrayList<Color> specialColors;
 
     static {
         mb = new ModelBuilder();
+
+        specialColors = new ArrayList<>();
+        specialColors.add(Color.GREEN);
+        specialColors.add(Color.BLUE);
+        specialColors.add(Color.RED);
+        specialColors.add(Color.BLACK);
     }
 
     public static Model getFloorArrowModel() {
@@ -297,6 +305,13 @@ public final class Models {
         partBuilder.line(-0.25f, 0.5f, 0.5f, -0.5f, -0.5f, 0.5f);
 
         return shipOutlineModel = mb.end();
+    }
+
+    public static Model getTileBoostModel() {
+        if (tileBoostModel != null) return tileBoostModel;
+
+        tileBoostModel = createTileModel(specialColors, solidTileIndices(0));
+        return tileBoostModel;
     }
 
     public static Model getTileOutlineModel() {
@@ -1175,5 +1190,12 @@ public final class Models {
         Vector3 v1 = new Vector3(p2).sub(p1);
         Vector3 v2 = new Vector3(p3).sub(p1);
         return v1.crs(v2).nor();
+    }
+
+    public static int[][] solidTileIndices(int c) {
+        return new int[][]{
+            new int[]{c, c, c, c}, new int[]{c, c, c, c}, new int[]{c, c, c, c},
+            new int[]{c, c, c, c}, new int[]{c, c, c, c}, new int[]{c, c, c, c}
+        };
     }
 }

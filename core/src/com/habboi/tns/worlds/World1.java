@@ -49,18 +49,10 @@ public class World1 extends World {
                 new int[]{0, 0, 0, 0}, new int[]{1, 0, 0, 1}, new int[]{0, 0, 0, 0},
                 new int[]{0, 0, 0, 0}, new int[]{0, 0, 0, 0}, new int[]{0, 0, 0, 0}
             });
-        addTileModel(new int[][]{
-                new int[]{4, 4, 4, 4}, new int[]{4, 4, 4, 4}, new int[]{4, 4, 4, 4},
-                new int[]{4, 4, 4, 4}, new int[]{4, 4, 4, 4}, new int[]{4, 4, 4, 4}
-            });
-        addTileModel(new int[][]{
-                new int[]{3, 3, 3, 3}, new int[]{3, 3, 3, 3}, new int[]{3, 3, 3, 3},
-                new int[]{3, 3, 3, 3}, new int[]{3, 3, 3, 3}, new int[]{3, 3, 3, 3}
-            });
-        addTileModel(new int[][]{
-                new int[]{2, 2, 2, 2}, new int[]{2, 2, 2, 2}, new int[]{2, 2, 2, 2},
-                new int[]{2, 2, 2, 2}, new int[]{2, 2, 2, 2}, new int[]{2, 2, 2, 2}
-            });
+        addTileModel(4);
+        addTileModel(3);
+        addTileModel(2);
+
         addTunnelModel(new int[]{1, 4});
 
         // create the landscape
