@@ -17,7 +17,7 @@ public class TileWithTunnels extends Cell {
     ModelInstance outlineInstance;
     TWTShape shape;
 
-    public TileWithTunnels(Vector3 pos, Vector3 size, int preset, int[] tunnels, Color outlineColor, TouchEffect effect, World world) {
+    public TileWithTunnels(Vector3 pos, Vector3 size, int preset, int[] tunnels, TouchEffect effect, World world) {
         size.x *= TileShape.TILE_WIDTH;
         size.y *= TileShape.TILE_HEIGHT;
         size.z *= TileShape.TILE_DEPTH;
@@ -37,7 +37,21 @@ public class TileWithTunnels extends Cell {
     }
 
     @Override
+    public Vector3 getPos() {
+        return shape.pos;
+    }
+
+    @Override
+    public Vector3 getSize() {
+        return shape.size;
+    }
+
+    @Override
     public void reset() {
+    }
+
+    @Override
+    public void update(float dt) {
     }
 
     @Override

@@ -24,8 +24,22 @@ public class Finish extends Cell {
     }
 
     @Override
+    public Vector3 getPos() {
+        return shape.pos;
+    }
+
+    @Override
+    public Vector3 getSize() {
+        return new Vector3(shape.radius, shape.radius, shape.radius);
+    }
+
+    @Override
     public void reset() {
 
+    }
+
+    @Override
+    public void update(float dt) {
     }
 
     @Override

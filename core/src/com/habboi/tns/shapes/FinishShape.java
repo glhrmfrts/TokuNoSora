@@ -6,11 +6,11 @@ import com.badlogic.gdx.math.Vector3;
 public class FinishShape implements Shape {
 
     public Vector3 pos = new Vector3();
+    public float radius;
 
     Vector3 dif = new Vector3();
     Vector3 closest = new Vector3();
     Vector2 n = new Vector2();
-    float radius;
 
     Shape.CollisionInfo collisionInfo = new CollisionInfo();
 

@@ -117,22 +117,30 @@ public class Ship {
         controller.reset();
     }
 
-    public void update(float dt) {
-        if (state == State.WAITING || state == State.ENDED) {
-            return;
-        }
-        if (controller.isDown(ShipController.Key.UP)) {
+    public void accelerate(boolean forward) {
+        if (forward) {
             if (vel.z > -MAX_VEL) {
                 vel.z -= 1;
             } else {
                 vel.z = -MAX_VEL;
             }
-        } else if (controller.isDown(ShipController.Key.DOWN)) {
+        } else {
             if (vel.z < 0) {
                 vel.z += 1;
             } else {
                 vel.z = 0;
             }
+        }
+    }
+
+    public void update(float dt) {
+        if (state == State.WAITING || state == State.ENDED) {
+            return;
+        }
+        if (controller.isDown(ShipController.Key.UP)) {
+            accelerate(true);
+        } else if (controller.isDown(ShipController.Key.DOWN)) {
+            accelerate(false);
         }
 
         if (floorCollisions > 0 || dBounce < MAX_BOUNCE_JUMP_INTERVAL) {
@@ -187,7 +195,7 @@ public class Ship {
 
     public boolean handleCollision(Cell cell) {
         Shape.CollisionInfo c = cell.getShape().getCollisionInfo();
-        if (cell.effect == Cell.TouchEffect.END) {
+        if (cell.effect == TouchEffect.END) {
             if (readyToEnd) {
                 state = State.ENDED;
                 finish = (Finish) cell;
@@ -207,6 +215,10 @@ public class Ship {
             if (vel.y < -MIN_BOUNCE_VEL) {
                 vel.y = -vel.y * BOUNCE_FACTOR;
                 playBounceSound();
+            }
+
+            if (cell.effect == TouchEffect.BOOST) {
+                accelerate(true);
             }
         }
         if (Math.abs(c.normal.x) == 1 && Math.abs(vel.x) > MIN_BOUNCE_VEL) {

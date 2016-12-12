@@ -1,14 +1,15 @@
-package com.habboi.tns;
+package com.habboi.tns.level;
 
 import com.badlogic.gdx.graphics.Color;
+import com.habboi.tns.worlds.World;
 
 public enum TouchEffect {
     NONE(Color.WHITE, null),
     END(Color.WHITE, null),
-    BOOST(Color.GREEN, BoostTouchEffectRenderer.class);
+    BOOST(Color.WHITE, BoostTouchEffectRenderer.class);
 
     private Color color;
-    private Class<T extends TouchEffectRenderer> rendererClass;
+    private Class<? extends TouchEffectRenderer> rendererClass;
 
     private TouchEffect(Color color, Class<? extends TouchEffectRenderer> rendererClass) {
         this.color = color;
@@ -19,10 +20,14 @@ public enum TouchEffect {
         return color;
     }
 
-    public TouchEffectRenderer getRenderer(Cell cell) {
-        TouchEffectRenderer renderer = rendererClass.newInstance();
+    public TouchEffectRenderer getRenderer(Cell cell, World world) {
+        try {
+            TouchEffectRenderer renderer = rendererClass.newInstance();
 
-        renderer.init(cell);
-        return renderer;
+            renderer.init(cell, world);
+            return renderer;
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

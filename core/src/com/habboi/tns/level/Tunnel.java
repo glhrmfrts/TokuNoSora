@@ -34,8 +34,22 @@ public class Tunnel extends Cell {
     }
 
     @Override
+    public Vector3 getPos() {
+        return shape.pos;
+    }
+
+    @Override
+    public Vector3 getSize() {
+        return new Vector3(shape.half.x, shape.half.y, shape.half.z * 2);
+    }
+
+    @Override
     public void reset() {
         shape.isInside = false;
+    }
+
+    @Override
+    public void update(float dt) {
     }
 
     @Override

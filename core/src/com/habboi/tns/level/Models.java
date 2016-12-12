@@ -41,7 +41,7 @@ public final class Models {
         if (floorArrowModel != null) return floorArrowModel;
 
         MeshPartBuilder partBuilder;
-        VertexInfo v1, v2, v3;
+        VertexInfo v1, v2, v3, v4;
 
         mb.begin();
 
@@ -53,6 +53,7 @@ public final class Models {
 
         Material material = new Material(new BlendingAttribute(0.75f));
         material.set(IntAttribute.createCullFace(GL20.GL_NONE));
+        material.set(ColorAttribute.createDiffuse(Color.WHITE));
 
         partBuilder = mb.part("main", GL20.GL_TRIANGLES,
                               VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.ColorPacked,

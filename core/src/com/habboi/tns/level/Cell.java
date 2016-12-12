@@ -10,11 +10,14 @@ import com.habboi.tns.shapes.Shape;
  */
 public abstract class Cell {
     public TouchEffect effect;
-    public Vector3 pos = new Vector3();
 
+    TouchEffectRenderer effectRenderer;
     ModelInstance modelInstance;
 
-    public abstract void reset();
-    public abstract void render(GameRenderer renderer);
+    public abstract Vector3 getPos();
+    public abstract Vector3 getSize();
     public abstract Shape getShape();
+    public abstract void reset();
+    public abstract void update(float dt);
+    public abstract void render(GameRenderer renderer);
 }

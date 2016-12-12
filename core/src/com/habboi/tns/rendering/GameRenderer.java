@@ -225,6 +225,11 @@ public class GameRenderer implements Disposable {
         glowingInstances.add(instance);
     }
 
+    public void renderGlowOnly(ModelInstance instance, Color color) {
+        setDiffuseColor(instance, color);
+        glowingInstances.add(instance);
+    }
+
     public void beginOrtho() {
         sb.begin();
         sb.setShader(shaderBasic2D.getShaderProgram());

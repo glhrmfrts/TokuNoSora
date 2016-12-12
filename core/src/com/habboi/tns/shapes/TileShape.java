@@ -8,10 +8,10 @@ public class TileShape implements Shape {
     public static final float TILE_DEPTH = 1;
     public static final float SLIDE_DISTANCE_MIN = 1.05f;
 
-    public Vector3 dif = new Vector3();
     public Vector3 half = new Vector3();
     public Vector3 pos = new Vector3();
 
+    Vector3 dif = new Vector3();
     Shape.CollisionInfo collisionInfo = new CollisionInfo();
 
     public TileShape(Vector3 pos, Vector3 size) {

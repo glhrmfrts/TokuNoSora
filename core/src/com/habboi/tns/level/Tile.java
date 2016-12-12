@@ -28,7 +28,7 @@ public class Tile extends Cell {
         shape.pos.z = -(shape.pos.z*TileShape.TILE_DEPTH + shape.half.z);
 
         this.effect = effect;
-        this.effectRenderer = effect.getRenderer(this);
+        this.effectRenderer = effect.getRenderer(this, world);
         this.outlineColor.set(effect.getColor());
 
         modelInstance = new ModelInstance(world.getTileModel(preset));
@@ -39,12 +39,31 @@ public class Tile extends Cell {
     }
 
     @Override
+    public Vector3 getPos() {
+        return shape.pos;
+    }
+
+    @Override
+    public Vector3 getSize() {
+        return new Vector3(shape.half.x*2, shape.half.y*2, shape.half.z*2);
+    }
+
+    @Override
     public void reset() {
 
     }
 
     @Override
+    public void update(float dt) {
+        if (effectRenderer != null)
+            effectRenderer.update(dt);
+    }
+
+    @Override
     public void render(GameRenderer renderer) {
+        if (effectRenderer != null)
+            effectRenderer.render(renderer);
+
         modelInstance.transform.setTranslation(shape.pos.x - shape.half.x, shape.pos.y - shape.half.y, shape.pos.z + shape.half.z);
         renderer.render(modelInstance);
 

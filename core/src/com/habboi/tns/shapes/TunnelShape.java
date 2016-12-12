@@ -9,13 +9,13 @@ public class TunnelShape implements Shape {
     public static final float TUNNEL_DEPTH = TileShape.TILE_DEPTH;
 
     public Vector3 pos = new Vector3();
+    public Vector3 half = new Vector3();
     public boolean isInside;
 
     Shape.CollisionInfo collisionInfo = new CollisionInfo();
     float depth;
     Vector3 closest = new Vector3();
     Vector3 dif = new Vector3();
-    Vector3 half = new Vector3();
     Vector2 n = new Vector2();
 
     public TunnelShape(Vector3 pos, float depth) {

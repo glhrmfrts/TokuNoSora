@@ -1,13 +1,74 @@
-package com.habboi.tns;
+package com.habboi.tns.level;
+
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.math.Vector3;
+import com.habboi.tns.rendering.GameRenderer;
+import com.habboi.tns.shapes.TileShape;
+import com.habboi.tns.worlds.World;
+
+import java.util.ArrayList;
 
 public class BoostTouchEffectRenderer implements TouchEffectRenderer {
-    Cell cell;
-    ModelInstance arrowInstance;
+    static final float HALF_X = 0.5f * TileShape.TILE_WIDTH;
+    static final float DISTANCE_Y = 0.01f;
+    static final float SPEED = 4;
 
-    public void init(Cell cell) {
+    static class Arrow {
+        Color color;
+        Vector3 pos;
+        ModelInstance instance;
+    }
+
+    ArrayList<Arrow> arrows = new ArrayList<>();
+    float baseX, baseY, baseZ;
+    Cell cell;
+    Vector3 cellPos;
+    Vector3 cellSize;
+
+    @Override
+    public void init(Cell cell, World world) {
         this.cell = cell;
 
-        arrowInstance = new ModelInstance(Models.getFloorArrowModel());
-        arrowInstance.transform.setTranslation();
+        Vector3 size = cellSize = cell.getSize();
+        float width = (int)size.x;
+        float depth = (int)size.z;
+
+        Vector3 pos = cellPos = cell.getPos();
+        baseX = pos.x - size.x * 0.5f + HALF_X;
+        baseY = pos.y + size.y * 0.5f;
+        baseZ = pos.z + size.z * 0.5f;
+
+        for (int z = 0; z < depth; z++) {
+            for (int x = 0; x < width; x++) {
+                Arrow arrow = new Arrow();
+                arrow.color = new Color(world.colors.get(1));
+                arrow.instance = new ModelInstance(Models.getFloorArrowModel());
+                arrow.instance.transform.setToScaling(0.5f, 1, 1);
+
+                arrow.pos = new Vector3(baseX + x, baseY + DISTANCE_Y, baseZ - z);
+                arrows.add(arrow);
+            }
+        }
+    }
+
+    @Override
+    public void update(float dt) {
+        for (Arrow arrow : arrows) {
+            arrow.pos.z -= SPEED * dt;
+
+            if (arrow.pos.z <= baseZ - cellSize.z + 1f) {
+                arrow.pos.z = baseZ;
+            }
+        }
+    }
+
+    @Override
+    public void render(GameRenderer renderer) {
+        for (Arrow arrow : arrows) {
+            arrow.instance.transform.setTranslation(arrow.pos.x, arrow.pos.y, arrow.pos.z);
+            renderer.render(arrow.instance, arrow.color);
+            renderer.renderGlow(arrow.instance);
+        }
     }
 }

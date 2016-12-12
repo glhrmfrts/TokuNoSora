@@ -32,12 +32,12 @@ public class LevelLoader extends SynchronousAssetLoader<Level, LevelLoader.Level
         return new Vector3(x, y, z);
     }
 
-    private Cell.TouchEffect touchEffectFromName(String name) {
+    private TouchEffect touchEffectFromName(String name) {
         switch (name) {
         case "boost":
-            return Cell.TouchEffect.BOOST;
+            return TouchEffect.BOOST;
         default:
-            return Cell.TouchEffect.NONE;
+            return TouchEffect.NONE;
         }
     }
 
@@ -67,7 +67,7 @@ public class LevelLoader extends SynchronousAssetLoader<Level, LevelLoader.Level
                 Vector3 pos = parseVector3(tile.getString("pos"));
                 Vector3 size = parseVector3(tile.getString("size"));
                 int preset = tile.getInt("preset");
-                Cell.TouchEffect effect = touchEffectFromName(tile.getString("effect", ""));
+                TouchEffect effect = touchEffectFromName(tile.getString("effect", ""));
 
                 level.addTile(pos, size, preset, effect);
             } else if (cell.has("finish")) {
@@ -93,7 +93,7 @@ public class LevelLoader extends SynchronousAssetLoader<Level, LevelLoader.Level
                 Vector3 size = parseVector3(twt.getString("size"));
                 int preset = twt.getInt("preset");
                 int[] tunnels = twt.get("tunnels").asIntArray();
-                Cell.TouchEffect effect = touchEffectFromName(twt.getString("effect", ""));
+                TouchEffect effect = touchEffectFromName(twt.getString("effect", ""));
 
                 level.addTileWithTunnels(pos, size, preset, tunnels, effect);
             }

@@ -7,12 +7,14 @@ import java.util.ArrayList;
 public class TWTShape implements Shape {
 
     public Vector3 pos = new Vector3();
+    public Vector3 size = new Vector3();
 
     Shape.CollisionInfo collisionInfo;
     ArrayList<Shape> shapes = new ArrayList<>();
 
     public TWTShape(Vector3 pos, Vector3 size, int[] tunnels) {
         this.pos.set(pos);
+        this.size.set(size);
 
         int width = (int)size.x;
         for (int i = 0; i < width; i++) {
