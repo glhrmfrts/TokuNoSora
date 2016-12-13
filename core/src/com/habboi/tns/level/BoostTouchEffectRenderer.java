@@ -67,8 +67,7 @@ public class BoostTouchEffectRenderer implements TouchEffectRenderer {
     public void render(GameRenderer renderer) {
         for (Arrow arrow : arrows) {
             arrow.instance.transform.setTranslation(arrow.pos.x, arrow.pos.y, arrow.pos.z);
-            renderer.render(arrow.instance, arrow.color);
-            renderer.renderGlow(arrow.instance);
+            renderer.renderGlow(arrow.instance, arrow.color);
         }
     }
 }

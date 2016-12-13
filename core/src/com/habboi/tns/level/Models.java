@@ -24,11 +24,13 @@ public final class Models {
     private static float TUNNEL_THICKNESS = 0.1f;
 
     private static Model floorArrowModel;
+    private static Model floorCircleModel;
     private static Model sunModel;
     private static Model shipModel;
     private static Model planeModel;
     private static Model shipOutlineModel;
     private static Model tileBoostModel;
+    private static Model tileFuelModel;
     private static Model tileOutlineModel;
     private static Model tunnelOutlineModel;
 
@@ -89,6 +91,40 @@ public final class Models {
         partBuilder.rect(v1, v2, v3, v4);
 
         return floorArrowModel = mb.end();
+    }
+
+    public static Model getFloorCircleModel() {
+        if (floorCircleModel != null) return floorCircleModel;
+
+        MeshPartBuilder partBuilder;
+
+        mb.begin();
+
+        final int segments = SUN_SEGMENTS;
+        final float deltaTheta = 2*(float)Math.PI / segments;
+        final Material material = new Material(IntAttribute.createCullFace(GL20.GL_NONE));
+        material.set(ColorAttribute.createDiffuse(Color.WHITE));
+
+        float theta = 0;
+        float x = 1;
+        float z = 0;
+
+        for (int i = 0; i < segments; i++) {
+            theta += deltaTheta;
+            float nx = (float)Math.cos(theta);
+            float nz = (float)Math.sin(theta);
+
+            partBuilder = mb.part("segment" + i, GL20.GL_LINES,
+                                  VertexAttributes.Usage.Position | VertexAttributes.Usage.ColorPacked,
+                                  material);
+            partBuilder.setColor(Color.WHITE);
+            partBuilder.line(x, 0, z, nx, 0, nz);
+
+            x = nx;
+            z = nz;
+        }
+
+        return floorCircleModel = mb.end();
     }
 
     public static Model getSunModel() {
@@ -312,6 +348,13 @@ public final class Models {
 
         tileBoostModel = createTileModel(specialColors, solidTileIndices(0));
         return tileBoostModel;
+    }
+
+    public static Model getTileFuelModel() {
+        if (tileFuelModel != null) return tileFuelModel;
+
+        tileFuelModel = createTileModel(specialColors, solidTileIndices(1));
+        return tileFuelModel;
     }
 
     public static Model getTileOutlineModel() {

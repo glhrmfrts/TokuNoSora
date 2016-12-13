@@ -10,6 +10,14 @@
                 "pos":"49,2,-2",
                 "size":"5,1,10",
                 "preset":0,
+                "effect":"fuel"
+            }
+        },
+        {
+            "tile":{
+                "pos":"49,2,8",
+                "size":"5,1,10",
+                "preset":0,
                 "effect":"boost"
             }
         }

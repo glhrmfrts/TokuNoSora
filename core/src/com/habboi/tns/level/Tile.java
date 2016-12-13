@@ -35,6 +35,8 @@ public class Tile extends Cell {
         Model model;
         if (effect == TouchEffect.BOOST) {
             model = Models.getTileBoostModel();
+        } else if (effect == TouchEffect.FUEL) {
+            model = Models.getTileFuelModel();
         } else {
             model = world.getTileModel(preset);
         }

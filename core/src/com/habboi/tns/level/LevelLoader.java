@@ -36,6 +36,8 @@ public class LevelLoader extends SynchronousAssetLoader<Level, LevelLoader.Level
         switch (name) {
         case "boost":
             return TouchEffect.BOOST;
+        case "fuel":
+            return TouchEffect.FUEL;
         default:
             return TouchEffect.NONE;
         }
