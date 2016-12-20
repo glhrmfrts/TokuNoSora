@@ -11,90 +11,90 @@ import aurelienribon.tweenengine.TweenManager;
  * Manage which tweens are active.
  */
 public class GameTweenManager {
-  public static abstract class GameTween {
-    boolean played;
-    String[] friends;
+    public static abstract class GameTween {
+        boolean played;
+        String[] friends;
 
-    public GameTween() {
+        public GameTween() {
+        }
+
+        public GameTween(String[] friends) {
+            this.friends = friends;
+        }
+
+        public abstract Tween tween();
+        public abstract void onComplete();
+    }
+    private static GameTweenManager instance;
+
+    private HashMap<String, GameTween> tweens;
+    private HashMap<String, Tween> active;
+    private TweenManager tm;
+
+    public static GameTweenManager get() {
+        if (instance == null) {
+            instance = new GameTweenManager();
+        }
+        return instance;
     }
 
-    public GameTween(String[] friends) {
-      this.friends = friends;
+    private GameTweenManager() {
+        tweens = new HashMap<>();
+        active = new HashMap<>();
+        tm = new TweenManager();
     }
 
-    public abstract Tween tween();
-    public abstract void onComplete();
-  }
-  private static GameTweenManager instance;
-
-  private HashMap<String, GameTween> tweens;
-  private HashMap<String, Tween> active;
-  private TweenManager tm;
-
-  public static GameTweenManager get() {
-    if (instance == null) {
-      instance = new GameTweenManager();
+    public GameTweenManager register(String name, GameTween tween) {
+        tweens.put(name, tween);
+        return this;
     }
-    return instance;
-  }
 
-  private GameTweenManager() {
-    tweens = new HashMap<>();
-    active = new HashMap<>();
-    tm = new TweenManager();
-  }
-
-  public GameTweenManager register(String name, GameTween tween) {
-    tweens.put(name, tween);
-    return this;
-  }
-
-  public boolean isActive(String name) {
-    return active.containsKey(name);
-  }
-
-  public boolean played(String name) {
-    return tweens.get(name).played;
-  }
-
-  public void remove(String name) {
-    tweens.remove(name);
-  }
-
-  public void start(final String name) {
-    final GameTween gt = tweens.get(name);
-    Tween tween = gt.tween();
-    tween.setCallbackTriggers(TweenCallback.COMPLETE);
-    tween.setCallback(new TweenCallback() {
-      @Override
-      public void onEvent(int i, BaseTween<?> baseTween) {
-        active.remove(name);
-        gt.onComplete();
-      }
-    });
-    tween.start(tm);
-    gt.played = true;
-    active.put(name, tween);
-    if (gt.friends != null) {
-      for (String friend : gt.friends) {
-        start(friend);
-      }
+    public boolean isActive(String name) {
+        return active.containsKey(name);
     }
-  }
 
-  public void restart(final String name) {
-    if (isActive(name)) {
-      active.get(name).start(tm);
-    } else {
-      start(name);
+    public boolean played(String name) {
+        return tweens.get(name).played;
     }
-  }
 
-  public void update(float dt) {
-    tm.update(dt);
-  }
+    public void remove(String name) {
+        tweens.remove(name);
+    }
 
-  public TweenManager getTweenManager() {
-    return tm;
-  }
+    public void start(final String name) {
+        final GameTween gt = tweens.get(name);
+        Tween tween = gt.tween();
+        tween.setCallbackTriggers(TweenCallback.COMPLETE);
+        tween.setCallback(new TweenCallback() {
+                @Override
+                public void onEvent(int i, BaseTween<?> baseTween) {
+                    active.remove(name);
+                    gt.onComplete();
+                }
+            });
+        tween.start(tm);
+        gt.played = true;
+        active.put(name, tween);
+        if (gt.friends != null) {
+            for (String friend : gt.friends) {
+                start(friend);
+            }
+        }
+    }
+
+    public void restart(final String name) {
+        if (isActive(name)) {
+            active.get(name).start(tm);
+        } else {
+            start(name);
+        }
+    }
+
+    public void update(float dt) {
+        tm.update(dt);
+    }
+
+    public TweenManager getTweenManager() {
+        return tm;
+    }
 }

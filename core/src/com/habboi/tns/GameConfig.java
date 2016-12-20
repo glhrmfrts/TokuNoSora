@@ -26,10 +26,10 @@ public class GameConfig {
     }
 
     public float getMusicVolume() {
-        return prefs.getFloat("music_volume", 0f);
+        return prefs.getFloat("music_volume", 0.5f);
     }
 
     public float getSfxVolume() {
-        return prefs.getFloat("sfx_volume", 0f);
+        return prefs.getFloat("sfx_volume", 0.5f);
     }
 }

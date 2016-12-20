@@ -12,49 +12,21 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
 /**
  * Created by w7 on 13/06/2016.
  */
-public class BlurShader implements Shader {
+public class FXAAShader implements Shader {
     ShaderProgram program;
     int u_sampler0;
-    int u_texelSize;
-    int u_orientation;
-    int u_blurAmount;
-    int u_blurScale;
-    int u_blurStrength;
+    int u_resolution;
 
     @Override
     public void init() {
         String vert = Gdx.files.internal("shaders/image.vert.glsl").readString();
-        String frag = Gdx.files.internal("shaders/blur.frag.glsl").readString();
+        String frag = Gdx.files.internal("shaders/fxaa.frag.glsl").readString();
         program = new ShaderProgram(vert, frag);
         if (!program.isCompiled()) {
             throw new GdxRuntimeException(program.getLog());
         }
         u_sampler0 = program.getUniformLocation("u_sampler0");
-        u_texelSize = program.getUniformLocation("u_texelSize");
-        u_orientation = program.getUniformLocation("u_orientation");
-        u_blurAmount = program.getUniformLocation("u_blurAmount");
-        u_blurScale = program.getUniformLocation("u_blurScale");
-        u_blurStrength = program.getUniformLocation("u_blurStrength");
-    }
-
-    public void setOrientation(int orientation) {
-        program.setUniformi(u_orientation, orientation);
-    }
-
-    public void setAmount(int amount) {
-        program.setUniformi(u_blurAmount, amount);
-    }
-
-    public void setScale(float scale) {
-        program.setUniformf(u_blurScale, scale);
-    }
-
-    public void setStrength(float strength) {
-        program.setUniformf(u_blurStrength, strength);
-    }
-
-    public void setImageSize(Vector2 imageSize) {
-        program.setUniformf(u_texelSize, 1.0f/imageSize.x, 1.0f/imageSize.y);
+        u_resolution = program.getUniformLocation("u_resolution");
     }
 
     @Override
@@ -69,15 +41,13 @@ public class BlurShader implements Shader {
 
     @Override
     public void begin(Camera camera, RenderContext context) {
-        begin(camera, context, 10, 1f, 0.2f);
+
     }
 
-    public void begin(Camera camera, RenderContext context, int amount, float scale, float strength) {
+    public void begin(Camera camera, RenderContext context, Vector2 resolution) {
         program.begin();
         program.setUniformi(u_sampler0, 0);
-        program.setUniformi(u_blurAmount, amount);
-        program.setUniformf(u_blurScale, scale);
-        program.setUniformf(u_blurStrength, strength);
+        program.setUniformf(u_resolution, resolution.x, resolution.y);
     }
 
     @Override

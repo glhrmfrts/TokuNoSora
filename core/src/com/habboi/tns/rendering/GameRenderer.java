@@ -46,10 +46,14 @@ public class GameRenderer implements Disposable {
     FrameBuffer fboDefault;
     FrameBuffer fboGlow;
     FrameBuffer fboBlur;
+    FrameBuffer fboGlobalBlur;
+    FrameBuffer fboFxaa;
     BasicShader shaderBasic;
     Basic2DShader shaderBasic2D;
     GlowShader shaderGlow;
     BlurShader shaderBlur;
+    FXAAShader shaderFXAA;
+    Vector2 resolution;
     Rect screenRect;
     ModelInstance screenSurface;
     ArrayList<ModelInstance> occludingInstances = new ArrayList<>();
@@ -69,21 +73,26 @@ public class GameRenderer implements Disposable {
         batch = new ModelBatch();
         sb = new SpriteBatch();
         fboDefault = new FrameBuffer(Pixmap.Format.RGB888, game.getWidth(), game.getHeight(), true);
-        fboGlow = new FrameBuffer(Pixmap.Format.RGBA8888, GLOWMAP_WIDTH, GLOWMAP_HEIGHT, true);
-        fboBlur = new FrameBuffer(Pixmap.Format.RGBA8888, GLOWMAP_WIDTH, GLOWMAP_HEIGHT, false);
+        fboGlow = new FrameBuffer(Pixmap.Format.RGBA8888, game.getWidth(), game.getHeight(), true);
+        fboBlur = new FrameBuffer(Pixmap.Format.RGBA8888, game.getWidth(), game.getHeight(), false);
+        fboGlobalBlur = new FrameBuffer(Pixmap.Format.RGBA8888, game.getWidth(), game.getHeight(), false);
+        fboFxaa = new FrameBuffer(Pixmap.Format.RGBA8888, game.getWidth(), game.getHeight(), false);
 
         shaderBasic2D = new Basic2DShader();
         shaderBasic = new BasicShader();
         shaderBlur = new BlurShader();
         shaderGlow = new GlowShader();
+        shaderFXAA = new FXAAShader();
         shaderBasic2D.init();
         shaderBasic.init();
         shaderBlur.init();
         shaderGlow.init();
+        shaderFXAA.init();
         shaderBlur.begin(null, null);
         shaderBlur.setImageSize(new Vector2(GLOWMAP_WIDTH, GLOWMAP_HEIGHT));
         shaderBlur.end();
 
+        resolution = new Vector2(game.getWidth(), game.getHeight());
         screenRect = new Rect(new Rectangle(0, 0, game.getWidth(), game.getHeight()));
         screenSurface = new ModelInstance(createScreenSurfaceModel());
 
@@ -182,15 +191,43 @@ public class GameRenderer implements Disposable {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         // blend the glowmap with the rendered scene
+        fboBlur.begin();
+
         shaderGlow.begin(null, null);
         fboDefault.getColorBufferTexture().bind(0);
         fboGlow.getColorBufferTexture().bind(1);
         shaderGlow.render(tmpRenderable);
         shaderGlow.end();
 
+        fboBlur.end();
+        Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
+
+        // global blur
+        fboGlobalBlur.begin();
+        shaderBlur.begin(null, null, 10, 0.25f, 0.1f);
+
+        fboBlur.getColorBufferTexture().bind(0);
+        shaderBlur.setOrientation(0);
+        shaderBlur.render(tmpRenderable);
+
+        fboGlobalBlur.end();
+
+        fboFxaa.begin();
+
+        fboGlobalBlur.getColorBufferTexture().bind(0);
+        shaderBlur.setOrientation(1);
+        shaderBlur.render(tmpRenderable);
+        shaderBlur.end();
+
+        fboFxaa.end();
+
+        shaderFXAA.begin(null, null, resolution);
+        fboFxaa.getColorBufferTexture().bind(0);
+        shaderFXAA.render(tmpRenderable);
+        shaderFXAA.end();
+
         // re-enable depth checks and writes
         Gdx.gl.glDepthMask(true);
-        Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
     }
 
     public void setDiffuseColor(ModelInstance instance, Color color) {

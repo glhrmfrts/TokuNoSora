@@ -7,11 +7,12 @@ import com.badlogic.gdx.math.Vector3;
  * Controls the camera of the ship.
  */
 public class ShipCamera {
-    static final float DISTANCE_Y = 1.75f;
-    static final float DISTANCE_Z = 8f;
-    static final float LERP_X = 3;
+    static final float DISTANCE_Y = 1f;
+    static final float DISTANCE_Z = 4f;
+    static final float LERP_X = 5;
     static final float LERP_Y = 3;
     static final float LERP_Z = 15;
+    static final float LOOK_AT_OFFSET = 2;
     Ship ship;
     PerspectiveCamera cam;
 
@@ -43,7 +44,7 @@ public class ShipCamera {
 
     public void update(float dt) {
         setCameraPos(ship.shape.pos, dt);
-        cam.lookAt(cam.position.x, cam.position.y - 1, ship.shape.pos.z);
+        cam.lookAt(cam.position.x, cam.position.y, ship.shape.pos.z - LOOK_AT_OFFSET);
         cam.update();
     }
 

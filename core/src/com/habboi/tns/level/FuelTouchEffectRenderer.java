@@ -18,19 +18,19 @@ public class FuelTouchEffectRenderer implements TouchEffectRenderer {
     @Override
     public void init(Cell cell, World world) {
         Vector3 size = cell.getSize();
-        float width = (int)size.x * 2;
-        float depth = (int)size.z * 2;
+        float width = (int)size.x;
+        float depth = (int)size.z;
 
         Vector3 pos = cell.getPos();
-        float baseX = pos.x - size.x * 0.5f + 0.25f;
+        float baseX = pos.x - size.x * 0.5f + 0.5f;
         float baseY = pos.y + size.y * 0.5f;
         float baseZ = pos.z + size.z * 0.5f;
 
         for (int z = 0; z < depth; z++) {
             for (int x = 0; x < width; x++) {
                 ModelInstance circle = new ModelInstance(Models.getFloorCircleModel());
-                circle.transform.setToScaling(0.25f, 1, 0.25f);
-                circle.transform.setTranslation(baseX + ((float)x * 0.5f), baseY + DISTANCE_Y, baseZ - ((float)z * 0.5f));
+                circle.transform.setToScaling(0.5f, 1, 0.5f);
+                circle.transform.setTranslation(baseX + (float)x, baseY + DISTANCE_Y, baseZ - (float)z);
 
                 circleInstances.add(circle);
             }
@@ -45,7 +45,7 @@ public class FuelTouchEffectRenderer implements TouchEffectRenderer {
     @Override
     public void render(GameRenderer renderer) {
         for (ModelInstance circle : circleInstances) {
-            //renderer.renderGlow(circle, Color.BLUE);
+            renderer.renderGlow(circle, Color.BLUE);
         }
     }
 }
