@@ -8,7 +8,7 @@ import com.badlogic.gdx.math.Vector3;
  */
 public class ShipCamera {
     static final float DISTANCE_Y = 1f;
-    static final float DISTANCE_Z = 4f;
+    static final float DISTANCE_Z = 5f;
     static final float LERP_X = 5;
     static final float LERP_Y = 3;
     static final float LERP_Z = 15;

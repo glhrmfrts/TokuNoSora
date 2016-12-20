@@ -100,7 +100,7 @@ public final class Models {
 
         mb.begin();
 
-        final int segments = SUN_SEGMENTS;
+        final int segments = 12;
         final float deltaTheta = 2*(float)Math.PI / segments;
         final Material material = new Material(IntAttribute.createCullFace(GL20.GL_NONE));
         material.set(ColorAttribute.createDiffuse(Color.WHITE));
