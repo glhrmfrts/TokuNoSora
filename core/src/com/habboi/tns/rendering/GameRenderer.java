@@ -47,7 +47,6 @@ public class GameRenderer implements Disposable {
     FrameBuffer fboGlow;
     FrameBuffer fboBlur;
     FrameBuffer fboGlobalBlur;
-    FrameBuffer fboFxaa;
     BasicShader shaderBasic;
     Basic2DShader shaderBasic2D;
     GlowShader shaderGlow;
@@ -76,7 +75,6 @@ public class GameRenderer implements Disposable {
         fboGlow = new FrameBuffer(Pixmap.Format.RGBA8888, game.getWidth(), game.getHeight(), true);
         fboBlur = new FrameBuffer(Pixmap.Format.RGBA8888, game.getWidth(), game.getHeight(), false);
         fboGlobalBlur = new FrameBuffer(Pixmap.Format.RGBA8888, game.getWidth(), game.getHeight(), false);
-        fboFxaa = new FrameBuffer(Pixmap.Format.RGBA8888, game.getWidth(), game.getHeight(), false);
 
         shaderBasic2D = new Basic2DShader();
         shaderBasic = new BasicShader();
@@ -144,85 +142,101 @@ public class GameRenderer implements Disposable {
 
     public void end() {
         batch.end();
+        fboDefault.end();
 
-        // draw glowing geometry
-        shaderBasic.begin(worldCam, null);
-        fboGlow.begin();
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
+        boolean isNice = GameConfig.get().getGraphicsLevel() == GRAPHIC_LEVEL_NICE;
+        if (isNice) {
 
-        Gdx.gl.glDisable(GL20.GL_CULL_FACE);
-        Gdx.gl.glColorMask(false, false, false, false);
-        for (ModelInstance inst : occludingInstances) {
-            inst.getRenderable(tmpRenderable);
-            shaderBasic.render(tmpRenderable);
+            // draw glowing geometry
+            fboGlow.begin();
+            shaderBasic.begin(worldCam, null);
+
+            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
+
+            Gdx.gl.glDisable(GL20.GL_CULL_FACE);
+            Gdx.gl.glColorMask(false, false, false, false);
+            for (ModelInstance inst : occludingInstances) {
+                inst.getRenderable(tmpRenderable);
+                shaderBasic.render(tmpRenderable);
+            }
+
+            Gdx.gl.glColorMask(true, true, true, true);
+            for (ModelInstance inst : glowingInstances) {
+                inst.getRenderable(tmpRenderable);
+                shaderBasic.render(tmpRenderable);
+            }
+            Gdx.gl.glEnable(GL20.GL_CULL_FACE);
+
+            shaderBasic.end();
+            fboGlow.end();
         }
-
-        Gdx.gl.glColorMask(true, true, true, true);
-        for (ModelInstance inst : glowingInstances) {
-            inst.getRenderable(tmpRenderable);
-            shaderBasic.render(tmpRenderable);
-        }
-        Gdx.gl.glEnable(GL20.GL_CULL_FACE);
-        shaderBasic.end();
 
         // the only renderable used from here on is the screen surface
         screenSurface.getRenderable(tmpRenderable);
 
-        // blur the glowmap (disables depth checks and writes)
-        Gdx.gl.glDepthMask(false);
-        shaderBlur.begin(null, null);
-        fboBlur.begin();
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        if (isNice) {
+            shaderBlur.begin(null, null);
+            fboBlur.begin();
 
-        fboGlow.getColorBufferTexture().bind(0);
-        shaderBlur.setOrientation(0);
-        shaderBlur.render(tmpRenderable);
+            // blur the glowmap (disables depth checks and writes)
+            Gdx.gl.glDepthMask(false);
+            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        // mix with vertical blur
-        fboGlow.begin();
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+            fboGlow.getColorBufferTexture().bind(0);
+            shaderBlur.setOrientation(0);
+            shaderBlur.render(tmpRenderable);
 
-        fboBlur.getColorBufferTexture().bind(0);
-        shaderBlur.setOrientation(1);
-        shaderBlur.render(tmpRenderable);
-        fboGlow.end();
-        shaderBlur.end();
+            fboBlur.end();
 
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+            // mix with vertical blur
+            fboGlow.begin();
+            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        // blend the glowmap with the rendered scene
-        fboBlur.begin();
+            fboBlur.getColorBufferTexture().bind(0);
+            shaderBlur.setOrientation(1);
+            shaderBlur.render(tmpRenderable);
 
-        shaderGlow.begin(null, null);
-        fboDefault.getColorBufferTexture().bind(0);
-        fboGlow.getColorBufferTexture().bind(1);
-        shaderGlow.render(tmpRenderable);
-        shaderGlow.end();
+            fboGlow.end();
+            shaderBlur.end();
 
-        fboBlur.end();
-        Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
+            // blend the glowmap with the rendered scene
+            fboBlur.begin();
+            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        // global blur
-        fboGlobalBlur.begin();
-        shaderBlur.begin(null, null, 10, 0.25f, 0.1f);
+            shaderGlow.begin(null, null);
+            fboDefault.getColorBufferTexture().bind(0);
+            fboGlow.getColorBufferTexture().bind(1);
+            shaderGlow.render(tmpRenderable);
+            shaderGlow.end();
 
-        fboBlur.getColorBufferTexture().bind(0);
-        shaderBlur.setOrientation(0);
-        shaderBlur.render(tmpRenderable);
+            fboBlur.end();
+            Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
 
-        fboGlobalBlur.end();
+            // global blur
+            shaderBlur.begin(null, null, 10, 0.25f, 0.1f);
 
-        fboFxaa.begin();
+            fboGlobalBlur.begin();
+            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        fboGlobalBlur.getColorBufferTexture().bind(0);
-        shaderBlur.setOrientation(1);
-        shaderBlur.render(tmpRenderable);
-        shaderBlur.end();
+            fboBlur.getColorBufferTexture().bind(0);
+            shaderBlur.setOrientation(0);
+            shaderBlur.render(tmpRenderable);
 
-        fboFxaa.end();
+            fboGlobalBlur.end();
+
+            fboDefault.begin();
+            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+            fboGlobalBlur.getColorBufferTexture().bind(0);
+            shaderBlur.setOrientation(1);
+            shaderBlur.render(tmpRenderable);
+            shaderBlur.end();
+
+            fboDefault.end();
+        }
 
         shaderFXAA.begin(null, null, resolution);
-        fboFxaa.getColorBufferTexture().bind(0);
+        fboDefault.getColorBufferTexture().bind(0);
         shaderFXAA.render(tmpRenderable);
         shaderFXAA.end();
 
