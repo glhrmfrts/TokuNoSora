@@ -15,6 +15,14 @@ public class MusicWrapper {
 
     public MusicWrapper(Music music) {
         this.music = music;
+
+        EventEmitter.get().listen("music_volume_update", new EventEmitter.EventHandler() {
+                @Override
+                public void onEvent(Object value) {
+                    MusicWrapper.this.music.setVolume((float)value);
+                }
+        });
+
         if (!registered) {
             registered = true;
             Tween.registerAccessor(MusicWrapper.class, new MusicAccessor());

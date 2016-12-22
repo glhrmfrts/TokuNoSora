@@ -10,6 +10,7 @@ import com.habboi.tns.Game;
 import com.habboi.tns.GameConfig;
 import com.habboi.tns.states.MenuState;
 import com.habboi.tns.utils.FontManager;
+import com.habboi.tns.utils.EventEmitter;
 
 import aurelienribon.tweenengine.Tween;
 import aurelienribon.tweenengine.TweenEquations;
@@ -40,6 +41,7 @@ public class OptionsMenu extends BaseMenu implements Disposable {
                 @Override
                 public void doAction() {
                     GameConfig.get().setMusicVolume(musicItem.getValue());
+                    EventEmitter.get().notify("music_volume_update", musicItem.getValue());
                 }
             });
         items.add(musicItem);
