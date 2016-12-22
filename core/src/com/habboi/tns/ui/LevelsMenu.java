@@ -264,6 +264,10 @@ public class LevelsMenu extends BaseMenu implements Disposable {
         }
     }
 
+    @Override
+    public void remove() {
+    }
+
     public void dispose() {
         GameTweenManager.get().remove("levels_menu_select_menu");
         GameTweenManager.get().remove("levels_menu_select_menu_border");

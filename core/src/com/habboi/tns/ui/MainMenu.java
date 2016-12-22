@@ -42,7 +42,12 @@ public class MainMenu extends BaseMenu implements Disposable {
             }));
         y -= bnds.height;
         bnds.y -= bnds.height;
-        items.add(new MainMenuItem("options", x, y, bnds));
+        items.add(new MainMenuItem("options", x, y, bnds).setAction(new MenuItemAction() {
+                @Override
+                public void doAction() {
+                    state.addMenu(new OptionsMenu(state, game));
+                }
+            }));
         y -= bnds.height;
         bnds.y -= bnds.height;
         items.add(new MainMenuItem("credits", x, y, bnds));
@@ -113,6 +118,10 @@ public class MainMenu extends BaseMenu implements Disposable {
             menuState.getGame().exit();
         }
         return super.keyDown(keycode);
+    }
+
+    @Override
+    public void remove() {
     }
 
     public void dispose() {

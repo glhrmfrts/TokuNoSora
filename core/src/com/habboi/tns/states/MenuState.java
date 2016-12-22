@@ -94,6 +94,7 @@ public class MenuState extends GameState {
 
     public Menu popMenu() {
         Menu m = menuStack.pop();
+        m.remove();
         return m;
     }
 

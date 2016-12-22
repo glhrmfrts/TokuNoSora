@@ -70,10 +70,12 @@ public class Rect {
         sr.setColor(color);
         float x = rect.x;
         float y = rect.y;
+
         if (center) {
             x -= rect.width/2;
             y -= rect.height/2;
         }
+
         sr.rect(x, y, rect.width, rect.height);
         sr.end();
 

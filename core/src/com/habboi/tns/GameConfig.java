@@ -32,4 +32,12 @@ public class GameConfig {
     public float getSfxVolume() {
         return prefs.getFloat("sfx_volume", 0.5f);
     }
+
+    public void setMusicVolume(float value) {
+        prefs.putFloat("music_volume", value);
+    }
+
+    public void setSfxVolume(float value) {
+        prefs.putFloat("sfx_volume", value);
+    }
 }

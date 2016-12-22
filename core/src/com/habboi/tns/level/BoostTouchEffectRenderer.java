@@ -46,7 +46,7 @@ public class BoostTouchEffectRenderer implements TouchEffectRenderer {
                 arrow.instance = new ModelInstance(Models.getFloorArrowModel());
                 arrow.instance.transform.setToScaling(0.5f, 1, 1);
 
-                arrow.pos = new Vector3(baseX + x, baseY + DISTANCE_Y, baseZ - z);
+                arrow.pos = new Vector3(baseX + x, baseY + DISTANCE_Y + 1, baseZ - z);
                 arrows.add(arrow);
             }
         }
