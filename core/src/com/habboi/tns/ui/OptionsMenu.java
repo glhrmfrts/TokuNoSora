@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
 import com.habboi.tns.Game;
 import com.habboi.tns.GameConfig;
@@ -14,12 +15,14 @@ import com.habboi.tns.utils.EventEmitter;
 
 import aurelienribon.tweenengine.Tween;
 import aurelienribon.tweenengine.TweenEquations;
+import java.util.ArrayList;
 
 public class OptionsMenu extends BaseMenu implements Disposable {
     static final int FONT_SIZE = Game.MAIN_FONT_SIZE;
 
     MenuState menuState;
     SliderOptionsMenuItem musicItem, sfxItem;
+    ChoiceOptionsMenuItem graphicsItem;
 
     public OptionsMenu(final MenuState state, final Game game) {
         menuState = state;
@@ -56,6 +59,17 @@ public class OptionsMenu extends BaseMenu implements Disposable {
                 }
             });
         items.add(sfxItem);
+
+        y -= bnds.height;
+        bnds.y -= bnds.height;
+        graphicsItem = new ChoiceOptionsMenuItem("graphics", x, y, bnds, new String[]{"nice", "fast"}, GameConfig.get().getGraphicLevel());
+        graphicsItem.setAction(new MenuItemAction() {
+                @Override
+                public void doAction() {
+                    GameConfig.get().setGraphicLevel(graphicsItem.getSelectedOption());
+                }
+            });
+        items.add(graphicsItem);
 
         y -= bnds.height;
         bnds.y -= bnds.height;
@@ -175,6 +189,74 @@ public class OptionsMenu extends BaseMenu implements Disposable {
 
         @Override
         public void valueChange(int delta) {}
+    }
+
+    static class ChoiceOptionsMenuItem extends MenuItem implements OptionsMenuItem {
+        Text text;
+        ArrayList<Text> options = new ArrayList<>();
+        int selectedOptionIndex;
+
+        public ChoiceOptionsMenuItem(String textValue, float x, float y, Rectangle bounds, String[] optionsValues, int selected) {
+            super(bounds);
+            selectedOptionIndex = selected;
+
+            final float sideCenter = bounds.width / 6;
+            text = new Text(FontManager.get().getFont(Game.MAIN_FONT, FONT_SIZE), textValue, null, Color.WHITE);
+            text.getPos().set(x - (20 + sideCenter), y);
+
+            int totalWidth = 0;
+            int i = 0;
+            for (String optionValue : optionsValues) {
+                Text optionText = new Text(FontManager.get().getFont(Game.MAIN_FONT, FONT_SIZE), optionValue, null, Color.WHITE);
+                optionText.getPos().set(x + (20 + sideCenter) + totalWidth + (20 * i), y);
+                options.add(optionText);
+
+                totalWidth += optionText.getBounds().x;
+                i++;
+            }
+
+            for (Text option : options) {
+                Vector2 pos = option.getPos();
+                pos.x -= totalWidth / 2;
+            }
+        }
+
+        public int getSelectedOption() {
+            return selectedOptionIndex;
+        }
+
+        @Override
+        public void renderShapes(ShapeRenderer sr) {
+
+        }
+
+        @Override
+        public void renderSprites(SpriteBatch sb) {
+            text.draw(sb, true);
+
+            for (int i = 0; i < options.size(); i++) {
+                Text option = options.get(i);
+                if (i == selectedOptionIndex) {
+                    option.getColor().set(1, 1, 1, 1);
+                } else {
+                    option.getColor().set(1, 1, 1, 0.25f);
+                }
+
+                option.draw(sb, true);
+            }
+        }
+
+        @Override
+        public void valueChange(int delta) {
+            if (delta == -1 && selectedOptionIndex > 0) {
+                selectedOptionIndex--;
+            }
+            if (delta == 1 && selectedOptionIndex < options.size() - 1) {
+                selectedOptionIndex++;
+            }
+
+            action.doAction();
+        }
     }
 
     static class SliderOptionsMenuItem extends MenuItem implements OptionsMenuItem {
