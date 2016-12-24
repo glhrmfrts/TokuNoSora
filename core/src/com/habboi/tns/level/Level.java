@@ -24,6 +24,7 @@ public class Level {
 
     ArrayList<Cell> cells = new ArrayList<>();
     LinkedList<Cell> collisions = new LinkedList<>();
+    ArrayList<GenericObject> decorations = new ArrayList<>();
     ArrayList<Tunnel> endTunnels = new ArrayList<>();
 
     public Level(String name, int number, int worldIndex, float centerX, Vector3 shipPos) {
@@ -44,6 +45,10 @@ public class Level {
 
     public World getWorld() {
         return world;
+    }
+
+    public void addArrows(Vector3 pos, Vector3 rotation, float height, int depth, int color) {
+        decorations.add(new Arrows(pos, rotation, height, depth, color, world));
     }
 
     public void addTile(Vector3 pos, Vector3 size, int preset, TouchEffect effect) {
@@ -121,11 +126,19 @@ public class Level {
             }
         }
         ship.readyToEnd = readyToEnd;
+
+        for (GenericObject decoration : decorations) {
+            decoration.update(dt);
+        }
     }
 
     public void render(GameRenderer renderer) {
         for (Cell cell : cells) {
             cell.render(renderer);
+        }
+
+        for (GenericObject decoration : decorations) {
+            decoration.render(renderer);
         }
     }
 

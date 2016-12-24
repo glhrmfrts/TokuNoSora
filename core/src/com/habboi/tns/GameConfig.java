@@ -25,12 +25,20 @@ public class GameConfig {
         return prefs;
     }
 
+    public int getGraphicLevel() {
+        return prefs.getInteger("graphic_level", 0);
+    }
+
     public float getMusicVolume() {
         return prefs.getFloat("music_volume", 0.5f);
     }
 
     public float getSfxVolume() {
         return prefs.getFloat("sfx_volume", 0.5f);
+    }
+
+    public void setGraphicLevel(int value) {
+        prefs.putInteger("graphic_level", value);
     }
 
     public void setMusicVolume(float value) {

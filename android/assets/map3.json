@@ -4,7 +4,7 @@
     "world_index": 0,
     "ship_pos": "49.5,5,0",
     "center_x": 50,
-    "cells": [
+    "objects": [
         {
             "tile":{
                 "pos":"49,2,-2",

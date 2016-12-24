@@ -25,6 +25,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
 import com.habboi.tns.Game;
+import com.habboi.tns.GameConfig;
 import com.habboi.tns.ui.Rect;
 
 import java.util.ArrayList;
@@ -34,8 +35,8 @@ import java.util.ArrayList;
  */
 public class GameRenderer implements Disposable {
     static final float FOV = 45f;
-    static final int GLOWMAP_WIDTH = 512;
-    static final int GLOWMAP_HEIGHT = 512;
+    static final int GRAPHIC_LEVEL_NICE = 0;
+    static final int GRAPHIC_LEVEL_FAST = 1;
 
     Game game;
     PerspectiveCamera worldCam;
@@ -87,7 +88,7 @@ public class GameRenderer implements Disposable {
         shaderGlow.init();
         shaderFXAA.init();
         shaderBlur.begin(null, null);
-        shaderBlur.setImageSize(new Vector2(GLOWMAP_WIDTH, GLOWMAP_HEIGHT));
+        shaderBlur.setImageSize(new Vector2(game.getWidth(), game.getHeight()));
         shaderBlur.end();
 
         resolution = new Vector2(game.getWidth(), game.getHeight());
@@ -144,7 +145,7 @@ public class GameRenderer implements Disposable {
         batch.end();
         fboDefault.end();
 
-        boolean isNice = GameConfig.get().getGraphicsLevel() == GRAPHIC_LEVEL_NICE;
+        boolean isNice = GameConfig.get().getGraphicLevel() == GRAPHIC_LEVEL_NICE;
         if (isNice) {
 
             // draw glowing geometry

@@ -62,24 +62,24 @@ public class LevelLoader extends SynchronousAssetLoader<Level, LevelLoader.Level
 
         Vector3 shipPos = parseVector3(root.getString("ship_pos"));
         level = new Level(name, number, worldIndex, centerX, shipPos);
-        JsonValue cells = root.get("cells");
-        for (JsonValue cell : cells.iterator()) {
-            if (cell.has("tile")) {
-                JsonValue tile = cell.get("tile");
+        JsonValue objects = root.get("objects");
+        for (JsonValue object : objects.iterator()) {
+            if (object.has("tile")) {
+                JsonValue tile = object.get("tile");
                 Vector3 pos = parseVector3(tile.getString("pos"));
                 Vector3 size = parseVector3(tile.getString("size"));
                 int preset = tile.getInt("preset");
                 TouchEffect effect = touchEffectFromName(tile.getString("effect", ""));
 
                 level.addTile(pos, size, preset, effect);
-            } else if (cell.has("finish")) {
-                JsonValue finish = cell.get("finish");
+            } else if (object.has("finish")) {
+                JsonValue finish = object.get("finish");
                 Vector3 pos = parseVector3(finish.getString("pos"));
                 float radius = finish.getFloat("radius");
 
                 level.addFinish(pos, radius);
-            } else if (cell.has("tunnel")) {
-                JsonValue tunnel = cell.get("tunnel");
+            } else if (object.has("tunnel")) {
+                JsonValue tunnel = object.get("tunnel");
                 Vector3 pos = parseVector3(tunnel.getString("pos"));
                 int depth = tunnel.getInt("depth");
                 int preset = tunnel.getInt("preset");
@@ -89,8 +89,8 @@ public class LevelLoader extends SynchronousAssetLoader<Level, LevelLoader.Level
                 }
 
                 level.addTunnel(pos, depth, preset, end);
-            } else if (cell.has("twt")) {
-                JsonValue twt = cell.get("twt");
+            } else if (object.has("twt")) {
+                JsonValue twt = object.get("twt");
                 Vector3 pos = parseVector3(twt.getString("pos"));
                 Vector3 size = parseVector3(twt.getString("size"));
                 int preset = twt.getInt("preset");
@@ -98,6 +98,15 @@ public class LevelLoader extends SynchronousAssetLoader<Level, LevelLoader.Level
                 TouchEffect effect = touchEffectFromName(twt.getString("effect", ""));
 
                 level.addTileWithTunnels(pos, size, preset, tunnels, effect);
+            } else if (object.has("arrows")) {
+                JsonValue arrows = object.get("arrows");
+                Vector3 pos = parseVector3(arrows.getString("pos"));
+                Vector3 rotation = parseVector3(arrows.getString("rotation"));
+                float height = arrows.getFloat("height");
+                int depth = arrows.getInt("depth");
+                int color = arrows.getInt("color");
+
+                level.addArrows(pos, rotation, height, depth, color);
             }
         }
         return level;

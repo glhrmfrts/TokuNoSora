@@ -8,7 +8,7 @@ import com.habboi.tns.shapes.Shape;
 /**
  * Represents a cell in the level.
  */
-public abstract class Cell {
+public abstract class Cell implements GenericObject {
     public TouchEffect effect;
 
     TouchEffectRenderer effectRenderer;
@@ -18,6 +18,4 @@ public abstract class Cell {
     public abstract Vector3 getSize();
     public abstract Shape getShape();
     public abstract void reset();
-    public abstract void update(float dt);
-    public abstract void render(GameRenderer renderer);
 }

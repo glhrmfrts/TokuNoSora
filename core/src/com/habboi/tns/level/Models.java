@@ -55,7 +55,7 @@ public final class Models {
 
         mb.begin();
 
-        float width = 0.15f;
+        float width = 0.30f;
         float ll = -1;
         float lr = -1 + width;
         float rl = 1 - width;
@@ -82,8 +82,8 @@ public final class Models {
 
         v1 = new VertexInfo().setPos(ll, 0, 0);
         v2 = new VertexInfo().setPos(lr, 0, 0);
-        v3 = new VertexInfo().setPos(0, 0, -1);
-        v4 = new VertexInfo().setPos(0, 0, -1 + width);
+        v3 = new VertexInfo().setPos(0, 0, -1 + width);
+        v4 = new VertexInfo().setPos(0, 0, -1);
         v1.setNor(0, 0, -1);
         v2.setNor(0, 0, -1);
         v3.setNor(0, 0, -1);

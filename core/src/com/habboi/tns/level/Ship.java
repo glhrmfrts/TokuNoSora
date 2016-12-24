@@ -15,7 +15,7 @@ import com.habboi.tns.shapes.TileShape;
 /**
  * My ship :).
  */
-public class Ship {
+public class Ship implements GenericObject {
     public enum State {
         WAITING, PLAYABLE, EXPLODED, FELL, ENDED
     }
