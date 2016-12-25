@@ -182,7 +182,7 @@ public class Ship implements GenericObject {
         dBounce += dt;
     }
 
-    public void render(GameRenderer renderer) {
+    public void render(GameRenderer renderer, int pass) {
         if (state == State.ENDED) {
             return;
         }
@@ -190,7 +190,7 @@ public class Ship implements GenericObject {
         bodyInstance.transform.setTranslation(shape.pos);
         renderer.render(bodyInstance);
         outlineInstance.transform.setTranslation(shape.pos);
-        renderer.renderGlow(outlineInstance);
+        renderer.render(outlineInstance);
     }
 
     public boolean handleCollision(Cell cell) {

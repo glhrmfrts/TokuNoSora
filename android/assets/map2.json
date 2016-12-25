@@ -9,7 +9,16 @@
                 "pos": "-4,5,12",
                 "rotation": "0,0,90",
                 "height": 1,
-                "depth": 5,
+                "depth": 8,
+                "color": 1
+            }
+        },
+        {
+            "arrows": {
+                "pos": "4,5,12",
+                "rotation": "0,0,-90",
+                "height": 1,
+                "depth": 8,
                 "color": 1
             }
         },

@@ -26,6 +26,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
 import com.habboi.tns.Game;
 import com.habboi.tns.GameConfig;
+import com.habboi.tns.level.Level;
 import com.habboi.tns.ui.Rect;
 
 import java.util.ArrayList;
@@ -34,9 +35,15 @@ import java.util.ArrayList;
  * Encapsulates the rendering context.
  */
 public class GameRenderer implements Disposable {
-    static final float FOV = 45f;
-    static final int GRAPHIC_LEVEL_NICE = 0;
-    static final int GRAPHIC_LEVEL_FAST = 1;
+    public static final float FOV = 45f;
+    public static final int RENDER_PASSES = 3;
+
+    public static final int GraphicLevelNice = 0;
+    public static final int GraphicLevelFast = 1;
+
+    public static final int RenderPassBody = 0;
+    public static final int RenderPassOutline = 1;
+    public static final int RenderPassEffect = 2;
 
     Game game;
     PerspectiveCamera worldCam;
@@ -44,10 +51,7 @@ public class GameRenderer implements Disposable {
     ModelBatch batch;
     SpriteBatch sb;
     Renderable tmpRenderable = new Renderable();
-    FrameBuffer fboDefault;
-    FrameBuffer fboGlow;
-    FrameBuffer fboBlur;
-    FrameBuffer fboGlobalBlur;
+    FrameBuffer blurTempBuffer;
     BasicShader shaderBasic;
     Basic2DShader shaderBasic2D;
     GlowShader shaderGlow;
@@ -56,6 +60,8 @@ public class GameRenderer implements Disposable {
     Vector2 resolution;
     Rect screenRect;
     ModelInstance screenSurface;
+    ArrayList<FrameBuffer> depthBuffers = new ArrayList<>();
+    ArrayList<FrameBuffer> textureBuffers = new ArrayList<>();
     ArrayList<ModelInstance> occludingInstances = new ArrayList<>();
     ArrayList<ModelInstance> glowingInstances = new ArrayList<>();
 
@@ -72,10 +78,14 @@ public class GameRenderer implements Disposable {
 
         batch = new ModelBatch();
         sb = new SpriteBatch();
-        fboDefault = new FrameBuffer(Pixmap.Format.RGB888, game.getWidth(), game.getHeight(), true);
-        fboGlow = new FrameBuffer(Pixmap.Format.RGBA8888, game.getWidth(), game.getHeight(), true);
-        fboBlur = new FrameBuffer(Pixmap.Format.RGBA8888, game.getWidth(), game.getHeight(), false);
-        fboGlobalBlur = new FrameBuffer(Pixmap.Format.RGBA8888, game.getWidth(), game.getHeight(), false);
+
+        int buffersWidth = game.getWidth();
+        int buffersHeight = game.getHeight();
+        depthBuffers.add(new FrameBuffer(Pixmap.Format.RGB888, game.getWidth(), game.getHeight(), true));
+        depthBuffers.add(new FrameBuffer(Pixmap.Format.RGBA8888, buffersWidth, buffersHeight, true));
+        textureBuffers.add(new FrameBuffer(Pixmap.Format.RGBA8888, buffersWidth, buffersHeight, false));
+        textureBuffers.add(new FrameBuffer(Pixmap.Format.RGBA8888, buffersWidth, buffersHeight, false));
+        blurTempBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, buffersWidth, buffersHeight, false);
 
         shaderBasic2D = new Basic2DShader();
         shaderBasic = new BasicShader();
@@ -132,7 +142,7 @@ public class GameRenderer implements Disposable {
     public void begin() {
         occludingInstances.clear();
         glowingInstances.clear();
-        fboDefault.begin();
+        depthBuffers.get(0).begin();
         batch.begin(worldCam);
     }
 
@@ -141,107 +151,113 @@ public class GameRenderer implements Disposable {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
     }
 
+    private void drawFXAA(FrameBuffer in, FrameBuffer out) {
+        if (out != null) out.begin();
+
+        shaderFXAA.begin(null, null, resolution);
+        in.getColorBufferTexture().bind(0);
+        shaderFXAA.render(tmpRenderable);
+        shaderFXAA.end();
+
+        if (out != null) out.end();
+    }
+
+    private void drawBlur(FrameBuffer in, FrameBuffer out) {
+        shaderBlur.begin(null, null);
+        drawBlurCommon(in, out);
+        shaderBlur.end();
+    }
+
+    private void drawBlur(FrameBuffer in, FrameBuffer out, int amount, float scale, float strength) {
+        shaderBlur.begin(null, null, amount, scale, strength);
+        drawBlurCommon(in, out);
+        shaderBlur.end();
+    }
+
+    private void drawBlurCommon(FrameBuffer in, FrameBuffer out) {
+        blurTempBuffer.begin();
+
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        in.getColorBufferTexture().bind(0);
+        shaderBlur.setOrientation(0);
+        shaderBlur.render(tmpRenderable);
+
+        blurTempBuffer.end();
+
+        // mix with vertical blur
+        if (out != null) out.begin();
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        blurTempBuffer.getColorBufferTexture().bind(0);
+        shaderBlur.setOrientation(1);
+        shaderBlur.render(tmpRenderable);
+
+        if (out != null) out.end();
+    }
+
+    private void drawGlowMap(FrameBuffer in, FrameBuffer in2, FrameBuffer out) {
+        if (out != null) out.begin();
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        shaderGlow.begin(null, null);
+        in.getColorBufferTexture().bind(0);
+        in2.getColorBufferTexture().bind(1);
+        shaderGlow.render(tmpRenderable);
+        shaderGlow.end();
+
+        if (out != null) out.end();
+        Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
+    }
+
+    public void drawGlowingGeometry(FrameBuffer out) {
+        if (out != null) out.begin();
+
+        shaderBasic.begin(worldCam, null);
+
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
+
+        Gdx.gl.glDisable(GL20.GL_CULL_FACE);
+        Gdx.gl.glColorMask(false, false, false, false);
+        for (ModelInstance inst : occludingInstances) {
+            inst.getRenderable(tmpRenderable);
+            shaderBasic.render(tmpRenderable);
+        }
+
+        Gdx.gl.glColorMask(true, true, true, true);
+        for (ModelInstance inst : glowingInstances) {
+            inst.getRenderable(tmpRenderable);
+            shaderBasic.render(tmpRenderable);
+        }
+        Gdx.gl.glEnable(GL20.GL_CULL_FACE);
+
+        shaderBasic.end();
+
+        if (out != null) out.end();
+    }
+
     public void end() {
         batch.end();
-        fboDefault.end();
+        depthBuffers.get(0).end();
 
-        boolean isNice = GameConfig.get().getGraphicLevel() == GRAPHIC_LEVEL_NICE;
+        boolean isNice = GameConfig.get().getGraphicLevel() == GraphicLevelNice;
         if (isNice) {
-
-            // draw glowing geometry
-            fboGlow.begin();
-            shaderBasic.begin(worldCam, null);
-
-            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
-
-            Gdx.gl.glDisable(GL20.GL_CULL_FACE);
-            Gdx.gl.glColorMask(false, false, false, false);
-            for (ModelInstance inst : occludingInstances) {
-                inst.getRenderable(tmpRenderable);
-                shaderBasic.render(tmpRenderable);
-            }
-
-            Gdx.gl.glColorMask(true, true, true, true);
-            for (ModelInstance inst : glowingInstances) {
-                inst.getRenderable(tmpRenderable);
-                shaderBasic.render(tmpRenderable);
-            }
-            Gdx.gl.glEnable(GL20.GL_CULL_FACE);
-
-            shaderBasic.end();
-            fboGlow.end();
+            drawGlowingGeometry(depthBuffers.get(1));
         }
 
         // the only renderable used from here on is the screen surface
         screenSurface.getRenderable(tmpRenderable);
 
+        Gdx.gl.glDepthMask(false);
         if (isNice) {
-            shaderBlur.begin(null, null);
-            fboBlur.begin();
-
-            // blur the glowmap (disables depth checks and writes)
-            Gdx.gl.glDepthMask(false);
-            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-            fboGlow.getColorBufferTexture().bind(0);
-            shaderBlur.setOrientation(0);
-            shaderBlur.render(tmpRenderable);
-
-            fboBlur.end();
-
-            // mix with vertical blur
-            fboGlow.begin();
-            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-            fboBlur.getColorBufferTexture().bind(0);
-            shaderBlur.setOrientation(1);
-            shaderBlur.render(tmpRenderable);
-
-            fboGlow.end();
-            shaderBlur.end();
-
-            // blend the glowmap with the rendered scene
-            fboBlur.begin();
-            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-            shaderGlow.begin(null, null);
-            fboDefault.getColorBufferTexture().bind(0);
-            fboGlow.getColorBufferTexture().bind(1);
-            shaderGlow.render(tmpRenderable);
-            shaderGlow.end();
-
-            fboBlur.end();
-            Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
-
-            // global blur
-            shaderBlur.begin(null, null, 10, 0.25f, 0.1f);
-
-            fboGlobalBlur.begin();
-            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-            fboBlur.getColorBufferTexture().bind(0);
-            shaderBlur.setOrientation(0);
-            shaderBlur.render(tmpRenderable);
-
-            fboGlobalBlur.end();
-
-            fboDefault.begin();
-            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-            fboGlobalBlur.getColorBufferTexture().bind(0);
-            shaderBlur.setOrientation(1);
-            shaderBlur.render(tmpRenderable);
-            shaderBlur.end();
-
-            fboDefault.end();
+            drawBlur(depthBuffers.get(1), textureBuffers.get(0));
+            drawGlowMap(depthBuffers.get(0), textureBuffers.get(0), textureBuffers.get(1));
+            drawBlur(textureBuffers.get(1), textureBuffers.get(0), 10, 0.25f, 0.1f);
+            drawFXAA(textureBuffers.get(0), null);
+        } else {
+            drawFXAA(depthBuffers.get(0), null);
         }
 
-        shaderFXAA.begin(null, null, resolution);
-        fboDefault.getColorBufferTexture().bind(0);
-        shaderFXAA.render(tmpRenderable);
-        shaderFXAA.end();
-
-        // re-enable depth checks and writes
         Gdx.gl.glDepthMask(true);
     }
 
@@ -282,6 +298,14 @@ public class GameRenderer implements Disposable {
         glowingInstances.add(instance);
     }
 
+    public void renderLevel(Level level) {
+        level.getWorld().render(this);
+
+        for (int i = 0; i < RENDER_PASSES; i++) {
+            level.render(this, i);
+        }
+    }
+
     public void beginOrtho() {
         sb.begin();
         sb.setShader(shaderBasic2D.getShaderProgram());
@@ -303,8 +327,12 @@ public class GameRenderer implements Disposable {
         shaderGlow.dispose();
         shaderBlur.dispose();
         shaderBasic.dispose();
-        fboGlow.dispose();
-        fboBlur.dispose();
-        fboDefault.dispose();
+
+        for (FrameBuffer buffer : depthBuffers) {
+            buffer.dispose();
+        }
+        for (FrameBuffer buffer : textureBuffers) {
+            buffer.dispose();
+        }
     }
 }

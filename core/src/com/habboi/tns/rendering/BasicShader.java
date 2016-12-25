@@ -52,6 +52,8 @@ public class BasicShader implements Shader {
     Gdx.gl.glEnable(GL20.GL_CULL_FACE);
     Gdx.gl.glCullFace(GL20.GL_BACK);
     Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
+    Gdx.gl.glEnable(GL20.GL_BLEND);
+    Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
   }
 
   @Override
@@ -70,6 +72,7 @@ public class BasicShader implements Shader {
     program.end();
     Gdx.gl.glDisable(GL20.GL_CULL_FACE);
     Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
+    Gdx.gl.glDisable(GL20.GL_BLEND);
   }
 
   @Override

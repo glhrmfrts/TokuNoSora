@@ -132,13 +132,13 @@ public class Level {
         }
     }
 
-    public void render(GameRenderer renderer) {
+    public void render(GameRenderer renderer, int pass) {
         for (Cell cell : cells) {
-            cell.render(renderer);
+            cell.render(renderer, pass);
         }
 
         for (GenericObject decoration : decorations) {
-            decoration.render(renderer);
+            decoration.render(renderer, pass);
         }
     }
 

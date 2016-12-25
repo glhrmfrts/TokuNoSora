@@ -55,9 +55,16 @@ public class TileWithTunnels extends Cell {
     }
 
     @Override
-    public void render(GameRenderer renderer) {
-        renderer.render(modelInstance);
-        renderer.renderGlow(outlineInstance);
+    public void render(GameRenderer renderer, int pass) {
+        switch (pass) {
+        case GameRenderer.RenderPassBody:
+            renderer.render(modelInstance);
+            break;
+
+        case GameRenderer.RenderPassOutline:
+            renderer.render(outlineInstance);
+            break;
+        }
     }
 
     @Override

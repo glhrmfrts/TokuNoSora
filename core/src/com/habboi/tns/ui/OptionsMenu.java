@@ -208,7 +208,8 @@ public class OptionsMenu extends BaseMenu implements Disposable {
             int i = 0;
             for (String optionValue : optionsValues) {
                 Text optionText = new Text(FontManager.get().getFont(Game.MAIN_FONT, FONT_SIZE), optionValue, null, Color.WHITE);
-                optionText.getPos().set(x + (20 + sideCenter) + totalWidth + (20 * i), y);
+
+                optionText.getPos().set(x + 10 + sideCenter + totalWidth + (10 * i), y - FONT_SIZE/2);
                 options.add(optionText);
 
                 totalWidth += optionText.getBounds().x;
@@ -242,7 +243,7 @@ public class OptionsMenu extends BaseMenu implements Disposable {
                     option.getColor().set(1, 1, 1, 0.25f);
                 }
 
-                option.draw(sb, true);
+                option.draw(sb, false);
             }
         }
 

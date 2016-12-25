@@ -249,9 +249,8 @@ public class InGameState extends GameState {
     public void render() {
         GameRenderer gr = game.getRenderer();
         gr.begin();
-        level.getWorld().render(gr);
-        level.render(gr);
-        ship.render(gr);
+        gr.renderLevel(level);
+        ship.render(gr, 0);
         gr.end();
 
         orthoCam.update();

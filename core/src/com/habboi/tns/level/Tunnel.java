@@ -53,12 +53,17 @@ public class Tunnel extends Cell {
     }
 
     @Override
-    public void render(GameRenderer renderer) {
-        modelInstance.transform.setTranslation(shape.pos.x, shape.pos.y + TunnelShape.TUNNEL_HEIGHT/4, shape.pos.z);
-        renderer.render(modelInstance);
-
-        outlineInstance.transform.setTranslation(shape.pos.x, shape.pos.y + TunnelShape.TUNNEL_HEIGHT/4, shape.pos.z);
-        renderer.renderGlow(outlineInstance);
+    public void render(GameRenderer renderer, int pass) {
+        switch (pass) {
+        case GameRenderer.RenderPassBody:
+            modelInstance.transform.setTranslation(shape.pos.x, shape.pos.y + TunnelShape.TUNNEL_HEIGHT/4, shape.pos.z);
+            renderer.render(modelInstance);
+            break;
+        case GameRenderer.RenderPassOutline:
+            outlineInstance.transform.setTranslation(shape.pos.x, shape.pos.y + TunnelShape.TUNNEL_HEIGHT/4, shape.pos.z);
+            renderer.render(outlineInstance);
+            break;
+        }
     }
 
     @Override

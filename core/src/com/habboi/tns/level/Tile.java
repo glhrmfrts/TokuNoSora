@@ -70,15 +70,21 @@ public class Tile extends Cell {
     }
 
     @Override
-    public void render(GameRenderer renderer) {
-        if (effectRenderer != null)
-            effectRenderer.render(renderer);
-
-        modelInstance.transform.setTranslation(shape.pos.x - shape.half.x, shape.pos.y - shape.half.y, shape.pos.z + shape.half.z);
-        renderer.render(modelInstance);
-
-        outlineInstance.transform.setTranslation(shape.pos.x - shape.half.x, shape.pos.y - shape.half.y, shape.pos.z + shape.half.z);
-        renderer.renderGlow(outlineInstance, outlineColor);
+    public void render(GameRenderer renderer, int pass) {
+        switch (pass) {
+        case GameRenderer.RenderPassBody:
+            modelInstance.transform.setTranslation(shape.pos.x - shape.half.x, shape.pos.y - shape.half.y, shape.pos.z + shape.half.z);
+            renderer.render(modelInstance);
+            break;
+        case GameRenderer.RenderPassOutline:
+            outlineInstance.transform.setTranslation(shape.pos.x - shape.half.x, shape.pos.y - shape.half.y, shape.pos.z + shape.half.z);
+            renderer.render(outlineInstance, outlineColor);
+            break;
+        case GameRenderer.RenderPassEffect:
+            if (effectRenderer != null)
+                effectRenderer.render(renderer);
+            break;
+        }
     }
 
     @Override

@@ -15,6 +15,7 @@ import com.habboi.tns.level.Level;
 import com.habboi.tns.level.LevelLoader;
 import com.habboi.tns.level.Models;
 import com.habboi.tns.states.MenuState;
+import com.habboi.tns.utils.FontManager;
 import com.habboi.tns.utils.MusicAccessor;
 import com.habboi.tns.worlds.Universe;
 import com.habboi.tns.states.*;
@@ -23,7 +24,6 @@ import com.habboi.tns.ui.GameTweenManager;
 import com.habboi.tns.ui.Rect;
 import com.habboi.tns.utils.FontFileHandleResolver;
 import com.habboi.tns.utils.FontLoader;
-import com.habboi.tns.utils.FontManager;
 
 import java.util.Stack;
 

@@ -43,7 +43,7 @@ public class Finish extends Cell {
     }
 
     @Override
-    public void render(GameRenderer renderer) {
+    public void render(GameRenderer renderer, int pass) {
     }
 
     @Override

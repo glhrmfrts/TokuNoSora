@@ -61,12 +61,12 @@ public final class Models {
         float rl = 1 - width;
         float rr = 1;
 
-        Material material = new Material(new BlendingAttribute(0.75f));
+        Material material = new Material(new BlendingAttribute(1f));
         material.set(IntAttribute.createCullFace(GL20.GL_NONE));
         material.set(ColorAttribute.createDiffuse(Color.WHITE));
 
         partBuilder = mb.part("main", GL20.GL_TRIANGLES,
-                              VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.ColorPacked,
+                              VertexAttributes.Usage.Position | VertexAttributes.Usage.ColorPacked,
                               material);
         partBuilder.setColor(Color.WHITE);
 
@@ -74,20 +74,12 @@ public final class Models {
         v2 = new VertexInfo().setPos(rr, 0, 0);
         v3 = new VertexInfo().setPos(0, 0, -1);
         v4 = new VertexInfo().setPos(0, 0, -1 + width);
-        v1.setNor(0, 0, -1);
-        v2.setNor(0, 0, -1);
-        v3.setNor(0, 0, -1);
-        v4.setNor(0, 0, -1);
         partBuilder.rect(v1, v2, v3, v4);
 
         v1 = new VertexInfo().setPos(ll, 0, 0);
         v2 = new VertexInfo().setPos(lr, 0, 0);
         v3 = new VertexInfo().setPos(0, 0, -1 + width);
         v4 = new VertexInfo().setPos(0, 0, -1);
-        v1.setNor(0, 0, -1);
-        v2.setNor(0, 0, -1);
-        v3.setNor(0, 0, -1);
-        v4.setNor(0, 0, -1);
         partBuilder.rect(v1, v2, v3, v4);
 
         return floorArrowModel = mb.end();
