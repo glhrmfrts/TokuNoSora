@@ -5,74 +5,56 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
 import com.habboi.tns.Game;
+import com.habboi.tns.states.EditorState;
 import com.habboi.tns.states.MenuState;
+import com.habboi.tns.ui.BaseMenu;
 import com.habboi.tns.utils.FontManager;
+import com.habboi.tns.worlds.Universe;
+import com.habboi.tns.worlds.World;
 
 import aurelienribon.tweenengine.Tween;
 import aurelienribon.tweenengine.TweenEquations;
+import java.util.ArrayList;
 
-/**
- * The main menu.
- */
-public class MainMenu extends BaseMenu implements Disposable {
+
+public class EditorWorldsMenu extends BaseMenu implements Disposable {
     static final int FONT_SIZE = Game.MAIN_FONT_SIZE;
 
     MenuState menuState;
 
-    public MainMenu(final MenuState state, final Game game) {
+    public EditorWorldsMenu(final MenuState state, final Game game) {
         menuState = state;
         sr = game.getShapeRenderer();
         sb = game.getRenderer().getSpriteBatch();
 
-        setSize(game.getWidth() * 1.1f, FONT_SIZE * 4 + 20 * 4);
+        float worldCount = Universe.get().worlds.size();
+        setSize(game.getWidth() * 1.1f, FONT_SIZE * worldCount + 20 * worldCount);
         setItemSize(game.getWidth()*1.1f, FONT_SIZE + 20);
         setCenter(game.getWidth() / 2, game.getHeight() / 2);
+
         createHighlight();
 
         float y = bounds.y + bounds.height/2 - itemBounds.height/2;
         float x = bounds.x;
+
         Rectangle bnds = new Rectangle(x, y, itemBounds.width, itemBounds.height);
-        items.add(new MainMenuItem("play", x, y, bnds).setAction(new MenuItemAction() {
-                @Override
-                public void doAction() {
-                    state.addMenu(new LevelsMenu(state, game));
-                }
-            }));
 
-        y -= bnds.height;
-        bnds.y -= bnds.height;
-        items.add(new MainMenuItem("editor", x, y, bnds).setAction(new MenuItemAction() {
-                @Override
-                public void doAction() {
-                    state.addMenu(new EditorWorldsMenu(state, game));
-                }
-            }));
+        for (final World world : Universe.get().worlds) {
+            items.add(new EditorWorldsMenuItem(world.name, x, y, bnds).setAction(new MenuItemAction() {
+                    @Override
+                    public void doAction() {
+                        game.addState(new EditorState(game, world));
+                    }
+                }));
 
-        y -= bnds.height;
-        bnds.y -= bnds.height;
-        items.add(new MainMenuItem("options", x, y, bnds).setAction(new MenuItemAction() {
-                @Override
-                public void doAction() {
-                    state.addMenu(new OptionsMenu(state, game));
-                }
-            }));
+            y -= bnds.height;
+            bnds.y -= bnds.height;
+        }
 
-        y -= bnds.height;
-        bnds.y -= bnds.height;
-        items.add(new MainMenuItem("credits", x, y, bnds));
-
-        y -= bnds.height;
-        bnds.y -= bnds.height;
-        items.add(new MainMenuItem("quit", x, y, bnds).setAction(new MenuItemAction() {
-                @Override
-                public void doAction() {
-                    game.exit();
-                }
-            }));
-
-        GameTweenManager.get().register("main_menu_select_menu", new GameTweenManager.GameTween() {
+        GameTweenManager.get().register("editor_worlds_menu_select_menu", new GameTweenManager.GameTween() {
                 @Override
                 public Tween tween() {
                     highlight.getRectangle().height = 0;
@@ -85,7 +67,7 @@ public class MainMenu extends BaseMenu implements Disposable {
                 public void onComplete() {
 
                 }
-        }).register("main_menu_select_menu_border", new GameTweenManager.GameTween() {
+        }).register("editor_worlds_menu_select_menu_border", new GameTweenManager.GameTween() {
                     @Override
                     public Tween tween() {
                         highlightBorder.getRectangle().height = 0;
@@ -106,8 +88,12 @@ public class MainMenu extends BaseMenu implements Disposable {
     @Override
     public boolean onChange(int delta) {
         setHighlight();
-        GameTweenManager.get().restart("main_menu_select_menu");
-        GameTweenManager.get().restart("main_menu_select_menu_border");
+        GameTweenManager.get().restart("editor_worlds_menu_select_menu");
+        GameTweenManager.get().restart("editor_worlds_menu_select_menu_border");
+
+        World world = Universe.get().worlds.get(activeIndex);
+        menuState.setWorld(world);
+
         return true;
     }
 
@@ -118,8 +104,8 @@ public class MainMenu extends BaseMenu implements Disposable {
 
         sb.begin();
         for (int i = 0; i < items.size(); i++) {
-            Text text = ((MainMenuItem) items.get(i)).text;
-            text.draw(sb, true);
+            EditorWorldsMenuItem item = (EditorWorldsMenuItem)items.get(i);
+            item.text.draw(sb, true);
         }
         sb.end();
     }
@@ -127,8 +113,9 @@ public class MainMenu extends BaseMenu implements Disposable {
     @Override
     public boolean keyDown(int keycode) {
         if (keycode == Input.Keys.ESCAPE) {
-            menuState.getGame().exit();
+            menuState.popMenu();
         }
+
         return super.keyDown(keycode);
     }
 
@@ -137,17 +124,18 @@ public class MainMenu extends BaseMenu implements Disposable {
     }
 
     public void dispose() {
-        GameTweenManager.get().remove("main_menu_select_menu");
-        GameTweenManager.get().remove("main_menu_select_menu_border");
+        GameTweenManager.get().remove("editor_worlds_menu_select_menu");
+        GameTweenManager.get().remove("editor_worlds_menu_select_menu_border");
     }
 
-    static class MainMenuItem extends MenuItem {
+    static class EditorWorldsMenuItem extends MenuItem {
         Text text;
 
-        public MainMenuItem(String textValue, float textX, float textY, Rectangle bounds) {
+        public EditorWorldsMenuItem(String textValue, float x, float y, Rectangle bounds) {
             super(bounds);
             text = new Text(FontManager.get().getFont(Game.MAIN_FONT, FONT_SIZE), textValue, null, Color.WHITE);
-            text.getPos().set(textX, textY);
+            text.getPos().set(x, y);
         }
     }
+
 }

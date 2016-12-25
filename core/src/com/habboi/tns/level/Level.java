@@ -20,31 +20,21 @@ public class Level {
     int number;
     World world;
     float centerX;
-    Vector3 shipPos;
+    Vector3 shipPos = new Vector3();
 
     ArrayList<Cell> cells = new ArrayList<>();
     LinkedList<Cell> collisions = new LinkedList<>();
     ArrayList<GenericObject> decorations = new ArrayList<>();
     ArrayList<Tunnel> endTunnels = new ArrayList<>();
 
+    public Level() {}
+
     public Level(String name, int number, int worldIndex, float centerX, Vector3 shipPos) {
         this.name = name;
         this.number = number;
-        this.shipPos = shipPos;
+        this.shipPos.set(shipPos);
         this.centerX = centerX;
         this.world = Universe.get().worlds.get(worldIndex);
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public Vector3 getShipPos() {
-        return shipPos;
-    }
-
-    public World getWorld() {
-        return world;
     }
 
     public void addArrows(Vector3 pos, Vector3 rotation, float height, int depth, int color) {
@@ -70,6 +60,22 @@ public class Level {
     public void addFinish(Vector3 pos, float radius) {
         Finish finish = new Finish(pos, radius);
         cells.add(finish);
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Vector3 getShipPos() {
+        return shipPos;
+    }
+
+    public World getWorld() {
+        return world;
+    }
+
+    public void setWorld(World world) {
+        this.world = world;
     }
 
     private void updatePhysics(Ship ship, float dt) {

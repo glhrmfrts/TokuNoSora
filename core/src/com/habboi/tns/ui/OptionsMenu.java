@@ -29,7 +29,7 @@ public class OptionsMenu extends BaseMenu implements Disposable {
         sr = game.getShapeRenderer();
         sb = game.getRenderer().getSpriteBatch();
 
-        setSize(game.getWidth() * 1.1f, FONT_SIZE * 2 + 20 * 2);
+        setSize(game.getWidth() * 1.1f, FONT_SIZE * 4 + 20 * 4);
         setItemSize(game.getWidth()*1.1f, FONT_SIZE + 20);
         setCenter(game.getWidth() / 2, game.getHeight() / 2);
 
