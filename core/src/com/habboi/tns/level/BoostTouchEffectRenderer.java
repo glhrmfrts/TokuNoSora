@@ -54,13 +54,13 @@ public class BoostTouchEffectRenderer implements TouchEffectRenderer {
 
     @Override
     public void update(float dt) {
-        for (Arrow arrow : arrows) {
+        /*for (Arrow arrow : arrows) {
             arrow.pos.z -= SPEED * dt;
 
             if (arrow.pos.z <= baseZ - cellSize.z + 1f) {
                 arrow.pos.z = baseZ;
             }
-        }
+        }*/
     }
 
     @Override

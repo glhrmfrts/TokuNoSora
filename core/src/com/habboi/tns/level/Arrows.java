@@ -10,7 +10,7 @@ import com.habboi.tns.worlds.World;
 import java.util.ArrayList;
 
 public class Arrows implements GenericObject {
-    static final float PADDING = 0.30f;
+    static final float PADDING = 0.25f;
     static final float SPEED = 4;
 
     float alphaSize;
@@ -44,19 +44,19 @@ public class Arrows implements GenericObject {
         this.baseZ = -pos.z;
         
         if (movement.x == -1) {
-            this.baseX = pos.x + depth;
+            this.baseX = pos.x + depth + (PADDING * depth) + 0.5f;
         }
         
         for (int i = 0; i < depth; i++) {
             Vector3 position = new Vector3(
                                            baseX * TileShape.TILE_WIDTH,
-                                           baseY * TileShape.TILE_HEIGHT,
+                                           baseY * TileShape.TILE_HEIGHT + 1f,
                                            baseZ * TileShape.TILE_DEPTH
                                            );
             if (movement.x != 0) {
-                position.x = (baseX + (i * Math.signum(movement.x))) * TileShape.TILE_WIDTH + (PADDING * Math.signum(movement.x));
+                position.x = (baseX + (i * Math.signum(movement.x))) * TileShape.TILE_WIDTH + (PADDING * i * Math.signum(movement.x));
             } else if (movement.z != 0) {
-                position.z = (baseZ - (i * Math.signum(movement.z))) * TileShape.TILE_WIDTH - (PADDING * Math.signum(movement.z));
+                position.z = (baseZ - (i * Math.signum(movement.z))) * TileShape.TILE_DEPTH - (PADDING * i * Math.signum(movement.z));
             }
             
             Arrow arrow = new Arrow(

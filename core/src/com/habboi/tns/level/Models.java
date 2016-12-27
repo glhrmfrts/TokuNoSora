@@ -35,16 +35,9 @@ public final class Models {
     private static Model tunnelOutlineModel;
 
     private static ModelBuilder mb;
-    private static ArrayList<Color> specialColors;
 
     static {
         mb = new ModelBuilder();
-
-        specialColors = new ArrayList<>();
-        specialColors.add(Color.GREEN);
-        specialColors.add(Color.BLUE);
-        specialColors.add(Color.RED);
-        specialColors.add(Color.BLACK);
     }
 
     public static Model getFloorArrowModel() {
@@ -333,20 +326,6 @@ public final class Models {
         partBuilder.line(-0.25f, 0.5f, 0.5f, -0.5f, -0.5f, 0.5f);
 
         return shipOutlineModel = mb.end();
-    }
-
-    public static Model getTileBoostModel() {
-        if (tileBoostModel != null) return tileBoostModel;
-
-        tileBoostModel = createTileModel(specialColors, solidTileIndices(0));
-        return tileBoostModel;
-    }
-
-    public static Model getTileFuelModel() {
-        if (tileFuelModel != null) return tileFuelModel;
-
-        tileFuelModel = createTileModel(specialColors, solidTileIndices(1));
-        return tileFuelModel;
     }
 
     public static Model getTileOutlineModel() {

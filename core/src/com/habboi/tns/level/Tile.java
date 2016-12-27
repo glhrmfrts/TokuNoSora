@@ -30,16 +30,9 @@ public class Tile extends Cell {
 
         this.effect = effect;
         this.effectRenderer = effect.getRenderer(this, world);
-        this.outlineColor.set(effect.getColor());
+        this.outlineColor.set(Color.WHITE);
 
-        Model model;
-        if (effect == TouchEffect.BOOST) {
-            model = Models.getTileBoostModel();
-        } else if (effect == TouchEffect.FUEL) {
-            model = Models.getTileFuelModel();
-        } else {
-            model = world.getTileModel(preset);
-        }
+        Model model = world.getTileModel(preset);
 
         modelInstance = new ModelInstance(model);
         modelInstance.transform.setToScaling(size.x, size.y, size.z);
