@@ -15,6 +15,9 @@ public class Arrows implements GenericObject {
 
     float alphaSize;
     ArrayList<Arrow> arrows = new ArrayList<>();
+    float baseX;
+    float baseY;
+    float baseZ;
     Color color;
     int depth;
     float halfAlphaSize;
@@ -22,24 +25,44 @@ public class Arrows implements GenericObject {
     float height;
     Vector3 pos = new Vector3();
     Vector3 rotation = new Vector3();
+    Vector3 movement = new Vector3();
     float size;
 
-    public Arrows(Vector3 pos, Vector3 rotation, float height, int depth, int colorIndex, World world) {
+    public Arrows(Vector3 pos, Vector3 rotation, Vector3 movement, float height, int depth, int colorIndex, World world) {
         this.color = world.colors.get(colorIndex);
         this.height = height;
         this.depth = depth;
-        this.alphaSize = depth - 2 + (PADDING * (depth - 2));
+        this.alphaSize = depth - 3 + (PADDING * (depth - 3));
         this.halfAlphaSize = alphaSize / 2;
         this.size = depth + (PADDING * depth);
         this.halfSize = size / 2;
         this.pos.set(pos.x, pos.y, -pos.z);
         this.rotation.set(rotation);
-
+        this.movement.set(movement);
+        this.baseX = pos.x;
+        this.baseY = pos.y;
+        this.baseZ = -pos.z;
+        
+        if (movement.x == -1) {
+            this.baseX = pos.x + depth;
+        }
+        
         for (int i = 0; i < depth; i++) {
+            Vector3 position = new Vector3(
+                                           baseX * TileShape.TILE_WIDTH,
+                                           baseY * TileShape.TILE_HEIGHT,
+                                           baseZ * TileShape.TILE_DEPTH
+                                           );
+            if (movement.x != 0) {
+                position.x = (baseX + (i * Math.signum(movement.x))) * TileShape.TILE_WIDTH + (PADDING * Math.signum(movement.x));
+            } else if (movement.z != 0) {
+                position.z = (baseZ - (i * Math.signum(movement.z))) * TileShape.TILE_WIDTH - (PADDING * Math.signum(movement.z));
+            }
+            
             Arrow arrow = new Arrow(
                                     new ModelInstance(Models.getFloorArrowModel()),
                                     this.color,
-                                    new Vector3(pos.x * TileShape.TILE_WIDTH, pos.y * TileShape.TILE_HEIGHT + 1f, -(pos.z + i) * TileShape.TILE_DEPTH - (PADDING * i))
+                                    position
                                     );
 
             arrow.instance.transform.setToScaling(1, height, 1);
@@ -53,15 +76,32 @@ public class Arrows implements GenericObject {
     @Override
     public void update(float dt) {
         for (Arrow arrow : arrows) {
-            if (Math.abs(rotation.z) == 90) {
-                float center = pos.z - halfSize;
+            if (movement.x != 0) {
+                float center = baseX - halfSize;
+
+                if (arrow.pos.x < center - halfAlphaSize) {
+                    float d = Math.abs(arrow.pos.x - (center - halfAlphaSize));
+                    arrow.color.a = 1 - Math.min(1, d / (halfSize - halfAlphaSize));
+                } else if (arrow.pos.x > center + halfAlphaSize) {
+                    float d = Math.abs(arrow.pos.x - (center + halfAlphaSize));
+                    arrow.color.a = 1 - Math.min(1, d / (halfSize - halfAlphaSize));
+                } else {
+                    arrow.color.a = 1;
+                }
+
+                arrow.pos.x -= SPEED * dt;
+                if (arrow.pos.x < center - halfSize) {
+                    arrow.pos.x = center + halfSize;
+                }
+            } else if (movement.z != 0) {
+                float center = baseZ - halfSize;
 
                 if (arrow.pos.z < center - halfAlphaSize) {
                     float d = Math.abs(arrow.pos.z - (center - halfAlphaSize));
-                    arrow.color.a = 1 - d / (halfSize - halfAlphaSize);
+                    arrow.color.a = 1 - Math.min(1, d / (halfSize - halfAlphaSize));
                 } else if (arrow.pos.z > center + halfAlphaSize) {
                     float d = Math.abs(arrow.pos.z - (center + halfAlphaSize));
-                    arrow.color.a = 1 - d / (halfSize - halfAlphaSize);
+                    arrow.color.a = 1 - Math.min(1, d / (halfSize - halfAlphaSize));
                 } else {
                     arrow.color.a = 1;
                 }

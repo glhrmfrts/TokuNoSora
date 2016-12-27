@@ -70,7 +70,7 @@ public class GameRenderer implements Disposable {
 
         worldCam = new PerspectiveCamera(FOV, g.getWidth(), g.getHeight());
         worldCam.near = 0.1f;
-        worldCam.far = 500f;
+        worldCam.far = 1000f;
 
         environment = new Environment();
         environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.4f, 0.4f, 0.4f, 1f));

@@ -55,7 +55,7 @@ public final class Models {
 
         mb.begin();
 
-        float width = 0.30f;
+        float width = 0.45f;
         float ll = -1;
         float lr = -1 + width;
         float rl = 1 - width;

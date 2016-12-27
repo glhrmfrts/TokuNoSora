@@ -143,9 +143,16 @@ public class Ship implements GenericObject {
             accelerate(false);
         }
 
-        if (floorCollisions > 0 || dBounce < MAX_BOUNCE_JUMP_INTERVAL) {
-            if (controller.isJustDown(ShipController.Key.JUMP)) {
+        boolean isBouncing = dBounce < MAX_BOUNCE_JUMP_INTERVAL;
+        if (floorCollisions > 0 || isBouncing) {
+            if (controller.isDown(ShipController.Key.JUMP)) {
+                float pvy = vel.y;
                 vel.y = JUMP_VEL;
+
+                if (isBouncing) {
+                    vel.y -= Math.max(pvy * 0.25f, 0);
+                }
+                
             } else if (dSlide != 0) {
                 vel.y = Math.min(vel.y, 0);
             }
@@ -213,6 +220,7 @@ public class Ship implements GenericObject {
             floorCollisions++;
 
             if (vel.y < -MIN_BOUNCE_VEL) {
+                vel.x = 0;
                 vel.y = -vel.y * BOUNCE_FACTOR;
                 playBounceSound();
             }

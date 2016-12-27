@@ -37,8 +37,8 @@ public class Level {
         this.world = Universe.get().worlds.get(worldIndex);
     }
 
-    public void addArrows(Vector3 pos, Vector3 rotation, float height, int depth, int color) {
-        decorations.add(new Arrows(pos, rotation, height, depth, color, world));
+    public void addArrows(Vector3 pos, Vector3 rotation, Vector3 movement, float height, int depth, int color) {
+        decorations.add(new Arrows(pos, rotation, movement, height, depth, color, world));
     }
 
     public void addTile(Vector3 pos, Vector3 size, int preset, TouchEffect effect) {

@@ -102,11 +102,12 @@ public class LevelLoader extends SynchronousAssetLoader<Level, LevelLoader.Level
                 JsonValue arrows = object.get("arrows");
                 Vector3 pos = parseVector3(arrows.getString("pos"));
                 Vector3 rotation = parseVector3(arrows.getString("rotation"));
+                Vector3 movement = parseVector3(arrows.getString("movement"));
                 float height = arrows.getFloat("height");
                 int depth = arrows.getInt("depth");
                 int color = arrows.getInt("color");
 
-                level.addArrows(pos, rotation, height, depth, color);
+                level.addArrows(pos, rotation, movement, height, depth, color);
             }
         }
         return level;

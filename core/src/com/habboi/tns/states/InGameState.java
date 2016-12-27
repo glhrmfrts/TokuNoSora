@@ -41,6 +41,7 @@ public class InGameState extends GameState {
     ShipCamera shipCam;
     Text levelCompleteText;
     Text raceTimeText;
+    Text fpsText;
     GameTweenManager gtm;
     Rect screenRect;
     PauseMenu pauseMenu;
@@ -48,6 +49,7 @@ public class InGameState extends GameState {
     int timesLevelCompleted;
     boolean paused;
     boolean quitFromMenu;
+    boolean debug;
     MusicWrapper music = new MusicWrapper();
 
     public InGameState(Game g) {
@@ -78,6 +80,9 @@ public class InGameState extends GameState {
         raceTimeText = new Text(fm.getFont("Neon.ttf", Game.MAIN_FONT_SIZE), "", null, Color.WHITE);
         raceTimeText.getPos().set(game.getWidth() / 2, game.getHeight() / 2 - Game.MAIN_FONT_SIZE/2 - 10);
         raceTimeText.getColor().a = 0;
+        fpsText = new Text(fm.getFont("Neon.ttf", Game.MAIN_FONT_SIZE), "", null, Color.WHITE);
+        fpsText.getPos().set(20, 60);
+        
         screenRect = new Rect(new Rectangle(0, 0, game.getWidth(), game.getHeight()));
         pauseMenu = new PauseMenu(this, game);
 
@@ -195,6 +200,11 @@ public class InGameState extends GameState {
             return true;
         }
 
+        if (keycode == Input.Keys.D) {
+            debug = !debug;
+            return true;
+        }
+
         if (paused) {
             return pauseMenu.keyDown(keycode);
         }
@@ -254,12 +264,20 @@ public class InGameState extends GameState {
         gr.end();
 
         orthoCam.update();
+        gr.beginOrtho(orthoCam.combined);
         if (ship.state == Ship.State.ENDED) {
-            gr.beginOrtho(orthoCam.combined);
             levelCompleteText.draw(gr.getSpriteBatch(), true);
             raceTimeText.draw(gr.getSpriteBatch(), true);
-            gr.endOrtho();
         }
+
+        if (debug) {
+            DecimalFormat format = new DecimalFormat("00.00");
+            fpsText.setValue("fps " + format.format(game.getFPS()), false);
+            fpsText.draw(gr.getSpriteBatch(), false);
+        }
+        
+        gr.endOrtho();
+        
         if (paused) {
             pauseMenu.render();
         }

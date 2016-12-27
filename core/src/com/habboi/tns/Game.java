@@ -51,6 +51,7 @@ public class Game extends ApplicationAdapter {
     Stack<GameState> stateStack;
     boolean stateChanged;
     boolean exiting;
+    float fpsTime;
 
     AssetManager am;
     Application.ApplicationType appType;
@@ -112,13 +113,17 @@ public class Game extends ApplicationAdapter {
     public boolean isAndroid() {
         return appType == Application.ApplicationType.Android;
     }
-
+    
     public int getWidth() {
         return width;
     }
 
     public int getHeight() {
         return height;
+    }
+
+    public float getFPS() {
+        return 1f / fpsTime;
     }
 
     public GameRenderer getRenderer() {
@@ -193,6 +198,7 @@ public class Game extends ApplicationAdapter {
 
         float delta = (start - lastUpdateTime);
         lastUpdateTime = start;
+        fpsTime = delta / 1000;
 
         accumUpdateTime += delta;
         while (accumUpdateTime >= STEP) {
