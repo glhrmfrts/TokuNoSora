@@ -22,6 +22,8 @@ public interface Shape {
         }
     }
 
-    boolean checkCollision(Shape shape);
-    CollisionInfo getCollisionInfo();
+    public boolean checkCollision(Shape shape);
+    public CollisionInfo getCollisionInfo();
+    public Vector3 getPos();
+    public Vector3 getSize();
 }

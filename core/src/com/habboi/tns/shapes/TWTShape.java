@@ -62,4 +62,14 @@ public class TWTShape implements Shape {
     public Shape.CollisionInfo getCollisionInfo() {
         return collisionInfo;
     }
+
+    @Override
+    public Vector3 getPos() {
+        return pos;
+    }
+
+    @Override
+    public Vector3 getSize() {
+        return size;
+    }
 }

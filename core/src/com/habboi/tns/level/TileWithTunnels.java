@@ -10,12 +10,8 @@ import com.habboi.tns.shapes.TileShape;
 import com.habboi.tns.shapes.TWTShape;
 import com.habboi.tns.worlds.World;
 
-/**
- * A tile with one or more tunnels in it's body
- */
-public class TileWithTunnels extends Cell {
+public class TileWithTunnels extends LevelObject {
     ModelInstance outlineInstance;
-    TWTShape shape;
 
     public TileWithTunnels(Vector3 pos, Vector3 size, int preset, int[] tunnels, TouchEffect effect, World world) {
         size.x *= TileShape.TILE_WIDTH;
@@ -35,17 +31,7 @@ public class TileWithTunnels extends Cell {
         outlineInstance = new ModelInstance(world.getTileWithTunnelsOutlineModel(size, tunnels));
         outlineInstance.transform.setTranslation(pos.x, pos.y, pos.z);
     }
-
-    @Override
-    public Vector3 getPos() {
-        return shape.pos;
-    }
-
-    @Override
-    public Vector3 getSize() {
-        return shape.size;
-    }
-
+    
     @Override
     public void reset() {
     }
@@ -65,10 +51,5 @@ public class TileWithTunnels extends Cell {
             renderer.render(outlineInstance);
             break;
         }
-    }
-
-    @Override
-    public Shape getShape() {
-        return shape;
     }
 }

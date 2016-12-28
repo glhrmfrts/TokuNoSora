@@ -67,4 +67,14 @@ public class TileShape implements Shape {
     public Shape.CollisionInfo getCollisionInfo() {
         return collisionInfo;
     }
+
+    @Override
+    public Vector3 getPos() {
+        return pos;
+    }
+
+    @Override
+    public Vector3 getSize() {
+        return new Vector3(half.x * 2, half.y * 2, half.z * 2);
+    }
 }

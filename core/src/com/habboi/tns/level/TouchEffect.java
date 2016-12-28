@@ -21,11 +21,11 @@ public enum TouchEffect {
         return color;
     }
 
-    public TouchEffectRenderer getRenderer(Cell cell, World world) {
+    public TouchEffectRenderer getRenderer(LevelObject obj, World world) {
         try {
             TouchEffectRenderer renderer = rendererClass.newInstance();
 
-            renderer.init(cell, world);
+            renderer.init(obj, world);
             return renderer;
         } catch (Exception e) {
             return null;

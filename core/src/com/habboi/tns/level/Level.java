@@ -22,9 +22,8 @@ public class Level {
     float centerX;
     Vector3 shipPos = new Vector3();
 
-    ArrayList<Cell> cells = new ArrayList<>();
-    LinkedList<Cell> collisions = new LinkedList<>();
-    ArrayList<GenericObject> decorations = new ArrayList<>();
+    ArrayList<LevelObject> objects = new ArrayList<>();
+    LinkedList<LevelObject> collisions = new LinkedList<>();
     ArrayList<Tunnel> endTunnels = new ArrayList<>();
 
     public Level() {}
@@ -38,11 +37,11 @@ public class Level {
     }
 
     public void addArrows(Vector3 pos, Vector3 rotation, Vector3 movement, float height, int depth, int color) {
-        decorations.add(new Arrows(pos, rotation, movement, height, depth, color, world));
+        objects.add(new Arrows(pos, rotation, movement, height, depth, color, world));
     }
 
     public void addTile(Vector3 pos, Vector3 size, int preset, TouchEffect effect) {
-        cells.add(new Tile(pos, size, preset, effect, world));
+        objects.add(new Tile(pos, size, preset, effect, world));
     }
 
     public void addTunnel(Vector3 pos, float depth, int preset, boolean end) {
@@ -50,16 +49,16 @@ public class Level {
         if (end) {
             endTunnels.add(tunnel);
         }
-        cells.add(tunnel);
+        objects.add(tunnel);
     }
 
     public void addTileWithTunnels(Vector3 pos, Vector3 size, int preset, int[] tunnels, TouchEffect effect) {
-        cells.add(new TileWithTunnels(pos, size, preset, tunnels, effect, world));
+        objects.add(new TileWithTunnels(pos, size, preset, tunnels, effect, world));
     }
 
     public void addFinish(Vector3 pos, float radius) {
         Finish finish = new Finish(pos, radius);
-        cells.add(finish);
+        objects.add(finish);
     }
 
     public String getName() {
@@ -82,18 +81,18 @@ public class Level {
         if (ship.state != Ship.State.ENDED) {
             ship.vel.y += (GRAVITY * world.gravityFactor) * dt;
         }
-        for (Cell cell : cells) {
-            cell.update(dt);
+        for (LevelObject obj : objects) {
+            obj.update(dt);
 
-            if (cell.getShape().checkCollision(ship.shape)) {
-                collisions.add(cell);
+            if (obj.shape != null && obj.shape.checkCollision(ship.shape)) {
+                collisions.add(obj);
             }
         }
 
-        Cell cell;
-        while ((cell = collisions.pollFirst()) != null) {
-            if (ship.handleCollision(cell)) {
-                Shape.CollisionInfo c = cell.getShape().getCollisionInfo();
+        LevelObject obj;
+        while ((obj = collisions.pollFirst()) != null) {
+            if (ship.handleCollision(obj)) {
+                Shape.CollisionInfo c = obj.shape.getCollisionInfo();
 
                 float velNormal = ship.vel.dot(c.normal);
                 if (velNormal > 0.0f) continue;
@@ -111,8 +110,8 @@ public class Level {
     }
 
     public void reset() {
-        for (Cell c : cells) {
-            c.reset();
+        for (LevelObject obj : objects) {
+            obj.reset();
         }
     }
 
@@ -132,19 +131,11 @@ public class Level {
             }
         }
         ship.readyToEnd = readyToEnd;
-
-        for (GenericObject decoration : decorations) {
-            decoration.update(dt);
-        }
     }
 
     public void render(GameRenderer renderer, int pass) {
-        for (Cell cell : cells) {
-            cell.render(renderer, pass);
-        }
-
-        for (GenericObject decoration : decorations) {
-            decoration.render(renderer, pass);
+        for (LevelObject obj : objects) {
+            obj.render(renderer, pass);
         }
     }
 

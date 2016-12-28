@@ -3,18 +3,18 @@ package com.habboi.tns.shapes;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
-public class FinishShape implements Shape {
+public class CircleShape implements Shape {
 
     public Vector3 pos = new Vector3();
     public float radius;
-
+    
     Vector3 dif = new Vector3();
     Vector3 closest = new Vector3();
     Vector2 n = new Vector2();
 
     Shape.CollisionInfo collisionInfo = new CollisionInfo();
 
-    public FinishShape(Vector3 pos, float radius) {
+    public CircleShape(Vector3 pos, float radius) {
         this.pos.set(pos);
         this.radius = radius;
     }
@@ -80,5 +80,15 @@ public class FinishShape implements Shape {
     @Override
     public Shape.CollisionInfo getCollisionInfo() {
         return collisionInfo;
+    }
+
+    @Override
+    public Vector3 getPos() {
+        return pos;
+    }
+
+    @Override
+    public Vector3 getSize() {
+        return new Vector3(radius, radius, radius);
     }
 }

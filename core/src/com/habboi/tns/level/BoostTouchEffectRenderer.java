@@ -22,19 +22,19 @@ public class BoostTouchEffectRenderer implements TouchEffectRenderer {
 
     ArrayList<Arrow> arrows = new ArrayList<>();
     float baseX, baseY, baseZ;
-    Cell cell;
-    Vector3 cellPos;
-    Vector3 cellSize;
+    LevelObject obj;
+    Vector3 objPos;
+    Vector3 objSize;
 
     @Override
-    public void init(Cell cell, World world) {
-        this.cell = cell;
+    public void init(LevelObject obj, World world) {
+        this.obj = obj;
 
-        Vector3 size = cellSize = cell.getSize();
+        Vector3 size = objSize = obj.shape.getSize();
         float width = (int)size.x;
         float depth = (int)size.z;
 
-        Vector3 pos = cellPos = cell.getPos();
+        Vector3 pos = objPos = obj.shape.getPos();
         baseX = pos.x - size.x * 0.5f + HALF_X;
         baseY = pos.y + size.y * 0.5f;
         baseZ = pos.z + size.z * 0.5f;
@@ -57,7 +57,7 @@ public class BoostTouchEffectRenderer implements TouchEffectRenderer {
         /*for (Arrow arrow : arrows) {
             arrow.pos.z -= SPEED * dt;
 
-            if (arrow.pos.z <= baseZ - cellSize.z + 1f) {
+            if (arrow.pos.z <= baseZ - objSize.z + 1f) {
                 arrow.pos.z = baseZ;
             }
         }*/

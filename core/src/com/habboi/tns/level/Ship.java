@@ -12,13 +12,15 @@ import com.habboi.tns.rendering.GameRenderer;
 import com.habboi.tns.shapes.Shape;
 import com.habboi.tns.shapes.TileShape;
 
-/**
- * My ship :).
- */
-public class Ship implements GenericObject {
+public class Ship {
     public enum State {
-        WAITING, PLAYABLE, EXPLODED, FELL, ENDED
+        WAITING,
+        PLAYABLE,
+        EXPLODED,
+        FELL,
+        ENDED
     }
+    
     public State state = State.WAITING;
     public Vector3 vel = new Vector3();
     public boolean readyToEnd;
@@ -38,7 +40,6 @@ public class Ship implements GenericObject {
     static final float MIN_BOUNCE_SOUND_INTERVAL = 0.50f;
     static final float BOUNCE_FACTOR = 0.35f;
     static final Color COLOR = new Color(0xff);
-    //static final Color OUTLINE_COLOR = new Color(0x1A0E74<<8 | 0xFF);
     static final Color OUTLINE_COLOR = new Color(0x00ff00<<8 | 0xFF);
 
     Vector3 spawnPos = new Vector3();
@@ -200,12 +201,12 @@ public class Ship implements GenericObject {
         renderer.render(outlineInstance);
     }
 
-    public boolean handleCollision(Cell cell) {
-        Shape.CollisionInfo c = cell.getShape().getCollisionInfo();
-        if (cell.effect == TouchEffect.END) {
+    public boolean handleCollision(LevelObject obj) {
+        Shape.CollisionInfo c = obj.shape.getCollisionInfo();
+        if (obj.effect == TouchEffect.END) {
             if (readyToEnd) {
                 state = State.ENDED;
-                finish = (Finish) cell;
+                finish = (Finish) obj;
             }
             return false;
         }
@@ -225,7 +226,7 @@ public class Ship implements GenericObject {
                 playBounceSound();
             }
 
-            if (cell.effect == TouchEffect.BOOST) {
+            if (obj.effect == TouchEffect.BOOST) {
                 accelerate(true);
             }
         }

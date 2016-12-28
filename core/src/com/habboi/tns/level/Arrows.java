@@ -9,7 +9,7 @@ import com.habboi.tns.worlds.World;
 
 import java.util.ArrayList;
 
-public class Arrows implements GenericObject {
+public class Arrows extends LevelObject {
     static final float PADDING = 0.25f;
     static final float SPEED = 4;
 
@@ -71,6 +71,10 @@ public class Arrows implements GenericObject {
             arrow.instance.transform.rotate(Vector3.Z, rotation.z);
             arrows.add(arrow);
         }
+    }
+
+    @Override
+    public void reset() {
     }
 
     @Override

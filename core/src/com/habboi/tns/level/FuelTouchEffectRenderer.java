@@ -16,12 +16,12 @@ public class FuelTouchEffectRenderer implements TouchEffectRenderer {
     ArrayList<ModelInstance> circleInstances = new ArrayList<>();
 
     @Override
-    public void init(Cell cell, World world) {
-        Vector3 size = cell.getSize();
+    public void init(LevelObject obj, World world) {
+        Vector3 size = obj.shape.getSize();
         float width = (int)size.x;
         float depth = (int)size.z;
 
-        Vector3 pos = cell.getPos();
+        Vector3 pos = obj.shape.getPos();
         float baseX = pos.x - size.x * 0.5f + 0.5f;
         float baseY = pos.y + size.y * 0.5f;
         float baseZ = pos.z + size.z * 0.5f;
