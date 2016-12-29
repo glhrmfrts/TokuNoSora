@@ -7,7 +7,7 @@ import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Disposable;
-import com.habboi.tns.level.Models;
+import com.habboi.tns.utils.Models;
 import com.habboi.tns.rendering.GameRenderer;
 
 import java.util.ArrayList;

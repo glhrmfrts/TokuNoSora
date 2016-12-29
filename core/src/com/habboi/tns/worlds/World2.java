@@ -8,7 +8,7 @@ import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.Renderable;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.math.Vector3;
-import com.habboi.tns.level.Models;
+import com.habboi.tns.utils.Models;
 import com.habboi.tns.rendering.GameRenderer;
 
 import java.util.ArrayList;

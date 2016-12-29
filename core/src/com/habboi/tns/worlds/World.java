@@ -4,8 +4,8 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Disposable;
-import com.habboi.tns.level.Models;
 import com.habboi.tns.rendering.GameRenderer;
+import com.habboi.tns.utils.Models;
 
 import java.util.ArrayList;
 import java.util.HashMap;

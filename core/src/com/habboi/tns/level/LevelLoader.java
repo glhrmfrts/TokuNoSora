@@ -108,6 +108,11 @@ public class LevelLoader extends SynchronousAssetLoader<Level, LevelLoader.Level
                 int color = arrows.getInt("color");
 
                 level.addArrows(pos, rotation, movement, height, depth, color);
+            } else if (object.has("collectable")) {
+                JsonValue collect = object.get("collectable");
+                Vector3 pos = parseVector3(collect.getString("pos"));
+
+                level.addCollectable(pos);
             }
         }
         return level;

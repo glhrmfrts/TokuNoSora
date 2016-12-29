@@ -7,6 +7,7 @@ import com.habboi.tns.rendering.GameRenderer;
 import com.habboi.tns.shapes.Shape;
 import com.habboi.tns.shapes.TileShape;
 import com.habboi.tns.shapes.TunnelShape;
+import com.habboi.tns.utils.Models;
 import com.habboi.tns.worlds.World;
 
 public class Tunnel extends LevelObject {

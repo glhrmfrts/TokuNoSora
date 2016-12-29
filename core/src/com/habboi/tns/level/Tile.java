@@ -4,10 +4,11 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Vector3;
-import com.habboi.tns.worlds.World;
 import com.habboi.tns.rendering.GameRenderer;
 import com.habboi.tns.shapes.Shape;
 import com.habboi.tns.shapes.TileShape;
+import com.habboi.tns.utils.Models;
+import com.habboi.tns.worlds.World;
 
 public class Tile extends LevelObject {
     ModelInstance outlineInstance;
@@ -23,7 +24,7 @@ public class Tile extends LevelObject {
         tileShape.pos.x = tileShape.pos.x*TileShape.TILE_WIDTH + tileShape.half.x;
         tileShape.pos.y = tileShape.pos.y*TileShape.TILE_HEIGHT + tileShape.half.y;
         tileShape.pos.z = -(tileShape.pos.z*TileShape.TILE_DEPTH + tileShape.half.z);
-        
+
         this.shape = tileShape;
         this.effect = effect;
         this.effectRenderer = effect.getRenderer(this, world);

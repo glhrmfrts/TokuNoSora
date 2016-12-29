@@ -1,4 +1,4 @@
-package com.habboi.tns.level;
+package com.habboi.tns.utils;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -28,6 +28,7 @@ public final class Models {
     private static Model sunModel;
     private static Model shipModel;
     private static Model planeModel;
+    private static Model prismModel;
     private static Model shipOutlineModel;
     private static Model tileBoostModel;
     private static Model tileFuelModel;
@@ -110,6 +111,135 @@ public final class Models {
         }
 
         return floorCircleModel = mb.end();
+    }
+
+    public static Model getPrismModel() {
+        if (prismModel != null) return prismModel;
+
+        MeshPartBuilder partBuilder;
+        VertexInfo v1, v2, v3;
+        Vector3 normal;
+
+        mb.begin();
+
+        Material material = new Material(new BlendingAttribute(0.75f));
+        material.set(IntAttribute.createCullFace(GL20.GL_NONE));
+        material.set(ColorAttribute.createDiffuse(new Color(0xf540efff)));
+
+        // (visible to player)
+        partBuilder = mb.part("back_bottom", GL20.GL_TRIANGLES,
+                              VertexAttributes.Usage.Position | VertexAttributes.Usage.ColorPacked | VertexAttributes.Usage.Normal,
+                              material);
+        partBuilder.setColor(Color.WHITE);
+
+        v1 = new VertexInfo().setPos(0, -1, 0);
+        v2 = new VertexInfo().setPos(1, 0, 1);
+        v3 = new VertexInfo().setPos(-1, 0, 1);
+        normal = calculateNormal(v1.position, v2.position, v3.position);
+        v1.setNor(normal);
+        v2.setNor(normal);
+        v3.setNor(normal);
+        partBuilder.triangle(v1, v2, v3);
+
+        partBuilder = mb.part("back_top", GL20.GL_TRIANGLES,
+                              VertexAttributes.Usage.Position | VertexAttributes.Usage.ColorPacked | VertexAttributes.Usage.Normal,
+                              material);
+        partBuilder.setColor(Color.WHITE);
+
+        v1 = new VertexInfo().setPos(-1, 0, 1);
+        v2 = new VertexInfo().setPos(1, 0, 1);
+        v3 = new VertexInfo().setPos(0, 1, 0);
+        normal = calculateNormal(v1.position, v2.position, v3.position);
+        v1.setNor(normal);
+        v2.setNor(normal);
+        v3.setNor(normal);
+        partBuilder.triangle(v1, v2, v3);
+
+        partBuilder = mb.part("right_bottom", GL20.GL_TRIANGLES,
+                              VertexAttributes.Usage.Position | VertexAttributes.Usage.ColorPacked | VertexAttributes.Usage.Normal,
+                              material);
+        partBuilder.setColor(Color.WHITE);
+
+        v1 = new VertexInfo().setPos(0, -1, 0);
+        v2 = new VertexInfo().setPos(1, 0, -1);
+        v3 = new VertexInfo().setPos(1, 0, 1);
+        normal = calculateNormal(v1.position, v2.position, v3.position);
+        v1.setNor(normal);
+        v2.setNor(normal);
+        v3.setNor(normal);
+        partBuilder.triangle(v1, v2, v3);
+
+        partBuilder = mb.part("right_top", GL20.GL_TRIANGLES,
+                              VertexAttributes.Usage.Position | VertexAttributes.Usage.ColorPacked | VertexAttributes.Usage.Normal,
+                              material);
+        partBuilder.setColor(Color.WHITE);
+
+        v1 = new VertexInfo().setPos(1, 0, 1);
+        v2 = new VertexInfo().setPos(1, 0, -1);
+        v3 = new VertexInfo().setPos(0, 1, 0);
+        normal = calculateNormal(v1.position, v2.position, v3.position);
+        v1.setNor(normal);
+        v2.setNor(normal);
+        v3.setNor(normal);
+        partBuilder.triangle(v1, v2, v3);
+
+        partBuilder = mb.part("front_bottom", GL20.GL_TRIANGLES,
+                              VertexAttributes.Usage.Position | VertexAttributes.Usage.ColorPacked | VertexAttributes.Usage.Normal,
+                              material);
+        partBuilder.setColor(Color.WHITE);
+
+        v1 = new VertexInfo().setPos(0, -1, 0);
+        v2 = new VertexInfo().setPos(-1, 0, -1);
+        v3 = new VertexInfo().setPos(1, 0, -1);
+        normal = calculateNormal(v1.position, v2.position, v3.position);
+        v1.setNor(normal);
+        v2.setNor(normal);
+        v3.setNor(normal);
+        partBuilder.triangle(v1, v2, v3);
+
+        partBuilder = mb.part("front_top", GL20.GL_TRIANGLES,
+                              VertexAttributes.Usage.Position | VertexAttributes.Usage.ColorPacked | VertexAttributes.Usage.Normal,
+                              material);
+        partBuilder.setColor(Color.WHITE);
+
+        v1 = new VertexInfo().setPos(1, 0, -1);
+        v2 = new VertexInfo().setPos(-1, 0, -1);
+        v3 = new VertexInfo().setPos(0, 1, 0);
+        normal = calculateNormal(v1.position, v2.position, v3.position);
+        v1.setNor(normal);
+        v2.setNor(normal);
+        v3.setNor(normal);
+        partBuilder.triangle(v1, v2, v3);
+
+        partBuilder = mb.part("left_bottom", GL20.GL_TRIANGLES,
+                              VertexAttributes.Usage.Position | VertexAttributes.Usage.ColorPacked | VertexAttributes.Usage.Normal,
+                              material);
+        partBuilder.setColor(Color.WHITE);
+
+        v1 = new VertexInfo().setPos(0, -1, 0);
+        v2 = new VertexInfo().setPos(-1, 0, 1);
+        v3 = new VertexInfo().setPos(-1, 0, -1);
+        normal = calculateNormal(v1.position, v2.position, v3.position);
+        v1.setNor(normal);
+        v2.setNor(normal);
+        v3.setNor(normal);
+        partBuilder.triangle(v1, v2, v3);
+
+        partBuilder = mb.part("left_top", GL20.GL_TRIANGLES,
+                              VertexAttributes.Usage.Position | VertexAttributes.Usage.ColorPacked | VertexAttributes.Usage.Normal,
+                              material);
+        partBuilder.setColor(Color.WHITE);
+
+        v1 = new VertexInfo().setPos(-1, 0, -1);
+        v2 = new VertexInfo().setPos(-1, 0, 1);
+        v3 = new VertexInfo().setPos(0, 1, 0);
+        normal = calculateNormal(v1.position, v2.position, v3.position);
+        v1.setNor(normal);
+        v2.setNor(normal);
+        v3.setNor(normal);
+        partBuilder.triangle(v1, v2, v3);
+
+        return prismModel = mb.end();
     }
 
     public static Model getSunModel() {

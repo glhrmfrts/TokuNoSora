@@ -6,6 +6,7 @@ import com.habboi.tns.worlds.World;
 public enum TouchEffect {
     NONE(Color.WHITE, null),
     END(Color.WHITE, null),
+    COLLECT(Color.WHITE, null),
     BOOST(Color.GREEN, BoostTouchEffectRenderer.class),
     FUEL(Color.BLUE, FuelTouchEffectRenderer.class);
 

@@ -40,6 +40,10 @@ public class Level {
         objects.add(new Arrows(pos, rotation, movement, height, depth, color, world));
     }
 
+    public void addCollectable(Vector3 pos) {
+        objects.add(new Collectable(pos, world));
+    }
+
     public void addTile(Vector3 pos, Vector3 size, int preset, TouchEffect effect) {
         objects.add(new Tile(pos, size, preset, effect, world));
     }
@@ -91,7 +95,7 @@ public class Level {
 
         LevelObject obj;
         while ((obj = collisions.pollFirst()) != null) {
-            if (ship.handleCollision(obj)) {
+            if (obj.onCollision(ship) && ship.onCollision(obj)) {
                 Shape.CollisionInfo c = obj.shape.getCollisionInfo();
 
                 float velNormal = ship.vel.dot(c.normal);

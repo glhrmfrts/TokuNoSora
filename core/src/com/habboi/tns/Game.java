@@ -13,8 +13,8 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.habboi.tns.level.Level;
 import com.habboi.tns.level.LevelLoader;
-import com.habboi.tns.level.Models;
 import com.habboi.tns.states.MenuState;
+import com.habboi.tns.utils.Models;
 import com.habboi.tns.utils.FontManager;
 import com.habboi.tns.utils.MusicAccessor;
 import com.habboi.tns.worlds.Universe;
@@ -113,7 +113,7 @@ public class Game extends ApplicationAdapter {
     public boolean isAndroid() {
         return appType == Application.ApplicationType.Android;
     }
-    
+
     public int getWidth() {
         return width;
     }

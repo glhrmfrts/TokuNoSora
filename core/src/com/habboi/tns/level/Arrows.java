@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Vector3;
 import com.habboi.tns.rendering.GameRenderer;
 import com.habboi.tns.shapes.TileShape;
+import com.habboi.tns.utils.Models;
 import com.habboi.tns.worlds.World;
 
 import java.util.ArrayList;
@@ -42,11 +43,11 @@ public class Arrows extends LevelObject {
         this.baseX = pos.x;
         this.baseY = pos.y;
         this.baseZ = -pos.z;
-        
+
         if (movement.x == -1) {
             this.baseX = pos.x + depth + (PADDING * depth) + 0.5f;
         }
-        
+
         for (int i = 0; i < depth; i++) {
             Vector3 position = new Vector3(
                                            baseX * TileShape.TILE_WIDTH,
@@ -58,7 +59,7 @@ public class Arrows extends LevelObject {
             } else if (movement.z != 0) {
                 position.z = (baseZ - (i * Math.signum(movement.z))) * TileShape.TILE_DEPTH - (PADDING * i * Math.signum(movement.z));
             }
-            
+
             Arrow arrow = new Arrow(
                                     new ModelInstance(Models.getFloorArrowModel()),
                                     this.color,

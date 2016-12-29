@@ -11,6 +11,7 @@ import com.habboi.tns.GameConfig;
 import com.habboi.tns.rendering.GameRenderer;
 import com.habboi.tns.shapes.Shape;
 import com.habboi.tns.shapes.TileShape;
+import com.habboi.tns.utils.Models;
 
 public class Ship {
     public enum State {
@@ -20,7 +21,8 @@ public class Ship {
         FELL,
         ENDED
     }
-    
+
+    public int collected;
     public State state = State.WAITING;
     public Vector3 vel = new Vector3();
     public boolean readyToEnd;
@@ -31,7 +33,7 @@ public class Ship {
     static final float BODY_HEIGHT = 0.3f;
     static final float BODY_DEPTH = 2.25f;
     static final float MAX_VEL = 65;
-    static final float STEER_VEL = 12;
+    static final float STEER_VEL = 10;
     static final float STEER_ACCELERATION = 50;
     static final float MAX_STEER_ACCUL = 300;
     static final float JUMP_VEL = 8;
@@ -153,7 +155,7 @@ public class Ship {
                 if (isBouncing) {
                     vel.y -= Math.max(pvy * 0.25f, 0);
                 }
-                
+
             } else if (dSlide != 0) {
                 vel.y = Math.min(vel.y, 0);
             }
@@ -201,8 +203,12 @@ public class Ship {
         renderer.render(outlineInstance);
     }
 
-    public boolean handleCollision(LevelObject obj) {
+    public boolean onCollision(LevelObject obj) {
         Shape.CollisionInfo c = obj.shape.getCollisionInfo();
+        if (obj.effect == TouchEffect.COLLECT) {
+            collected++;
+            return false;
+        }
         if (obj.effect == TouchEffect.END) {
             if (readyToEnd) {
                 state = State.ENDED;

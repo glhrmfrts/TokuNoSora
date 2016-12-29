@@ -10,7 +10,11 @@ public abstract class LevelObject {
     public TouchEffectRenderer effectRenderer;
     public ModelInstance modelInstance;
     public Shape shape;
-    
+
+    public boolean onCollision(Ship ship) {
+        return true;
+    }
+
     public abstract void reset();
     public abstract void update(float dt);
     public abstract void render(GameRenderer renderer, int pass);

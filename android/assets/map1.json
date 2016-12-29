@@ -6,6 +6,11 @@
     "ship_pos": "3,3,0",
     "objects": [
         {
+            "collectable":{
+                "pos":"3,2,10"
+            }
+        },
+        {
             "tile": {
                 "pos": "2,0,0",
                 "size": "2,2,6",

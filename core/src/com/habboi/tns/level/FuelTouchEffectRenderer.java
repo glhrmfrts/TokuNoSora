@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Vector3;
 import com.habboi.tns.rendering.GameRenderer;
 import com.habboi.tns.shapes.TileShape;
+import com.habboi.tns.utils.Models;
 import com.habboi.tns.worlds.World;
 
 import java.util.ArrayList;
