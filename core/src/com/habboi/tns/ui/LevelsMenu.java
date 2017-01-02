@@ -49,7 +49,7 @@ public class LevelsMenu extends BaseMenu implements Disposable {
     public LevelsMenu(final MenuState state, final Game game) {
         menuState = state;
         sr = game.getShapeRenderer();
-        sb = game.getRenderer().getSpriteBatch();
+        sb = game.getSpriteBatch();
         background = new Rect(new Rectangle(0, 0, game.getWidth(), game.getHeight()));
         background.getColor().a = 0;
         final GameTweenManager gtm = GameTweenManager.get();

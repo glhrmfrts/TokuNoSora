@@ -40,15 +40,6 @@ public class Collectable extends LevelObject {
     }
 
     @Override
-    public void render(GameRenderer renderer, int pass) {
-        if (!visible) return;
-
-        if (pass == GameRenderer.RenderPassBody) {
-            renderer.render(modelInstance);
-        }
-    }
-
-    @Override
     public boolean onCollision(Ship ship) {
         effect = TouchEffect.NONE;
         visible = false;

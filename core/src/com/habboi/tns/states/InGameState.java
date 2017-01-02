@@ -4,8 +4,10 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
@@ -70,7 +72,9 @@ public class InGameState extends GameState {
 
         ShipController sc = new ShipController(false);
         ship = new Ship(game, level.getShipPos(), sc);
-        shipCam = new ShipCamera(ship, game.getRenderer().getWorldCam());
+        shipCam = new ShipCamera(ship, game.getRenderer().getLevelRenderer().getCamera());
+
+        level.addShip(ship);
 
         FontManager fm = FontManager.get();
         levelCompleteText = new Text(fm.getFont("Neon.ttf", Game.MAIN_FONT_SIZE),
@@ -257,26 +261,29 @@ public class InGameState extends GameState {
 
     @Override
     public void render() {
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
         GameRenderer gr = game.getRenderer();
-        gr.begin();
-        gr.renderLevel(level);
-        ship.render(gr, 0);
-        gr.end();
+        SpriteBatch sb = game.getSpriteBatch();
+
+        gr.render(level, level.getWorld());
 
         orthoCam.update();
-        gr.beginOrtho(orthoCam.combined);
+        sb.setProjectionMatrix(orthoCam.combined);
+        sb.begin();
+
         if (ship.state == Ship.State.ENDED) {
-            levelCompleteText.draw(gr.getSpriteBatch(), true);
-            raceTimeText.draw(gr.getSpriteBatch(), true);
+            levelCompleteText.draw(sb, true);
+            raceTimeText.draw(sb, true);
         }
 
         if (debug) {
             DecimalFormat format = new DecimalFormat("00.00");
             fpsText.setValue("fps " + format.format(game.getFPS()), false);
-            fpsText.draw(gr.getSpriteBatch(), false);
+            fpsText.draw(sb, false);
         }
         
-        gr.endOrtho();
+        sb.end();
         
         if (paused) {
             pauseMenu.render();

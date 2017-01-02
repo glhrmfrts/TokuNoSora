@@ -5,7 +5,9 @@ import com.badlogic.gdx.graphics.Color;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
 import com.habboi.tns.Game;
 import com.habboi.tns.GameConfig;
@@ -42,7 +44,7 @@ public class IntroState extends GameState {
     public void create() {
         world = Universe.get().worlds.get(0);
 
-        worldCam = game.getRenderer().getWorldCam();
+        worldCam = game.getRenderer().getLevelRenderer().getCamera();
         worldCam.position.set(0, MenuState.CAM_Y, 0);
         worldCam.lookAt(0, MenuState.CAM_LOOKAT_Y, -MenuState.CAM_DIST);
 
@@ -139,15 +141,16 @@ public class IntroState extends GameState {
 
     @Override
     public void render() {
-        GameRenderer gr = game.getRenderer();
-        worldCam.update();
-        gr.begin();
-        world.render(gr);
-        gr.end();
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        gr.beginOrtho();
-        titleText.draw(gr.getSpriteBatch(), true);
-        gr.endOrtho();
+        GameRenderer gr = game.getRenderer();
+        SpriteBatch sb = game.getSpriteBatch();
+
+        gr.render(world);
+
+        sb.begin();
+        titleText.draw(sb, true);
+        sb.end();
 
         screenRect.draw(game.getShapeRenderer());
     }

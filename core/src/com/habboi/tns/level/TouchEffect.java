@@ -1,6 +1,9 @@
 package com.habboi.tns.level;
 
 import com.badlogic.gdx.graphics.Color;
+import com.habboi.tns.rendering.BoostTouchEffectRenderer;
+import com.habboi.tns.rendering.FuelTouchEffectRenderer;
+import com.habboi.tns.rendering.TouchEffectRenderer;
 import com.habboi.tns.worlds.World;
 
 public enum TouchEffect {

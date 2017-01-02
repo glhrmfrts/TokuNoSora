@@ -1,9 +1,11 @@
-package com.habboi.tns.level;
+package com.habboi.tns.rendering;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g3d.Environment;
+import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Vector3;
-import com.habboi.tns.rendering.GameRenderer;
+import com.habboi.tns.level.LevelObject;
 import com.habboi.tns.shapes.TileShape;
 import com.habboi.tns.utils.Models;
 import com.habboi.tns.worlds.World;
@@ -44,9 +46,9 @@ public class FuelTouchEffectRenderer implements TouchEffectRenderer {
     }
 
     @Override
-    public void render(GameRenderer renderer) {
+    public void render(ModelBatch batch, Environment environment) {
         for (ModelInstance circle : circleInstances) {
-            renderer.renderGlow(circle, Color.BLUE);
+            batch.render(circle, environment);
         }
     }
 }

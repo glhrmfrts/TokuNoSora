@@ -1,9 +1,11 @@
-package com.habboi.tns.level;
+package com.habboi.tns.rendering;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g3d.Environment;
+import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Vector3;
-import com.habboi.tns.rendering.GameRenderer;
+import com.habboi.tns.level.LevelObject;
 import com.habboi.tns.shapes.TileShape;
 import com.habboi.tns.utils.Models;
 import com.habboi.tns.worlds.World;
@@ -55,20 +57,16 @@ public class BoostTouchEffectRenderer implements TouchEffectRenderer {
 
     @Override
     public void update(float dt) {
-        /*for (Arrow arrow : arrows) {
-            arrow.pos.z -= SPEED * dt;
-
-            if (arrow.pos.z <= baseZ - objSize.z + 1f) {
-                arrow.pos.z = baseZ;
-            }
-        }*/
+        for (Arrow arrow : arrows) {
+            arrow.instance.transform.setTranslation(arrow.pos.x, arrow.pos.y, arrow.pos.z);
+        }
     }
 
     @Override
-    public void render(GameRenderer renderer) {
+    public void render(ModelBatch batch, Environment environment) {
         for (Arrow arrow : arrows) {
             arrow.instance.transform.setTranslation(arrow.pos.x, arrow.pos.y, arrow.pos.z);
-            renderer.renderGlow(arrow.instance, arrow.color);
+            batch.render(arrow.instance, environment);
         }
     }
 }

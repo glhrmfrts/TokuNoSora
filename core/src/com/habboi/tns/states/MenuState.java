@@ -6,7 +6,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
 import com.habboi.tns.Game;
 import com.habboi.tns.GameConfig;
@@ -51,7 +53,7 @@ public class MenuState extends GameState {
         addMenu(new MainMenu(this, game));
 
         world = Universe.get().worlds.get(0);
-        worldCam = game.getRenderer().getWorldCam();
+        worldCam = game.getRenderer().getWorldRenderer().getCamera();
 
         screenRect = game.getRenderer().getScreenRect();
         GameTweenManager.get().register("menu_state_in", new GameTweenManager.GameTween() {
@@ -125,15 +127,19 @@ public class MenuState extends GameState {
 
     @Override
     public void render() {
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
         GameRenderer gr = game.getRenderer();
-        worldCam.update();
-        gr.begin();
-        world.render(gr);
-        gr.end();
+        SpriteBatch sb = game.getSpriteBatch();
+
+        gr.render(world);
+
         menuStack.peek().render();
-        gr.beginOrtho();
-        titleText.draw(gr.getSpriteBatch(), true);
-        gr.endOrtho();
+
+        sb.begin();
+        titleText.draw(sb, true);
+        sb.end();
+
         screenRect.draw(game.getShapeRenderer());
     }
 

@@ -1,6 +1,8 @@
 package com.habboi.tns.states;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.math.Vector3;
@@ -36,7 +38,7 @@ public class EditorState extends GameState {
         level = new Level();
         level.setWorld(world);
 
-        worldCam = game.getRenderer().getWorldCam();
+        worldCam = game.getRenderer().getWorldRenderer().getCamera();
     }
 
     @Override
@@ -69,12 +71,12 @@ public class EditorState extends GameState {
 
     @Override
     public void render() {
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
         worldCam.update();
 
         GameRenderer gr = game.getRenderer();
-        gr.begin();
-        gr.renderLevel(level);
-        gr.end();
+        gr.render(world);
     }
 
     @Override

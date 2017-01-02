@@ -21,7 +21,7 @@ public class PauseMenu extends BaseMenu {
 
     public PauseMenu(final InGameState state, final Game game) {
         sr = game.getShapeRenderer();
-        sb = game.getRenderer().getSpriteBatch();
+        sb = game.getSpriteBatch();
         container = new Rect(new Rectangle(0, 0, game.getWidth(), game.getHeight()));
         container.getColor().a = 0.30f;
 

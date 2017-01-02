@@ -28,7 +28,7 @@ public class EditorWorldsMenu extends BaseMenu implements Disposable {
     public EditorWorldsMenu(final MenuState state, final Game game) {
         menuState = state;
         sr = game.getShapeRenderer();
-        sb = game.getRenderer().getSpriteBatch();
+        sb = game.getSpriteBatch();
 
         float worldCount = Universe.get().worlds.size();
         setSize(game.getWidth() * 1.1f, FONT_SIZE * worldCount + 20 * worldCount);

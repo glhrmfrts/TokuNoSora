@@ -8,6 +8,7 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.TimeUtils;
@@ -17,6 +18,7 @@ import com.habboi.tns.states.MenuState;
 import com.habboi.tns.utils.Models;
 import com.habboi.tns.utils.FontManager;
 import com.habboi.tns.utils.MusicAccessor;
+import com.habboi.tns.utils.Shaders;
 import com.habboi.tns.worlds.Universe;
 import com.habboi.tns.states.*;
 import com.habboi.tns.rendering.GameRenderer;
@@ -46,6 +48,7 @@ public class Game extends ApplicationAdapter {
     InputMultiplexer inputMul;
     GameRenderer renderer;
     ShapeRenderer sr;
+    SpriteBatch sb;
     Rect exitingRect;
     GameState currentState;
     Stack<GameState> stateStack;
@@ -70,6 +73,8 @@ public class Game extends ApplicationAdapter {
 
         renderer = new GameRenderer(this);
         sr = new ShapeRenderer();
+        sb = new SpriteBatch();
+
         am = new AssetManager();
         am.setLoader(Level.class, new LevelLoader(new InternalFileHandleResolver()));
         am.setLoader(BitmapFont.class, new FontLoader(new FontFileHandleResolver()));
@@ -132,6 +137,10 @@ public class Game extends ApplicationAdapter {
 
     public ShapeRenderer getShapeRenderer() {
         return sr;
+    }
+
+    public SpriteBatch getSpriteBatch() {
+      return sb;
     }
 
     public AssetManager getAssetManager() {
@@ -220,7 +229,10 @@ public class Game extends ApplicationAdapter {
     public void dispose() {
         currentState.dispose();
         renderer.dispose();
+        sb.dispose();
+        sr.dispose();
         Models.dispose();
+        Shaders.dispose();
         Universe.get().dispose();
     }
 }

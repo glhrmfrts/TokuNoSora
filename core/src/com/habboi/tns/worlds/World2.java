@@ -31,11 +31,8 @@ public class World2 extends World {
     float time;
     float offset;
     float spread;
-    float dt;
     int count;
     int litRect;
-    Texture backgroundTexture;
-    Renderable tmpRenderable = new Renderable();
     Vector3 shipPos = new Vector3();
     ArrayList<Rect> rects = new ArrayList<>();
 
@@ -70,10 +67,10 @@ public class World2 extends World {
             rect.instance = new ModelInstance(rectModel);
             rect.instance.transform.setToScaling(WIDTH, HEIGHT, 1);
             rects.add(rect);
+            instances.add(rect.instance);
         }
 
-        // the texture would be loaded synchronously anyway, so :)
-        backgroundTexture = new Texture(Gdx.files.internal("background.jpg"));
+        background = new Texture(Gdx.files.internal("background.jpg"));
     }
 
     @Override
@@ -92,41 +89,25 @@ public class World2 extends World {
     public void update(Vector3 shipPos, float vel, float dt) {
         this.shipPos.set(shipPos);
         offset = vel * dt * 2;
-        this.dt = dt;
-    }
 
-    @Override
-    public void render(GameRenderer renderer) {
-        renderer.clear(Color.BLACK);
-        ColorAttribute attr;
         time += dt;
         if (time >= STEP) {
-            time = 0;
-            litRect = (litRect + 1) % count;
+          time = 0;
+          litRect = (litRect + 1) % count;
         }
+
         int rev = count - litRect;
-        rects.get(rev % count).instance.getRenderable(tmpRenderable);
-        attr = (ColorAttribute) tmpRenderable.material.get(ColorAttribute.Diffuse);
-        attr.color.set(colors.get(1));
-        rects.get((rev + 1) % count).instance.getRenderable(tmpRenderable);
-        attr = (ColorAttribute) tmpRenderable.material.get(ColorAttribute.Diffuse);
-        attr.color.set(colors.get(3));
-        renderBackground(renderer);
+        Models.setColor(rects.get(rev % count).instance, ColorAttribute.Diffuse, colors.get(1));
+        Models.setColor(rects.get((rev + 1) % count).instance, ColorAttribute.Diffuse, colors.get(3));
+
         final float base = shipPos.z - DEPTH/1.1f;
         for (int i = 0; i < count; i++) {
-            Rect rect = rects.get(i);
-            rect.zOffset += offset;
-            rect.zOffset %= DEPTH;
-            rect.instance.transform.setTranslation(centerX, 0, base + rect.zOffset);
-            renderer.renderGlow(rect.instance);
+          Rect rect = rects.get(i);
+          rect.zOffset += offset;
+          rect.zOffset %= DEPTH;
+          rect.instance.transform.setTranslation(centerX, 0, base + rect.zOffset);
         }
         offset = 0;
-    }
-
-    private void renderBackground(GameRenderer renderer) {
-        renderer.beginOrtho();
-        renderer.getSpriteBatch().draw(backgroundTexture, 0, 0);
-        renderer.endOrtho();
     }
 
     @Override

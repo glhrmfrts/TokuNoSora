@@ -13,7 +13,7 @@ import com.habboi.tns.shapes.Shape;
 import com.habboi.tns.shapes.TileShape;
 import com.habboi.tns.utils.Models;
 
-public class Ship {
+public class Ship extends LevelObject {
     public enum State {
         WAITING,
         PLAYABLE,
@@ -42,12 +42,9 @@ public class Ship {
     static final float MIN_BOUNCE_SOUND_INTERVAL = 0.50f;
     static final float BOUNCE_FACTOR = 0.35f;
     static final Color COLOR = new Color(0xff);
-    static final Color OUTLINE_COLOR = new Color(0x00ff00<<8 | 0xFF);
 
     Vector3 spawnPos = new Vector3();
     Game game;
-    ModelInstance bodyInstance;
-    ModelInstance outlineInstance;
     ShipController controller;
     Finish finish;
     Sound bounceSound;
@@ -68,24 +65,9 @@ public class Ship {
         this.controller = controller;
         this.game = game;
 
-        bodyInstance = new ModelInstance(Models.getShipModel());
-        bodyInstance.transform.setToScaling(BODY_WIDTH, BODY_HEIGHT, BODY_DEPTH);
-
-        outlineInstance = new ModelInstance(Models.getShipOutlineModel());
-        outlineInstance.transform.setToScaling(BODY_WIDTH, BODY_HEIGHT, BODY_DEPTH);
-
-        Renderable r = new Renderable();
-        ColorAttribute attr;
-
-        // set the body color
-        bodyInstance.getRenderable(r);
-        attr = (ColorAttribute) r.material.get(ColorAttribute.Diffuse);
-        attr.color.set(COLOR);
-
-        // set the outline color
-        outlineInstance.getRenderable(r);
-        attr = (ColorAttribute) r.material.get(ColorAttribute.Diffuse);
-        attr.color.set(OUTLINE_COLOR);
+        modelInstance = new ModelInstance(Models.getShipModel());
+        modelInstance.transform.setToScaling(BODY_WIDTH, BODY_HEIGHT, BODY_DEPTH);
+        Models.setColor(modelInstance, ColorAttribute.Diffuse, COLOR);
 
         bounceSound = game.getAssetManager().get("audio/bounce.wav");
         explosionSound = game.getAssetManager().get("audio/explosion.wav");
@@ -93,10 +75,6 @@ public class Ship {
 
     public boolean canReceiveInput() {
         return state == State.PLAYABLE || state == State.WAITING || state == State.ENDED;
-    }
-
-    public Finish getFinish() {
-        return finish;
     }
 
     public ShipController getController() {
@@ -137,9 +115,12 @@ public class Ship {
     }
 
     public void update(float dt) {
+        modelInstance.transform.setTranslation(shape.pos);
+
         if (state == State.WAITING || state == State.ENDED) {
             return;
         }
+
         if (controller.isDown(ShipController.Key.UP)) {
             accelerate(true);
         } else if (controller.isDown(ShipController.Key.DOWN)) {
@@ -190,17 +171,6 @@ public class Ship {
         controller.update(dt);
         raceTime += dt;
         dBounce += dt;
-    }
-
-    public void render(GameRenderer renderer, int pass) {
-        if (state == State.ENDED) {
-            return;
-        }
-
-        bodyInstance.transform.setTranslation(shape.pos);
-        renderer.render(bodyInstance);
-        outlineInstance.transform.setTranslation(shape.pos);
-        renderer.render(outlineInstance);
     }
 
     public boolean onCollision(LevelObject obj) {

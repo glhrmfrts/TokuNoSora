@@ -27,7 +27,7 @@ public class OptionsMenu extends BaseMenu implements Disposable {
     public OptionsMenu(final MenuState state, final Game game) {
         menuState = state;
         sr = game.getShapeRenderer();
-        sb = game.getRenderer().getSpriteBatch();
+        sb = game.getSpriteBatch();
 
         setSize(game.getWidth() * 1.1f, FONT_SIZE * 4 + 20 * 4);
         setItemSize(game.getWidth()*1.1f, FONT_SIZE + 20);

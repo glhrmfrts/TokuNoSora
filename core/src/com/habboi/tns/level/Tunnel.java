@@ -11,7 +11,6 @@ import com.habboi.tns.utils.Models;
 import com.habboi.tns.worlds.World;
 
 public class Tunnel extends LevelObject {
-    ModelInstance outlineInstance;
 
     public Tunnel(Vector3 pos, float depth, int preset, World world) {
         float x = pos.x*TunnelShape.TUNNEL_WIDTH;
@@ -21,9 +20,7 @@ public class Tunnel extends LevelObject {
 
         modelInstance = new ModelInstance(world.getTunnelModel(preset));
         modelInstance.transform.setToScaling(TunnelShape.TUNNEL_WIDTH, TunnelShape.TUNNEL_HEIGHT, depth*TunnelShape.TUNNEL_DEPTH);
-
-        outlineInstance = new ModelInstance(Models.getTunnelOutlineModel());
-        outlineInstance.transform.setToScaling(TunnelShape.TUNNEL_WIDTH, TunnelShape.TUNNEL_HEIGHT, depth*TunnelShape.TUNNEL_DEPTH);
+        modelInstance.transform.setTranslation(shape.getPos());
     }
 
     public boolean isShipInside() {
@@ -37,20 +34,5 @@ public class Tunnel extends LevelObject {
 
     @Override
     public void update(float dt) {
-    }
-
-    @Override
-    public void render(GameRenderer renderer, int pass) {
-        TunnelShape tunnelShape = (TunnelShape)shape;
-        switch (pass) {
-        case GameRenderer.RenderPassBody:
-            modelInstance.transform.setTranslation(tunnelShape.pos.x, tunnelShape.pos.y + TunnelShape.TUNNEL_HEIGHT/4, tunnelShape.pos.z);
-            renderer.render(modelInstance);
-            break;
-        case GameRenderer.RenderPassOutline:
-            outlineInstance.transform.setTranslation(tunnelShape.pos.x, tunnelShape.pos.y + TunnelShape.TUNNEL_HEIGHT/4, tunnelShape.pos.z);
-            renderer.render(outlineInstance);
-            break;
-        }
     }
 }

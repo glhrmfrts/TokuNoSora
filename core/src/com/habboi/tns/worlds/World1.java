@@ -26,7 +26,6 @@ public class World1 extends World {
     static final float SUN_RADIUS = 150;
     static final float WIDTH = 400f;
 
-    Texture backgroundTexture;
     float centerX;
     int count;
     ArrayList<Line> lines = new ArrayList<>();
@@ -68,6 +67,7 @@ public class World1 extends World {
             line.instance = new ModelInstance(lineModel);
             line.instance.transform.setToScaling(WIDTH, 1, 1);
             lines.add(line);
+            instances.add(line.instance);
         }
 
         Model verticalLineModel = Models.createLineModel(colors.get(1), new int[]{0, 0, -1, 0, 0, 1});
@@ -78,13 +78,14 @@ public class World1 extends World {
             line.instance = new ModelInstance(verticalLineModel);
             line.instance.transform.setToScaling(1, 1, DEPTH);
             verticalLines.add(line);
+            instances.add(line.instance);
         }
 
         sunInstance = new ModelInstance(Models.getSunModel());
         sunInstance.transform.setToScaling(SUN_RADIUS, SUN_RADIUS, 1);
+        instances.add(sunInstance);
 
-        // the texture would be loaded synchronously anyway, so :)
-        backgroundTexture = new Texture(Gdx.files.internal("background.jpg"));
+        background = new Texture(Gdx.files.internal("background.jpg"));
     }
 
     @Override
@@ -100,42 +101,24 @@ public class World1 extends World {
     @Override
     public void update(Vector3 shipPos, float vel, float dt) {
         this.shipPos.set(shipPos);
-        offset = vel * dt * 2;
-    }
-
-    @Override
-    public void render(GameRenderer renderer) {
-        renderer.clear(Color.BLACK);
-        renderBackground(renderer);
+        float offset = vel * dt * 2;
 
         planeInstance.transform.setTranslation(centerX, DISTANCE_Y - 0.5f, shipPos.z);
-        renderer.render(planeInstance);
 
         final float base = shipPos.z - DEPTH/1.1f;
         for (int i = 0; i < count; i++) {
-            Line line = lines.get(i);
-            line.offset += offset;
-            line.offset %= DEPTH;
-            line.instance.transform.setTranslation(centerX, DISTANCE_Y, base + line.offset);
-            renderer.renderGlow(line.instance);
+          Line line = lines.get(i);
+          line.offset += offset;
+          line.offset %= DEPTH;
+          line.instance.transform.setTranslation(centerX, DISTANCE_Y, base + line.offset);
         }
 
         for (int i = 0; i < verticalCount; i++) {
-            Line line = verticalLines.get(i);
-            line.instance.transform.setTranslation(centerX - (WIDTH * 0.5f) + line.offset, DISTANCE_Y, shipPos.z + DEPTH * 0.25f);
-            renderer.renderGlow(line.instance);
+          Line line = verticalLines.get(i);
+          line.instance.transform.setTranslation(centerX - (WIDTH * 0.5f) + line.offset, DISTANCE_Y, shipPos.z + DEPTH * 0.25f);
         }
 
         sunInstance.transform.setTranslation(centerX, DISTANCE_Y, shipPos.z - DEPTH);
-        renderer.renderGlowOnly(sunInstance);
-
-        offset = 0;
-    }
-
-    private void renderBackground(GameRenderer renderer) {
-        renderer.beginOrtho();
-        renderer.getSpriteBatch().draw(backgroundTexture, 0, 0);
-        renderer.endOrtho();
     }
 
     @Override

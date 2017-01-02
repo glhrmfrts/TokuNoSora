@@ -1,8 +1,6 @@
 package com.habboi.tns.level;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
-import com.habboi.tns.rendering.GameRenderer;
 import com.habboi.tns.shapes.Shape;
 import com.habboi.tns.worlds.Universe;
 import com.habboi.tns.worlds.World;
@@ -19,7 +17,7 @@ public class Level {
     String name;
     int number;
     World world;
-    float centerX;
+    public float centerX;
     Vector3 shipPos = new Vector3();
 
     ArrayList<LevelObject> objects = new ArrayList<>();
@@ -42,6 +40,10 @@ public class Level {
 
     public void addCollectable(Vector3 pos) {
         objects.add(new Collectable(pos, world));
+    }
+
+    public void addShip(Ship ship) {
+        objects.add(ship);
     }
 
     public void addTile(Vector3 pos, Vector3 size, int preset, TouchEffect effect) {
@@ -67,6 +69,10 @@ public class Level {
 
     public String getName() {
         return name;
+    }
+
+    public ArrayList<LevelObject> getObjects() {
+      return objects;
     }
 
     public Vector3 getShipPos() {
@@ -135,12 +141,6 @@ public class Level {
             }
         }
         ship.readyToEnd = readyToEnd;
-    }
-
-    public void render(GameRenderer renderer, int pass) {
-        for (LevelObject obj : objects) {
-            obj.render(renderer, pass);
-        }
     }
 
     public void dispose() {

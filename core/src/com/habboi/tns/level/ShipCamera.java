@@ -16,8 +16,6 @@ public class ShipCamera {
     public ShipCamera(Ship ship, PerspectiveCamera cam) {
         this.ship = ship;
         this.cam = cam;
-        cam.near = 0.1f;
-        cam.far = 1000f;
         reset();
     }
 

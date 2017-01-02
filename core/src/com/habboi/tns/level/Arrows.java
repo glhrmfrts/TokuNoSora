@@ -2,7 +2,9 @@ package com.habboi.tns.level;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.math.Vector3;
+import com.habboi.tns.rendering.ArrowsRenderer;
 import com.habboi.tns.rendering.GameRenderer;
 import com.habboi.tns.shapes.TileShape;
 import com.habboi.tns.utils.Models;
@@ -43,6 +45,7 @@ public class Arrows extends LevelObject {
         this.baseX = pos.x;
         this.baseY = pos.y;
         this.baseZ = -pos.z;
+        this.renderer = ArrowsRenderer.getInstance();
 
         if (movement.x == -1) {
             this.baseX = pos.x + depth + (PADDING * depth) + 0.5f;
@@ -70,8 +73,14 @@ public class Arrows extends LevelObject {
             arrow.instance.transform.rotate(Vector3.X, rotation.x);
             arrow.instance.transform.rotate(Vector3.Y, rotation.y);
             arrow.instance.transform.rotate(Vector3.Z, rotation.z);
+
+            Models.setColor(arrow.instance, ColorAttribute.Diffuse, this.color);
             arrows.add(arrow);
         }
+    }
+
+    public ArrayList<Arrow> getArrows() {
+        return arrows;
     }
 
     @Override
@@ -116,16 +125,8 @@ public class Arrows extends LevelObject {
                     arrow.pos.z = center + halfSize;
                 }
             }
-        }
-    }
 
-    @Override
-    public void render(GameRenderer renderer, int pass) {
-        if (pass == GameRenderer.RenderPassEffect) {
-            for (Arrow arrow : arrows) {
-                arrow.instance.transform.setTranslation(arrow.pos);
-                renderer.render(arrow.instance, arrow.color);
-            }
+            arrow.instance.transform.setTranslation(arrow.pos);
         }
     }
 }

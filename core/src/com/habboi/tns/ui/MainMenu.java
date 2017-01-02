@@ -24,7 +24,7 @@ public class MainMenu extends BaseMenu implements Disposable {
     public MainMenu(final MenuState state, final Game game) {
         menuState = state;
         sr = game.getShapeRenderer();
-        sb = game.getRenderer().getSpriteBatch();
+        sb = game.getSpriteBatch();
 
         setSize(game.getWidth() * 1.1f, FONT_SIZE * 4 + 20 * 4);
         setItemSize(game.getWidth()*1.1f, FONT_SIZE + 20);

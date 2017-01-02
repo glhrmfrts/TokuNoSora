@@ -1,7 +1,9 @@
 package com.habboi.tns.worlds;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g3d.Model;
+import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Disposable;
 import com.habboi.tns.rendering.GameRenderer;
@@ -20,12 +22,13 @@ public abstract class World implements Disposable {
     public String name;
     public String music;
     public ArrayList<Color> colors = new ArrayList<>();
+    public Texture background;
 
     ArrayList<Model> tileModels = new ArrayList<>();
     ArrayList<int[][]> tilePresets = new ArrayList<>();
     ArrayList<Model> tunnelModels = new ArrayList<>();
     Map<String, Model> tileWithTunnelsModels = new HashMap<>();
-    Map<String, Model> tileWithTunnelsOutlineModels = new HashMap<>();
+    ArrayList<ModelInstance> instances = new ArrayList<>();
 
     public World(float gravityFactor, float oxygenFactor, String name, String music) {
         this.gravityFactor = gravityFactor;
@@ -47,6 +50,10 @@ public abstract class World implements Disposable {
         tileModels.add(Models.createTileModel(colors, model));
     }
 
+    public ArrayList<ModelInstance> getInstances() {
+      return instances;
+    }
+
     public Model getTileModel(int i) {
         return tileModels.get(i);
     }
@@ -62,17 +69,6 @@ public abstract class World implements Disposable {
         return model;
     }
 
-    public Model getTileWithTunnelsOutlineModel(Vector3 size, int[] tunnels) {
-        String key = size.toString() + tunnels.toString();
-        if (tileWithTunnelsOutlineModels.containsKey(key)) {
-            return tileWithTunnelsOutlineModels.get(key);
-        }
-
-        Model model = Models.createTileWithTunnelsOutlineModel(size, tunnels);
-        tileWithTunnelsOutlineModels.put(key, model);
-        return model;
-    }
-
     public void addTunnelModel(int[] model) {
         tunnelModels.add(Models.createTunnelModel(colors, model));
     }
@@ -83,6 +79,5 @@ public abstract class World implements Disposable {
 
     public abstract void reset();
     public abstract void update(Vector3 shipPos, float vel, float dt);
-    public abstract void render(GameRenderer renderer);
     public abstract void setCenterX(float centerX);
 }
