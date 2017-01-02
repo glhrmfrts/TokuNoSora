@@ -59,6 +59,7 @@ public class World1 extends World {
         spread = DEPTH / count;
         planeInstance = new ModelInstance(Models.createPlaneModel(colors.get(0)));
         planeInstance.transform.setToScaling(WIDTH, 1, DEPTH);
+        instances.add(planeInstance);
 
         Model lineModel = Models.createLineModel(colors.get(1), new int[]{-1, 0, 0, 1, 0, 0});
         for (int i = 0; i < count; i++) {
@@ -100,25 +101,24 @@ public class World1 extends World {
 
     @Override
     public void update(Vector3 shipPos, float vel, float dt) {
-        this.shipPos.set(shipPos);
         float offset = vel * dt * 2;
 
-        planeInstance.transform.setTranslation(centerX, DISTANCE_Y - 0.5f, shipPos.z);
+        planeInstance.transform.setTranslation(centerX, shipPos.y + DISTANCE_Y - 0.5f, shipPos.z);
 
         final float base = shipPos.z - DEPTH/1.1f;
         for (int i = 0; i < count; i++) {
           Line line = lines.get(i);
           line.offset += offset;
           line.offset %= DEPTH;
-          line.instance.transform.setTranslation(centerX, DISTANCE_Y, base + line.offset);
+          line.instance.transform.setTranslation(centerX, shipPos.y + DISTANCE_Y, base + line.offset);
         }
 
         for (int i = 0; i < verticalCount; i++) {
           Line line = verticalLines.get(i);
-          line.instance.transform.setTranslation(centerX - (WIDTH * 0.5f) + line.offset, DISTANCE_Y, shipPos.z + DEPTH * 0.25f);
+          line.instance.transform.setTranslation(centerX - (WIDTH * 0.5f) + line.offset, shipPos.y + DISTANCE_Y, shipPos.z + DEPTH * 0.25f);
         }
 
-        sunInstance.transform.setTranslation(centerX, DISTANCE_Y, shipPos.z - DEPTH);
+        sunInstance.transform.setTranslation(centerX, shipPos.y + DISTANCE_Y, shipPos.z - DEPTH);
     }
 
     @Override

@@ -20,7 +20,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
 import com.habboi.tns.Game;
 import com.habboi.tns.level.Level;
-import com.habboi.tns.rendering.effects.BloomEffect;
+import com.habboi.tns.rendering.effects.BlurEffect;
+import com.habboi.tns.rendering.effects.FXAAEffect;
 import com.habboi.tns.rendering.effects.ShaderEffect;
 import com.habboi.tns.rendering.shaders.FXAAShader;
 import com.habboi.tns.ui.Rect;
@@ -32,7 +33,7 @@ import com.habboi.tns.worlds.World;
  * Encapsulates the rendering context.
  */
 public class GameRenderer implements Disposable {
-    public static final float FOV = 60f;
+    public static final float FOV = 45f;
 
     public static final int GraphicLevelNice = 0;
     public static final int GraphicLevelFast = 1;
@@ -54,6 +55,8 @@ public class GameRenderer implements Disposable {
     ModelInstance screenQuad;
     Renderable screenQuadRenderable = new Renderable();
     WorldRenderer worldRenderer;
+    ShaderEffect fxaa;
+    BlurEffect blur;
 
     public GameRenderer(Game g) {
         game = g;
@@ -73,10 +76,12 @@ public class GameRenderer implements Disposable {
         screenQuad = new ModelInstance(createScreenQuadModel());
         screenQuad.getRenderable(screenQuadRenderable);
 
+        fxaa = new FXAAEffect(resolution);
+        blur = new BlurEffect();
+
         postProcessor = new PostProcessor(this, resolution);
-        //postProcessor.addEffect(new BloomEffect());
-        //postProcessor.addEffect(new BlurEffect());
-        //postProcessor.addEffect(new ShaderEffect(Shaders.get(FXAAShader.class)));
+        postProcessor.addEffect(blur);
+        postProcessor.addEffect(fxaa);
 
         Gdx.gl.glLineWidth(1);
     }
@@ -116,11 +121,6 @@ public class GameRenderer implements Disposable {
         return screenQuadRenderable;
     }
 
-    public void clear(Color c) {
-        Gdx.gl.glClearColor(c.r, c.g, c.b, c.a);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
-    }
-
     public void render(Level level, World world) {
         postProcessor.begin();
         batch.begin(worldRenderer.getCamera());
@@ -136,9 +136,13 @@ public class GameRenderer implements Disposable {
 
     public void render(World world) {
         postProcessor.begin();
+
         batch.begin(worldRenderer.getCamera());
         worldRenderer.render(world, game.getSpriteBatch(), batch, environment);
         batch.end();
+
+        Gdx.gl.glClear(GL20.GL_DEPTH_BUFFER_BIT);
+
         postProcessor.end();
     }
 

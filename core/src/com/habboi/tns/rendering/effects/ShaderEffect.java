@@ -14,13 +14,17 @@ public class ShaderEffect extends Effect {
     this.shader = shader;
   }
 
+  public Shader getShader() {
+     return shader;
+  }
+
   public void render(GameRenderer renderer, FrameBuffer inBuffer, FrameBuffer outBuffer) {
     if (outBuffer != null) outBuffer.begin();
 
     Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
     shader.begin(null, null);
-    inBuffer.getColorBufferTexture();
+    inBuffer.getColorBufferTexture().bind(0);
     shader.render(renderer.getScreenQuadRenderable());
     shader.end();
 

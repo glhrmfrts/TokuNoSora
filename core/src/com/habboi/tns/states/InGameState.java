@@ -72,9 +72,12 @@ public class InGameState extends GameState {
 
         ShipController sc = new ShipController(false);
         ship = new Ship(game, level.getShipPos(), sc);
-        shipCam = new ShipCamera(ship, game.getRenderer().getLevelRenderer().getCamera());
+        shipCam = new ShipCamera(ship, new PerspectiveCamera[] {
+                game.getRenderer().getLevelRenderer().getCamera(),
+                game.getRenderer().getWorldRenderer().getCamera()
+        });
 
-        level.addShip(ship);
+        level.setShip(ship);
 
         FontManager fm = FontManager.get();
         levelCompleteText = new Text(fm.getFont("Neon.ttf", Game.MAIN_FONT_SIZE),
@@ -254,14 +257,15 @@ public class InGameState extends GameState {
                 gtm.start("reset");
             }
         }
-        level.update(ship, dt);
+
+        level.update(dt);
         ship.update(dt);
         shipCam.update(dt);
     }
 
     @Override
     public void render() {
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
         GameRenderer gr = game.getRenderer();
         SpriteBatch sb = game.getSpriteBatch();

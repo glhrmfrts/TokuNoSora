@@ -20,6 +20,7 @@ public class Level {
     public float centerX;
     Vector3 shipPos = new Vector3();
 
+    Ship ship;
     ArrayList<LevelObject> objects = new ArrayList<>();
     LinkedList<LevelObject> collisions = new LinkedList<>();
     ArrayList<Tunnel> endTunnels = new ArrayList<>();
@@ -39,11 +40,7 @@ public class Level {
     }
 
     public void addCollectable(Vector3 pos) {
-        objects.add(new Collectable(pos, world));
-    }
-
-    public void addShip(Ship ship) {
-        objects.add(ship);
+        objects.add(new Collectible(pos, world));
     }
 
     public void addTile(Vector3 pos, Vector3 size, int preset, TouchEffect effect) {
@@ -75,6 +72,10 @@ public class Level {
       return objects;
     }
 
+    public Ship getShip() {
+      return ship;
+    }
+
     public Vector3 getShipPos() {
         return shipPos;
     }
@@ -83,11 +84,15 @@ public class Level {
         return world;
     }
 
+    public void setShip(Ship ship) {
+      this.ship = ship;
+    }
+
     public void setWorld(World world) {
         this.world = world;
     }
 
-    private void updatePhysics(Ship ship, float dt) {
+    private void updatePhysics(float dt) {
         if (ship.state != Ship.State.ENDED) {
             ship.vel.y += (GRAVITY * world.gravityFactor) * dt;
         }
@@ -125,8 +130,8 @@ public class Level {
         }
     }
 
-    public void update(Ship ship, float dt) {
-        updatePhysics(ship, dt);
+    public void update(float dt) {
+        updatePhysics(dt);
 
         world.setCenterX(this.centerX);
         world.update(ship.shape.pos, -ship.vel.z, dt);

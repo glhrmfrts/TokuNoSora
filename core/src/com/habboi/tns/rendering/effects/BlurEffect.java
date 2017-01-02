@@ -14,10 +14,15 @@ public class BlurEffect extends Effect {
   private BlurShader shader;
 
   public BlurEffect() {
+    this(10, 0.25f, 0.1f);
+  }
+
+  public BlurEffect(int amount, float scale, float strength) {
     shader = Shaders.get(BlurShader.class);
-    shader.begin(null, null);
+    shader.setAmount(amount);
+    shader.setScale(scale);
+    shader.setStrength(strength);
     shader.setImageSize(new Vector2(GameRenderer.Width, GameRenderer.Height));
-    shader.end();
 
     helperBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, GameRenderer.Width, GameRenderer.Height, false);
   }
@@ -28,8 +33,9 @@ public class BlurEffect extends Effect {
 
     Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+    shader.begin(null, null);
     inBuffer.getColorBufferTexture().bind(0);
-    shader.setOrientation(0);
+    shader.setOrientationUniform(0);
     shader.render(renderer.getScreenQuadRenderable());
 
     helperBuffer.end();
@@ -39,8 +45,9 @@ public class BlurEffect extends Effect {
     Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
     helperBuffer.getColorBufferTexture().bind(0);
-    shader.setOrientation(1);
+    shader.setOrientationUniform(1);
     shader.render(renderer.getScreenQuadRenderable());
+    shader.end();
 
     if (outBuffer != null) outBuffer.end();
   }

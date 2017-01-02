@@ -91,7 +91,9 @@ public class Ship extends LevelObject {
     }
 
     public void reset() {
+        collected = 0;
         raceTime = 0;
+        visible = true;
         state = State.WAITING;
         shape.pos.set(spawnPos);
         vel.set(0, 0, 0);
@@ -183,6 +185,7 @@ public class Ship extends LevelObject {
             if (readyToEnd) {
                 state = State.ENDED;
                 finish = (Finish) obj;
+                visible = false;
             }
             return false;
         }

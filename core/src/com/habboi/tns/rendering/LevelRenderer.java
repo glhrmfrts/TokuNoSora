@@ -1,5 +1,6 @@
 package com.habboi.tns.rendering;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
@@ -21,8 +22,12 @@ public class LevelRenderer {
   }
 
   public void render(Level level, ModelBatch modelBatch, Environment environment) {
+    Gdx.gl.glLineWidth(2);
+
     for (LevelObject object : level.getObjects()) {
-      // TODO: check if object is visible
+      // TODO: check if object is in frustum
+      if (!object.visible) continue;
+
       if (object.renderer != null) {
         object.renderer.render(object, modelBatch, environment);
       } else if (object.modelInstance != null) {
@@ -32,6 +37,10 @@ public class LevelRenderer {
       if (object.effectRenderer != null) {
         object.effectRenderer.render(modelBatch, environment);
       }
+    }
+
+    if (level.getShip().visible) {
+      modelBatch.render(level.getShip().modelInstance, environment);
     }
   }
 }

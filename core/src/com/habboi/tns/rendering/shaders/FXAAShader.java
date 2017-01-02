@@ -14,6 +14,7 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
  */
 public class FXAAShader implements Shader {
     ShaderProgram program;
+    Vector2 resolution = new Vector2();
     int u_sampler0;
     int u_resolution;
 
@@ -29,6 +30,10 @@ public class FXAAShader implements Shader {
         u_resolution = program.getUniformLocation("u_resolution");
     }
 
+    public void setResolution(Vector2 resolution) {
+        this.resolution.set(resolution);
+    }
+
     @Override
     public int compareTo(Shader other) {
         return 0;
@@ -41,10 +46,6 @@ public class FXAAShader implements Shader {
 
     @Override
     public void begin(Camera camera, RenderContext context) {
-
-    }
-
-    public void begin(Camera camera, RenderContext context, Vector2 resolution) {
         program.begin();
         program.setUniformi(u_sampler0, 0);
         program.setUniformf(u_resolution, resolution.x, resolution.y);

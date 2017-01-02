@@ -27,7 +27,7 @@ public class Tile extends LevelObject {
 
         modelInstance = new ModelInstance(model);
         modelInstance.transform.setToScaling(size.x, size.y, size.z);
-        modelInstance.transform.setTranslation(tileShape.pos);
+        modelInstance.transform.setTranslation(tileShape.pos.x - size.x / 2, tileShape.pos.y - size.y / 2, tileShape.pos.z + size.z / 2);
     }
 
     @Override

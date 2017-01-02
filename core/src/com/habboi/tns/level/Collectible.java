@@ -2,19 +2,16 @@ package com.habboi.tns.level;
 
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
-import com.habboi.tns.rendering.GameRenderer;
 import com.habboi.tns.shapes.TileShape;
 import com.habboi.tns.utils.Models;
 import com.habboi.tns.worlds.World;
 
-public class Collectable extends LevelObject {
+public class Collectible extends LevelObject {
     static final float WIDTH = 0.25f;
     static final float HEIGHT = 0.5f;
     static final float DEPTH = 0.25f;
 
-    boolean visible = true;
-
-    public Collectable(Vector3 pos, World world) {
+    public Collectible(Vector3 pos, World world) {
         pos.x = pos.x * TileShape.TILE_WIDTH + (WIDTH * 0.5f * TileShape.TILE_WIDTH);
         pos.y = pos.y * TileShape.TILE_HEIGHT + (HEIGHT * 0.5f * TileShape.TILE_HEIGHT) + HEIGHT;
         pos.z = -pos.z * TileShape.TILE_DEPTH + (DEPTH * 0.5f * TileShape.TILE_DEPTH);

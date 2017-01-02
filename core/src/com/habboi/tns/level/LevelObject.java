@@ -11,6 +11,7 @@ public abstract class LevelObject {
     public ModelInstance modelInstance;
     public LevelObjectRenderer renderer;
     public Shape shape;
+    public boolean visible = true;
 
     public boolean onCollision(Ship ship) {
         return true;

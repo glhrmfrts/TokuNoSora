@@ -1271,7 +1271,6 @@ public final class Models {
         mb.begin();
 
         color = color.cpy();
-        color.a = 0.75f;
         final Material material = new Material(ColorAttribute.createDiffuse(color));
         material.set(IntAttribute.createCullFace(GL20.GL_NONE));
         material.set(new BlendingAttribute(1));

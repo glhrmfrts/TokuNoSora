@@ -1,5 +1,6 @@
 package com.habboi.tns.rendering;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.Environment;
@@ -11,16 +12,13 @@ public class WorldRenderer {
   private PerspectiveCamera camera;
 
   public WorldRenderer() {
-    this(20f, 1000f);
-  }
-
-  public WorldRenderer(float near, float far) {
     camera = new PerspectiveCamera(GameRenderer.FOV, GameRenderer.Width, GameRenderer.Height);
-    camera.near = near;
-    camera.far = far;
+    camera.near = 25f;
+    camera.far = 1000f;
   }
 
   public PerspectiveCamera getCamera() {
+    camera.update();
     return camera;
   }
 
@@ -31,6 +29,7 @@ public class WorldRenderer {
         sb.end();
     }
 
+    Gdx.gl.glLineWidth(1);
     for (ModelInstance model : world.getInstances()) {
       batch.render(model, environment);
     }
