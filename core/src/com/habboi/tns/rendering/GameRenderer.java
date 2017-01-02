@@ -20,9 +20,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
 import com.habboi.tns.Game;
 import com.habboi.tns.level.Level;
-import com.habboi.tns.rendering.effects.BlurEffect;
-import com.habboi.tns.rendering.effects.FXAAEffect;
-import com.habboi.tns.rendering.effects.ShaderEffect;
+import com.habboi.tns.rendering.effects.*;
 import com.habboi.tns.rendering.shaders.FXAAShader;
 import com.habboi.tns.ui.Rect;
 import com.habboi.tns.utils.Shaders;
@@ -57,6 +55,7 @@ public class GameRenderer implements Disposable {
     WorldRenderer worldRenderer;
     ShaderEffect fxaa;
     BlurEffect blur;
+    BloomEffect bloom;
 
     public GameRenderer(Game g) {
         game = g;
@@ -76,11 +75,12 @@ public class GameRenderer implements Disposable {
         screenQuad = new ModelInstance(createScreenQuadModel());
         screenQuad.getRenderable(screenQuadRenderable);
 
+        bloom = new BloomEffect(new Vector2(resolution.x / 2, resolution.y / 2));
         fxaa = new FXAAEffect(resolution);
-        blur = new BlurEffect();
+        blur = new BlurEffect(resolution);
 
-        postProcessor = new PostProcessor(this, resolution);
-        postProcessor.addEffect(blur);
+        postProcessor = new PostProcessor(this, new Vector2(resolution.x, resolution.y));
+        postProcessor.addEffect(bloom);
         postProcessor.addEffect(fxaa);
 
         Gdx.gl.glLineWidth(1);

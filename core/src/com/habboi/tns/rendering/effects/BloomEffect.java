@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
+import com.badlogic.gdx.math.Vector2;
 import com.habboi.tns.rendering.GameRenderer;
 import com.habboi.tns.rendering.shaders.BrightPassShader;
 import com.habboi.tns.rendering.shaders.GlowShader;
@@ -15,14 +16,17 @@ public class BloomEffect extends Effect {
   private BrightPassShader brightPassShader;
   private FrameBuffer brightPassBuffer;
   private GlowShader glowShader;
+  private Vector2 resolution = new Vector2();
 
-  public BloomEffect() {
-    blurEffect = new BlurEffect();
+  public BloomEffect(Vector2 resolution) {
+    this.resolution.set(resolution);
+
+    blurEffect = new BlurEffect(resolution, 10, 1, 0.4f);
     brightPassShader = Shaders.get(BrightPassShader.class);
     glowShader = Shaders.get(GlowShader.class);
 
-    blurBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, GameRenderer.Width, GameRenderer.Height, false);
-    brightPassBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, GameRenderer.Width, GameRenderer.Height, false);
+    blurBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, (int)resolution.x, (int)resolution.y, false);
+    brightPassBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, (int)resolution.x, (int)resolution.y, false);
   }
 
   private void doBrightPass(GameRenderer renderer, FrameBuffer inBuffer) {

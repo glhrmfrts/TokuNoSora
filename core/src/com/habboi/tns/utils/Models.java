@@ -43,7 +43,11 @@ public final class Models {
     public static void setColor(ModelInstance instance, long type, Color color) {
         instance.getRenderable(tmpRenderable);
         ColorAttribute attr = (ColorAttribute) tmpRenderable.material.get(type);
-        attr.color.set(color);
+        if (attr != null) {
+            attr.color.set(color);
+        } else {
+            tmpRenderable.material.set(new ColorAttribute(type, color));
+        }
     }
 
     public static Model getFloorArrowModel() {

@@ -12,19 +12,23 @@ import com.habboi.tns.utils.Shaders;
 public class BlurEffect extends Effect {
   private FrameBuffer helperBuffer;
   private BlurShader shader;
+  private int amount;
+  private Vector2 resolution = new Vector2();
+  private float scale;
+  private float strength;
 
-  public BlurEffect() {
-    this(10, 0.25f, 0.1f);
+  public BlurEffect(Vector2 resolution) {
+    this(resolution, 10, 0.25f, 0.1f);
   }
 
-  public BlurEffect(int amount, float scale, float strength) {
-    shader = Shaders.get(BlurShader.class);
-    shader.setAmount(amount);
-    shader.setScale(scale);
-    shader.setStrength(strength);
-    shader.setImageSize(new Vector2(GameRenderer.Width, GameRenderer.Height));
+  public BlurEffect(Vector2 resolution, int amount, float scale, float strength) {
+    this.resolution.set(resolution);
+    this.amount = amount;
+    this.scale = scale;
+    this.strength = strength;
 
-    helperBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, GameRenderer.Width, GameRenderer.Height, false);
+    shader = Shaders.get(BlurShader.class);
+    helperBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, (int)resolution.x, (int)resolution.y, false);
   }
 
   @Override
@@ -33,7 +37,7 @@ public class BlurEffect extends Effect {
 
     Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-    shader.begin(null, null);
+    shader.begin(null, null, resolution, amount, scale, strength);
     inBuffer.getColorBufferTexture().bind(0);
     shader.setOrientationUniform(0);
     shader.render(renderer.getScreenQuadRenderable());

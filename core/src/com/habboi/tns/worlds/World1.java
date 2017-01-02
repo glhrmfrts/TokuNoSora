@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Disposable;
 import com.habboi.tns.utils.Models;
@@ -69,6 +70,8 @@ public class World1 extends World {
             line.instance.transform.setToScaling(WIDTH, 1, 1);
             lines.add(line);
             instances.add(line.instance);
+
+            Models.setColor(line.instance, ColorAttribute.Emissive, colors.get(1));
         }
 
         Model verticalLineModel = Models.createLineModel(colors.get(1), new int[]{0, 0, -1, 0, 0, 1});
@@ -80,6 +83,8 @@ public class World1 extends World {
             line.instance.transform.setToScaling(1, 1, DEPTH);
             verticalLines.add(line);
             instances.add(line.instance);
+
+            Models.setColor(line.instance, ColorAttribute.Emissive, colors.get(1));
         }
 
         sunInstance = new ModelInstance(Models.getSunModel());

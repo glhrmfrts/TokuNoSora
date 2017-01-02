@@ -14,9 +14,6 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
  */
 public class BlurShader implements Shader {
     ShaderProgram program;
-    int amount;
-    float scale;
-    float strength;
     Vector2 texelSize = new Vector2();
     int u_sampler0;
     int u_texelSize;
@@ -41,24 +38,12 @@ public class BlurShader implements Shader {
         u_blurStrength = program.getUniformLocation("u_blurStrength");
     }
 
-    public void setAmount(int amount) {
-        this.amount = amount;
-    }
-
-    public void setScale(float scale) {
-        this.scale = scale;
-    }
-
-    public void setStrength(float strength) {
-        this.strength = strength;
-    }
-
     public void setImageSize(Vector2 imageSize) {
         texelSize.set(1.0f / imageSize.x, 1.0f / imageSize.y);
     }
 
     public void setOrientationUniform(int orientation) {
-      program.setUniformi(u_orientation, orientation);
+        program.setUniformi(u_orientation, orientation);
     }
 
     @Override
@@ -75,10 +60,16 @@ public class BlurShader implements Shader {
     public void begin(Camera camera, RenderContext context) {
         program.begin();
         program.setUniformi(u_sampler0, 0);
+        program.setUniformf(u_texelSize, texelSize.x, texelSize.y);
+    }
+
+    public void begin(Camera camera, RenderContext context, Vector2 resolution, int amount, float scale, float strength) {
+        program.begin();
+        program.setUniformi(u_sampler0, 0);
         program.setUniformi(u_blurAmount, amount);
         program.setUniformf(u_blurScale, scale);
         program.setUniformf(u_blurStrength, strength);
-        program.setUniformf(u_texelSize, texelSize.x, texelSize.y);
+        program.setUniformf(u_texelSize, 1.0f/resolution.x, 1.0f/resolution.y);
     }
 
     @Override
