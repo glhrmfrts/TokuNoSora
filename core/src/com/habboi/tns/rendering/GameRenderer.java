@@ -21,15 +21,10 @@ import com.badlogic.gdx.utils.Disposable;
 import com.habboi.tns.Game;
 import com.habboi.tns.level.Level;
 import com.habboi.tns.rendering.effects.*;
-import com.habboi.tns.rendering.shaders.FXAAShader;
 import com.habboi.tns.ui.Rect;
-import com.habboi.tns.utils.Shaders;
 import com.habboi.tns.worlds.World;
 
 
-/**
- * Encapsulates the rendering context.
- */
 public class GameRenderer implements Disposable {
     public static final float FOV = 45f;
 

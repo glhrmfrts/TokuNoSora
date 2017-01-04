@@ -27,6 +27,7 @@ public class Ship extends LevelObject {
     public Vector3 vel = new Vector3();
     public boolean readyToEnd;
     public float raceTime;
+    public float oxygenLevel;
     public TileShape shape;
 
     static final float BODY_WIDTH = 0.60f;
@@ -41,6 +42,7 @@ public class Ship extends LevelObject {
     static final float MIN_BOUNCE_VEL = 1f;
     static final float MIN_BOUNCE_SOUND_INTERVAL = 0.50f;
     static final float BOUNCE_FACTOR = 0.35f;
+    static final float OXYGEN_FILL_FACTOR = 0.50f;
     static final Color COLOR = new Color(0xff);
 
     Vector3 spawnPos = new Vector3();
@@ -53,6 +55,7 @@ public class Ship extends LevelObject {
     float dSlide;
     float dBounce;
     float steerAccul;
+    boolean fillOxygen;
 
     public Ship(Game game, Vector3 pos, ShipController controller) {
         shape = new TileShape(
@@ -94,6 +97,8 @@ public class Ship extends LevelObject {
         collected = 0;
         raceTime = 0;
         visible = true;
+        fillOxygen = false;
+        oxygenLevel = 1;
         state = State.WAITING;
         shape.pos.set(spawnPos);
         vel.set(0, 0, 0);
@@ -121,6 +126,10 @@ public class Ship extends LevelObject {
 
         if (state == State.WAITING || state == State.ENDED) {
             return;
+        }
+
+        if (fillOxygen && oxygenLevel < 1.0f) {
+            oxygenLevel += OXYGEN_FILL_FACTOR * dt;
         }
 
         if (controller.isDown(ShipController.Key.UP)) {
@@ -173,6 +182,16 @@ public class Ship extends LevelObject {
         controller.update(dt);
         raceTime += dt;
         dBounce += dt;
+        fillOxygen = false;
+
+        System.out.println(oxygenLevel);
+    }
+
+    public void doExplode() {
+        if (state == State.PLAYABLE) {
+            explosionSound.play(GameConfig.get().getSfxVolume());
+        }
+        state = State.EXPLODED;
     }
 
     public boolean onCollision(LevelObject obj) {
@@ -190,23 +209,32 @@ public class Ship extends LevelObject {
             return false;
         }
         if (c.normal.z == 1 && -vel.z > MAX_VEL/2) {
-            if (state == State.PLAYABLE) {
-                explosionSound.play(GameConfig.get().getSfxVolume());
-            }
-            state = State.EXPLODED;
+            doExplode();
             return true;
         }
         if (c.normal.y == 1) {
             floorCollisions++;
 
+            if (obj.effect == TouchEffect.EXPLODE) {
+                doExplode();
+                return true;
+            }
+
             if (vel.y < -MIN_BOUNCE_VEL) {
                 vel.x = 0;
                 vel.y = -vel.y * BOUNCE_FACTOR;
                 playBounceSound();
+                return true;
             }
 
             if (obj.effect == TouchEffect.BOOST) {
                 accelerate(true);
+                return true;
+            }
+
+            if (obj.effect == TouchEffect.OXYGEN) {
+                fillOxygen = true;
+                return true;
             }
         }
         if (Math.abs(c.normal.x) == 1 && Math.abs(vel.x) > MIN_BOUNCE_VEL) {

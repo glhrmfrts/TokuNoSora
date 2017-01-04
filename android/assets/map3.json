@@ -1,16 +1,17 @@
 {
     "name": "Road 3",
     "number": 3,
-    "world_index": 0,
-    "ship_pos": "49.5,5,0",
-    "center_x": 50,
+    "worldIndex": 0,
+    "oxygenFactor": 0.01,
+    "shipPos": "49.5,5,0",
+    "centerX": 50,
     "objects": [
         {
             "tile":{
                 "pos":"49,2,-2",
                 "size":"5,1,10",
                 "preset":0,
-                "effect":"fuel"
+                "effect":"oxygen"
             }
         },
         {
@@ -20,6 +21,14 @@
                 "preset":0,
                 "effect":"boost"
             }
+        },
+      {
+        "tile":{
+          "pos":"49,2,18",
+          "size":"5,1,10",
+          "preset":0,
+          "effect":"explode"
         }
+      }
     ]
 }

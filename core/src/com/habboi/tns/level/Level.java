@@ -8,15 +8,15 @@ import com.habboi.tns.worlds.World;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
-/**
- * Manages a level and it's objects.
- */
+
 public class Level {
     static final float GRAVITY = -9.87f;
 
     String name;
     int number;
+    int worldIndex;
     World world;
+    float oxygenFactor;
     public float centerX;
     Vector3 shipPos = new Vector3();
 
@@ -27,9 +27,11 @@ public class Level {
 
     public Level() {}
 
-    public Level(String name, int number, int worldIndex, float centerX, Vector3 shipPos) {
+    public Level(String name, int number, int worldIndex, float oxygenFactor, float centerX, Vector3 shipPos) {
         this.name = name;
         this.number = number;
+        this.worldIndex = worldIndex;
+        this.oxygenFactor = oxygenFactor;
         this.shipPos.set(shipPos);
         this.centerX = centerX;
         this.world = Universe.get().worlds.get(worldIndex);
@@ -146,6 +148,7 @@ public class Level {
             }
         }
         ship.readyToEnd = readyToEnd;
+        ship.oxygenLevel -= oxygenFactor * dt;
     }
 
     public void dispose() {

@@ -33,10 +33,6 @@ public class LevelRenderer {
       } else if (object.modelInstance != null) {
         modelBatch.render(object.modelInstance, environment);
       }
-
-      if (object.effectRenderer != null) {
-        object.effectRenderer.render(modelBatch, environment);
-      }
     }
 
     if (level.getShip().visible) {

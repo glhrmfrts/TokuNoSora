@@ -31,13 +31,21 @@ public final class Models {
     private static Model shipModel;
     private static Model planeModel;
     private static Model prismModel;
+    private static Model boostTileModel;
+    private static Model explodeTileModel;
+    private static Model fuelTileModel;
 
     private static ModelBuilder mb;
     private static Renderable tmpRenderable;
+    private static ArrayList<Color> specialColors;
 
     static {
         mb = new ModelBuilder();
         tmpRenderable = new Renderable();
+        specialColors =  new ArrayList<>();
+        specialColors.add(Color.GREEN);
+        specialColors.add(Color.RED);
+        specialColors.add(Color.BLUE);
     }
 
     public static void setColor(ModelInstance instance, long type, Color color) {
@@ -274,8 +282,8 @@ public final class Models {
             float ny = (float)Math.sin(theta);
 
             partBuilder = mb.part("segment" + i, GL20.GL_TRIANGLES,
-                                  VertexAttributes.Usage.Position | VertexAttributes.Usage.ColorPacked,
-                                  material);
+                    VertexAttributes.Usage.Position | VertexAttributes.Usage.ColorPacked,
+                    material);
 
             v1 = new VertexInfo().setPos(0, 0, 0);
             v2 = new VertexInfo().setPos(x, y, 0);
@@ -289,6 +297,27 @@ public final class Models {
         }
 
         return sunModel = mb.end();
+    }
+
+    public static Model getBoostTileModel() {
+        if (boostTileModel != null)
+            return boostTileModel;
+
+        return boostTileModel = createTileModel(specialColors, solidTileIndices(0), Color.GREEN);
+    }
+
+    public static Model getExplodeTileModel() {
+        if (explodeTileModel != null)
+            return explodeTileModel;
+
+        return explodeTileModel = createTileModel(specialColors, solidTileIndices(1), Color.RED);
+    }
+
+    public static Model getOxygenTileModel() {
+        if (fuelTileModel != null)
+            return fuelTileModel;
+
+        return fuelTileModel = createTileModel(specialColors, solidTileIndices(2), Color.BLUE);
     }
 
     public static Model getShipModel() {
@@ -464,6 +493,10 @@ public final class Models {
     }
 
     public static Model createTileModel(ArrayList<Color> colors, int[][] colorsIndices) {
+        return createTileModel(colors, colorsIndices, Color.WHITE);
+    }
+
+    public static Model createTileModel(ArrayList<Color> colors, int[][] colorsIndices, Color outlineColor) {
         MeshPartBuilder partBuilder;
         VertexInfo v1, v2, v3, v4;
 
@@ -545,12 +578,12 @@ public final class Models {
         v4 = new VertexInfo().setPos(0, 1, 0).setNor(0, 0, 1).setCol(colors.get(backColors[3]));
         partBuilder.rect(v1, v2, v3, v4);
 
-        createTileOutline();
+        createTileOutline(outlineColor);
 
         return mb.end();
     }
 
-    public static void createTileOutline() {
+    public static void createTileOutline(Color color) {
         MeshPartBuilder partBuilder;
 
         final Material material = new Material(ColorAttribute.createDiffuse(Color.WHITE));
@@ -560,7 +593,7 @@ public final class Models {
         partBuilder = mb.part("outline_bottom", GL20.GL_LINES,
                 VertexAttributes.Usage.Position | VertexAttributes.Usage.ColorPacked,
                 material);
-        partBuilder.setColor(Color.WHITE);
+        partBuilder.setColor(color);
         partBuilder.line(0, 0, -1, 0, 0, 0);
         partBuilder.line(0, 0, 0, 1, 0, 0);
         partBuilder.line(1, 0, 0, 1, 0, -1);
@@ -570,7 +603,7 @@ public final class Models {
         partBuilder = mb.part("outline_top", GL20.GL_LINES,
                 VertexAttributes.Usage.Position | VertexAttributes.Usage.ColorPacked,
                 material);
-        partBuilder.setColor(Color.WHITE);
+        partBuilder.setColor(color);
         partBuilder.line(0, 1, -1, 0, 1, 0);
         partBuilder.line(0, 1, 0, 1, 1, 0);
         partBuilder.line(1, 1, 0, 1, 1, -1);
@@ -580,7 +613,7 @@ public final class Models {
         partBuilder = mb.part("outline_left", GL20.GL_LINES,
                 VertexAttributes.Usage.Position | VertexAttributes.Usage.ColorPacked,
                 material);
-        partBuilder.setColor(Color.WHITE);
+        partBuilder.setColor(color);
         partBuilder.line(0, 0, -1, 0, 0, 0);
         partBuilder.line(0, 0, 0, 0, 1, 0);
         partBuilder.line(0, 1, 0, 0, 1, -1);
@@ -590,7 +623,7 @@ public final class Models {
         partBuilder = mb.part("outline_right", GL20.GL_LINES,
                 VertexAttributes.Usage.Position | VertexAttributes.Usage.ColorPacked,
                 material);
-        partBuilder.setColor(Color.WHITE);
+        partBuilder.setColor(color);
         partBuilder.line(1, 0, -1, 1, 0, 0);
         partBuilder.line(1, 0, 0, 1, 1, 0);
         partBuilder.line(1, 1, 0, 1, 1, -1);
@@ -600,7 +633,7 @@ public final class Models {
         partBuilder = mb.part("outline_front", GL20.GL_LINES,
                 VertexAttributes.Usage.Position | VertexAttributes.Usage.ColorPacked,
                 material);
-        partBuilder.setColor(Color.WHITE);
+        partBuilder.setColor(color);
         partBuilder.line(1, 0, -1, 0, 0, -1);
         partBuilder.line(0, 0, -1, 0, 1, -1);
         partBuilder.line(0, 1, -1, 1, 1, -1);
@@ -610,7 +643,7 @@ public final class Models {
         partBuilder = mb.part("outline_back", GL20.GL_LINES,
                 VertexAttributes.Usage.Position | VertexAttributes.Usage.ColorPacked,
                 material);
-        partBuilder.setColor(Color.WHITE);
+        partBuilder.setColor(color);
         partBuilder.line(1, 0, 0, 0, 0, 0);
         partBuilder.line(0, 0, 0, 0, 1, 0);
         partBuilder.line(0, 1, 0, 1, 1, 0);

@@ -34,8 +34,10 @@ public class LevelLoader extends SynchronousAssetLoader<Level, LevelLoader.Level
         switch (name) {
         case "boost":
             return TouchEffect.BOOST;
-        case "fuel":
-            return TouchEffect.FUEL;
+        case "explode":
+            return TouchEffect.EXPLODE;
+        case "oxygen":
+            return TouchEffect.OXYGEN;
         default:
             return TouchEffect.NONE;
         }
@@ -51,15 +53,16 @@ public class LevelLoader extends SynchronousAssetLoader<Level, LevelLoader.Level
         JsonValue root = new JsonReader().parse(file);
         String name = root.getString("name");
         int number = root.getInt("number");
-        int worldIndex = root.getInt("world_index");
+        int worldIndex = root.getInt("worldIndex");
+        float oxygenFactor = root.getFloat("oxygenFactor");
         float centerX = 0;
 
         try {
-            centerX = root.getFloat("center_x");
+            centerX = root.getFloat("centerX");
         } catch (Exception e) {}
 
-        Vector3 shipPos = parseVector3(root.getString("ship_pos"));
-        level = new Level(name, number, worldIndex, centerX, shipPos);
+        Vector3 shipPos = parseVector3(root.getString("shipPos"));
+        level = new Level(name, number, worldIndex, oxygenFactor, centerX, shipPos);
         JsonValue objects = root.get("objects");
         for (JsonValue object : objects.iterator()) {
             if (object.has("tile")) {
@@ -106,8 +109,8 @@ public class LevelLoader extends SynchronousAssetLoader<Level, LevelLoader.Level
                 int color = arrows.getInt("color");
 
                 level.addArrows(pos, rotation, movement, height, depth, color);
-            } else if (object.has("collectable")) {
-                JsonValue collect = object.get("collectable");
+            } else if (object.has("collectible")) {
+                JsonValue collect = object.get("collectible");
                 Vector3 pos = parseVector3(collect.getString("pos"));
 
                 level.addCollectable(pos);

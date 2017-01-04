@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Vector3;
 import com.habboi.tns.shapes.TileShape;
+import com.habboi.tns.utils.Models;
 import com.habboi.tns.worlds.World;
 
 public class Tile extends LevelObject {
@@ -21,9 +22,21 @@ public class Tile extends LevelObject {
 
         this.shape = tileShape;
         this.effect = effect;
-        this.effectRenderer = effect.getRenderer(this, world);
 
-        Model model = world.getTileModel(preset);
+        Model model;
+        switch (effect) {
+            case BOOST:
+                model = Models.getBoostTileModel();
+                break;
+            case EXPLODE:
+                model = Models.getExplodeTileModel();
+                break;
+            case OXYGEN:
+                model = Models.getOxygenTileModel();
+                break;
+            default:
+                model = world.getTileModel(preset);
+        }
 
         modelInstance = new ModelInstance(model);
         modelInstance.transform.setToScaling(size.x, size.y, size.z);
@@ -32,12 +45,9 @@ public class Tile extends LevelObject {
 
     @Override
     public void reset() {
-
     }
 
     @Override
     public void update(float dt) {
-        if (effectRenderer != null)
-            effectRenderer.update(dt);
     }
 }
