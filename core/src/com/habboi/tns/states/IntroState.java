@@ -106,6 +106,8 @@ public class IntroState extends GameState {
 
     @Override
     public void update(float dt) {
+        System.out.println(InputManager.getInstance().isAnyButtonDown());
+        
         if (InputManager.getInstance().isAnyButtonDown()) {
             Color c = titleText.getColor();
             c.a = 1;

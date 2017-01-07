@@ -10,7 +10,11 @@ import com.badlogic.gdx.controllers.PovDirection;
 import com.badlogic.gdx.utils.SharedLibraryLoader;
 import com.habboi.tns.ui.Menu;
 
+/**
+ * Map virtual buttons to controller or keyboard real buttons/keys
+ */
 public class InputManager extends ControllerAdapter implements InputProcessor {
+    // buttons
     public static final int Select = 0;
     public static final int Jump = 1;
     public static final int Up = 2;
@@ -18,17 +22,23 @@ public class InputManager extends ControllerAdapter implements InputProcessor {
     public static final int Left = 4;
     public static final int Right = 5;
     public static final int Back = 6;
+    public static final int Pause = 7;
 
+    // axes
     public static final int Horizontal = 0;
-    public static final int Vertical = 0;
+    public static final int Vertical = 1;
+    public static final int Acceleration = 2;
 
     public static final float DEAD_ZONE = 0.2f;
+    public static final int NUM_BUTTONS = 8;
+    public static final int NUM_AXIS = 3;
 
     private static InputManager instance;
 
-    private int[] buttons = new int[7];
-    private int[] prevButtons = new int[7];
-    private float[] axis = new float[2];
+    private int[] buttons = new int[NUM_BUTTONS];
+    private int[] prevButtons = new int[NUM_BUTTONS];
+    private float[] axis = new float[NUM_AXIS];
+    private boolean[] axisMenu = new boolean[NUM_AXIS];
     private int anyButton;
     private Controller currentController;
 
@@ -37,6 +47,14 @@ public class InputManager extends ControllerAdapter implements InputProcessor {
             instance = new InputManager();
         }
         return instance;
+    }
+
+    public static float axisDeadZoneValue(float value) {
+        if (Math.abs(value) > DEAD_ZONE) {
+            return value;
+        }
+
+        return 0;
     }
 
     private InputManager() {
@@ -73,19 +91,34 @@ public class InputManager extends ControllerAdapter implements InputProcessor {
 
     public void update() {
         System.arraycopy(buttons, 0, prevButtons, 0, buttons.length);
-        anyButton = 0;
     }
 
     public void menuInteraction(Menu menu) {
-        if (axis[Horizontal] >= 0.8f) {
-            menu.buttonDown(Right);
-        } else if (axis[Horizontal] <= -0.8f) {
-            menu.buttonDown(Left);
+        if (axis[Horizontal] == 0) {
+            axisMenu[Horizontal] = false;
         }
-        if (axis[Vertical] >= 0.8f) {
-            menu.buttonDown(Up);
-        } else if (axis[Vertical] <= -0.8f) {
-            menu.buttonDown(Down);
+        if (axis[Vertical] == 0) {
+            axisMenu[Vertical] = false;
+        }
+
+        if (!axisMenu[Horizontal]) {
+            if (axis[Horizontal] >= 0.8f) {
+                menu.buttonDown(Right);
+                axisMenu[Horizontal] = true;
+            } else if (axis[Horizontal] <= -0.8f) {
+                menu.buttonDown(Left);
+                axisMenu[Horizontal] = true;
+            }
+        }
+
+        if (!axisMenu[Vertical]) {
+            if (axis[Vertical] >= 0.8f) {
+                menu.buttonDown(Up);
+                axisMenu[Vertical] = true;
+            } else if (axis[Vertical] <= -0.8f) {
+                menu.buttonDown(Down);
+                axisMenu[Vertical] = true;
+            }       
         }
 
         if (isButtonJustDown(Select)) {
@@ -93,14 +126,6 @@ public class InputManager extends ControllerAdapter implements InputProcessor {
         } else if (isButtonJustDown(Back)) {
             menu.buttonDown(Back);
         }
-    }
-
-    private float axisDeadZoneValue(float value) {
-        if (Math.abs(value) > DEAD_ZONE) {
-            return value;
-        }
-
-        return 0;
     }
 
     @Override
@@ -119,7 +144,7 @@ public class InputManager extends ControllerAdapter implements InputProcessor {
 
     @Override
     public boolean axisMoved(Controller controller, int axisCode, float value) {
-        value = axisDeadZoneValue(-value);
+        value = axisDeadZoneValue(value);
         if (value != 0)
             System.out.println("axis: " + axisCode + " = " + value);
 
@@ -133,7 +158,10 @@ public class InputManager extends ControllerAdapter implements InputProcessor {
             axis[Horizontal] = value;
         }
         if (axisCode == Xbox.L_STICK_VERTICAL_AXIS) {
-            axis[Vertical] = value;
+            axis[Vertical] = -value;
+        }
+        if (axisCode == Xbox.R_TRIGGER || axisCode == Xbox.L_TRIGGER) {
+            axis[Acceleration] = -value;
         }
 
         return true;
@@ -155,6 +183,12 @@ public class InputManager extends ControllerAdapter implements InputProcessor {
             buttons[Back]++;
             return true;
         }
+
+        if (buttonCode == Xbox.START) {
+            buttons[Pause]++;
+            return true;
+        }
+
         return false;
     }
 
@@ -172,6 +206,11 @@ public class InputManager extends ControllerAdapter implements InputProcessor {
 
         if (buttonCode == Xbox.B) {
             buttons[Back] = 0;
+            return true;
+        }
+
+        if (buttonCode == Xbox.START) {
+            buttons[Pause] = 0;
             return true;
         }
         return false;
@@ -211,6 +250,7 @@ public class InputManager extends ControllerAdapter implements InputProcessor {
 
         case Input.Keys.ESCAPE:
             buttons[Back]++;
+            buttons[Pause]++;
             return true;
         }
         return false;
@@ -253,6 +293,7 @@ public class InputManager extends ControllerAdapter implements InputProcessor {
 
         case Input.Keys.ESCAPE:
             buttons[Back] = 0;
+            buttons[Pause] = 0;
             return true;
         }
         return false;
@@ -261,8 +302,17 @@ public class InputManager extends ControllerAdapter implements InputProcessor {
     @Override
     public boolean povMoved(Controller controller, int povCode, PovDirection value) {
         System.out.println("pov: " + povCode + " = " + value);
-/*
+
         if (povCode == 0) {
+            if (value == PovDirection.center) {
+                buttons[Left] = 0;
+                buttons[Right] = 0;
+                buttons[Up] = 0;
+                buttons[Down] = 0;
+                axis[Horizontal] = 0;
+                axis[Vertical] = 0;
+            }
+
             if (value == PovDirection.east) {
                 buttons[Right]++;
                 axis[Horizontal] = 1;
@@ -304,7 +354,6 @@ public class InputManager extends ControllerAdapter implements InputProcessor {
                 axis[Vertical] = -1;
             }
         }
-        */
         return false;
     }
 
@@ -338,124 +387,124 @@ public class InputManager extends ControllerAdapter implements InputProcessor {
         return false;
     }
 
-public static class Xbox {
-    // Buttons
-    public static final int A;
-    public static final int B;
-    public static final int X;
-    public static final int Y;
-    public static final int GUIDE;
-    public static final int L_BUMPER;
-    public static final int R_BUMPER;
-    public static final int BACK;
-    public static final int START;
-    public static final int DPAD_UP;
-    public static final int DPAD_DOWN;
-    public static final int DPAD_LEFT;
-    public static final int DPAD_RIGHT;
+    public static class Xbox {
+        // Buttons
+        public static final int A;
+        public static final int B;
+        public static final int X;
+        public static final int Y;
+        public static final int GUIDE;
+        public static final int L_BUMPER;
+        public static final int R_BUMPER;
+        public static final int BACK;
+        public static final int START;
+        public static final int DPAD_UP;
+        public static final int DPAD_DOWN;
+        public static final int DPAD_LEFT;
+        public static final int DPAD_RIGHT;
 
-    // Axes
-    /** left trigger, -1 if not pressed, 1 if pressed **/
-    public static final int L_TRIGGER;
-    /** right trigger, -1 if not pressed, 1 if pressed **/
-    public static final int R_TRIGGER;
-    /** left stick vertical axis, -1 if up, 1 if down **/
-    public static final int L_STICK_VERTICAL_AXIS;
-    /** left stick horizontal axis, -1 if left, 1 if right **/
-    public static final int L_STICK_HORIZONTAL_AXIS;
-    /** right stick vertical axis, -1 if up, 1 if down **/
-    public static final int R_STICK_VERTICAL_AXIS;
-    /** right stick horizontal axis, -1 if left, 1 if right **/
-    public static final int R_STICK_HORIZONTAL_AXIS;
+        // Axes
+        /** left trigger, -1 if not pressed, 1 if pressed **/
+        public static final int L_TRIGGER;
+        /** right trigger, -1 if not pressed, 1 if pressed **/
+        public static final int R_TRIGGER;
+        /** left stick vertical axis, -1 if up, 1 if down **/
+        public static final int L_STICK_VERTICAL_AXIS;
+        /** left stick horizontal axis, -1 if left, 1 if right **/
+        public static final int L_STICK_HORIZONTAL_AXIS;
+        /** right stick vertical axis, -1 if up, 1 if down **/
+        public static final int R_STICK_VERTICAL_AXIS;
+        /** right stick horizontal axis, -1 if left, 1 if right **/
+        public static final int R_STICK_HORIZONTAL_AXIS;
 
-    static {
-        if (SharedLibraryLoader.isWindows) {
-            A = 0;
-            B = 1;
-            X = 2;
-            Y = 3;
-            GUIDE = -1;
-            L_BUMPER = 4;
-            R_BUMPER = 5;
-            BACK = 6;
-            START = 7;
-            DPAD_UP = -1;
-            DPAD_DOWN = -1;
-            DPAD_LEFT = -1;
-            DPAD_RIGHT = -1;
-            L_TRIGGER = 4;
-            R_TRIGGER = 4;
-            L_STICK_VERTICAL_AXIS = 0;
-            L_STICK_HORIZONTAL_AXIS = 1;
-            R_STICK_VERTICAL_AXIS = 2;
-            R_STICK_HORIZONTAL_AXIS = 3;
-        } else if (SharedLibraryLoader.isLinux) {
-            A = 0;
-            B = 1;
-            X = 2;
-            Y = 3;
-            GUIDE = -1;
-            L_BUMPER = -1;
-            R_BUMPER = -1;
-            BACK = -1;
-            START = -1;
-            DPAD_UP = -1;
-            DPAD_DOWN = -1;
-            DPAD_LEFT = -1;
-            DPAD_RIGHT = -1;
-            L_TRIGGER = -1;
-            R_TRIGGER = -1;
-            L_STICK_VERTICAL_AXIS = -1;
-            L_STICK_HORIZONTAL_AXIS = -1;
-            R_STICK_VERTICAL_AXIS = -1;
-            R_STICK_HORIZONTAL_AXIS = -1;
-        } else if (SharedLibraryLoader.isMac) {
-            A = 11;
-            B = 12;
-            X = 13;
-            Y = 14;
-            GUIDE = 10;
-            L_BUMPER = 8;
-            R_BUMPER = 9;
-            BACK = 5;
-            START = 4;
-            DPAD_UP = 0;
-            DPAD_DOWN = 1;
-            DPAD_LEFT = 2;
-            DPAD_RIGHT = 3;
-            L_TRIGGER = 0;
-            R_TRIGGER = 1;
-            L_STICK_VERTICAL_AXIS = 3;
-            L_STICK_HORIZONTAL_AXIS = 2;
-            R_STICK_VERTICAL_AXIS = 5;
-            R_STICK_HORIZONTAL_AXIS = 4;
-        } else {
-            A = -1;
-            B = -1;
-            X = -1;
-            Y = -1;
-            GUIDE = -1;
-            L_BUMPER = -1;
-            R_BUMPER = -1;
-            L_TRIGGER = -1;
-            R_TRIGGER = -1;
-            BACK = -1;
-            START = -1;
-            DPAD_UP = -1;
-            DPAD_DOWN = -1;
-            DPAD_LEFT = -1;
-            DPAD_RIGHT = -1;
-            L_STICK_VERTICAL_AXIS = -1;
-            L_STICK_HORIZONTAL_AXIS = -1;
-            R_STICK_VERTICAL_AXIS = -1;
-            R_STICK_HORIZONTAL_AXIS = -1;
+        static {
+            if (SharedLibraryLoader.isWindows) {
+                A = 0;
+                B = 1;
+                X = 2;
+                Y = 3;
+                GUIDE = -1;
+                L_BUMPER = 4;
+                R_BUMPER = 5;
+                BACK = 6;
+                START = 7;
+                DPAD_UP = -1;
+                DPAD_DOWN = -1;
+                DPAD_LEFT = -1;
+                DPAD_RIGHT = -1;
+                L_TRIGGER = 4;
+                R_TRIGGER = 4;
+                L_STICK_VERTICAL_AXIS = 0;
+                L_STICK_HORIZONTAL_AXIS = 1;
+                R_STICK_VERTICAL_AXIS = 2;
+                R_STICK_HORIZONTAL_AXIS = 3;
+            } else if (SharedLibraryLoader.isLinux) {
+                A = 0;
+                B = 1;
+                X = 2;
+                Y = 3;
+                GUIDE = -1;
+                L_BUMPER = -1;
+                R_BUMPER = -1;
+                BACK = -1;
+                START = -1;
+                DPAD_UP = -1;
+                DPAD_DOWN = -1;
+                DPAD_LEFT = -1;
+                DPAD_RIGHT = -1;
+                L_TRIGGER = -1;
+                R_TRIGGER = -1;
+                L_STICK_VERTICAL_AXIS = -1;
+                L_STICK_HORIZONTAL_AXIS = -1;
+                R_STICK_VERTICAL_AXIS = -1;
+                R_STICK_HORIZONTAL_AXIS = -1;
+            } else if (SharedLibraryLoader.isMac) {
+                A = 11;
+                B = 12;
+                X = 13;
+                Y = 14;
+                GUIDE = 10;
+                L_BUMPER = 8;
+                R_BUMPER = 9;
+                BACK = 5;
+                START = 4;
+                DPAD_UP = 0;
+                DPAD_DOWN = 1;
+                DPAD_LEFT = 2;
+                DPAD_RIGHT = 3;
+                L_TRIGGER = 0;
+                R_TRIGGER = 1;
+                L_STICK_VERTICAL_AXIS = 3;
+                L_STICK_HORIZONTAL_AXIS = 2;
+                R_STICK_VERTICAL_AXIS = 5;
+                R_STICK_HORIZONTAL_AXIS = 4;
+            } else {
+                A = -1;
+                B = -1;
+                X = -1;
+                Y = -1;
+                GUIDE = -1;
+                L_BUMPER = -1;
+                R_BUMPER = -1;
+                L_TRIGGER = -1;
+                R_TRIGGER = -1;
+                BACK = -1;
+                START = -1;
+                DPAD_UP = -1;
+                DPAD_DOWN = -1;
+                DPAD_LEFT = -1;
+                DPAD_RIGHT = -1;
+                L_STICK_VERTICAL_AXIS = -1;
+                L_STICK_HORIZONTAL_AXIS = -1;
+                R_STICK_VERTICAL_AXIS = -1;
+                R_STICK_HORIZONTAL_AXIS = -1;
+            }
+        }
+        
+        /** @return whether the {@link Controller} is an Xbox controller
+         */
+        public static boolean isXboxController(Controller controller) {
+            return controller.getName().contains("Xbox");
         }
     }
-    
-    /** @return whether the {@link Controller} is an Xbox controller
-     */
-    public static boolean isXboxController(Controller controller) {
-        return controller.getName().contains("Xbox");
-    }
-}
 }

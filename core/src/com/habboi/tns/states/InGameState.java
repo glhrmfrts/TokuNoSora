@@ -203,7 +203,7 @@ public class InGameState extends GameState {
 
     @Override
     public void update(float dt) {
-        if (InputManager.getInstance().isButtonDown(InputManager.Back) && ship.state != Ship.State.ENDED) {
+        if (InputManager.getInstance().isButtonJustDown(InputManager.Pause) && ship.state != Ship.State.ENDED) {
             paused = !paused;
         }
         if (quitFromMenu) {
@@ -221,7 +221,7 @@ public class InGameState extends GameState {
                 raceTimeText.setValue("time " + format.format(ship.raceTime), true);
                 gtm.start("level_complete");
             } else if (!gtm.isActive("level_complete")) {
-                if (ship.getController().isAnyKeyDown()) {
+                if (InputManager.getInstance().isAnyButtonDown()) {
                     if (!gtm.played("level_complete_end")) {
                         gtm.start("level_complete_end");
                     }

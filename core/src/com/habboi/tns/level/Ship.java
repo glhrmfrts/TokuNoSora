@@ -11,6 +11,7 @@ import com.habboi.tns.GameConfig;
 import com.habboi.tns.rendering.GameRenderer;
 import com.habboi.tns.shapes.Shape;
 import com.habboi.tns.shapes.TileShape;
+import com.habboi.tns.utils.InputManager;
 import com.habboi.tns.utils.Models;
 
 public class Ship extends LevelObject {
@@ -102,19 +103,18 @@ public class Ship extends LevelObject {
         state = State.WAITING;
         shape.pos.set(spawnPos);
         vel.set(0, 0, 0);
-        controller.reset();
     }
 
-    public void accelerate(boolean forward) {
-        if (forward) {
+    public void accelerate(float amount) {
+        if (amount > 0) {
             if (vel.z > -MAX_VEL) {
-                vel.z -= 1;
+                vel.z -= amount;
             } else {
                 vel.z = -MAX_VEL;
             }
-        } else {
+        } else if (amount < 0) {
             if (vel.z < 0) {
-                vel.z += 1;
+                vel.z -= amount;
             } else {
                 vel.z = 0;
             }
@@ -132,15 +132,14 @@ public class Ship extends LevelObject {
             oxygenLevel += OXYGEN_FILL_FACTOR * dt;
         }
 
-        if (controller.isDown(ShipController.Key.UP)) {
-            accelerate(true);
-        } else if (controller.isDown(ShipController.Key.DOWN)) {
-            accelerate(false);
+        float acceleration = controller.inputManager.getAxis(InputManager.Acceleration);
+        if (acceleration != 0) {
+            accelerate(acceleration);
         }
 
         boolean isBouncing = dBounce < MAX_BOUNCE_JUMP_INTERVAL;
         if (floorCollisions > 0 || isBouncing) {
-            if (controller.isDown(ShipController.Key.JUMP)) {
+            if (controller.inputManager.isButtonDown(InputManager.Jump)) {
                 float pvy = vel.y;
                 vel.y = JUMP_VEL;
 
@@ -153,14 +152,17 @@ public class Ship extends LevelObject {
             }
         }
 
+        float steerAxis = controller.inputManager.getAxis(InputManager.Horizontal);
         if (floorCollisions > 0) {
             // only steer and jump when ship is on the floor
             float target = 0;
-            if ((dSlide <= 0 || floorCollisions > 1) && controller.isDown(ShipController.Key.LEFT)) {
-                target = -STEER_VEL * Math.max(-vel.z / MAX_VEL, 0.25f);
-            } else if ((dSlide >= 0 || floorCollisions > 1) && controller.isDown(ShipController.Key.RIGHT)) {
-                target = STEER_VEL * Math.max(-vel.z / MAX_VEL, 0.25f);
+
+            if ((dSlide <= 0 || floorCollisions > 1) && steerAxis < 0) {
+                target = steerAxis * STEER_VEL * Math.max(-vel.z / MAX_VEL, 0.25f);
+            } else if ((dSlide >= 0 || floorCollisions > 1) && steerAxis > 0) {
+                target = steerAxis * STEER_VEL * Math.max(-vel.z / MAX_VEL, 0.25f);
             }
+
             float accel = STEER_ACCELERATION + steerAccul;
             if (target == 0) {
                 accel *= 4;
@@ -168,7 +170,7 @@ public class Ship extends LevelObject {
             vel.x = steer(vel.x, target, accel, dt);
             steerAccul = 0;
         } else {
-            if (controller.isDown(ShipController.Key.LEFT) || controller.isDown(ShipController.Key.RIGHT)) {
+            if (steerAxis != 0) {
                 steerAccul = Math.min(steerAccul + STEER_VEL, MAX_STEER_ACCUL);
             }
         }
@@ -183,8 +185,6 @@ public class Ship extends LevelObject {
         raceTime += dt;
         dBounce += dt;
         fillOxygen = false;
-
-        System.out.println(oxygenLevel);
     }
 
     public void doExplode() {
@@ -228,7 +228,7 @@ public class Ship extends LevelObject {
             }
 
             if (obj.effect == TouchEffect.BOOST) {
-                accelerate(true);
+                accelerate(1);
                 return true;
             }
 

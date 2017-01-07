@@ -186,6 +186,7 @@ public class Game extends ApplicationAdapter {
 
     public void update() {
         currentState.update(STEP_SECONDS);
+        InputManager.getInstance().update();
         GameTweenManager.get().update(STEP_SECONDS);
     }
 
@@ -200,8 +201,6 @@ public class Game extends ApplicationAdapter {
         float delta = (start - lastUpdateTime);
         lastUpdateTime = start;
         fpsTime = delta / 1000;
-
-        InputManager.getInstance().update();
 
         accumUpdateTime += delta;
         while (accumUpdateTime >= STEP) {
