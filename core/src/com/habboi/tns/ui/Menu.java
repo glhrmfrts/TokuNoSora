@@ -4,7 +4,7 @@ public interface Menu {
 
     void resume();
     boolean onChange(int delta);
-    boolean keyDown(int keycode);
+    boolean buttonDown(int buttonCode);
     void render();
     void remove();
 }

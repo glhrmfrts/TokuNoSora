@@ -110,11 +110,6 @@ public class PauseMenu extends BaseMenu {
     }
 
     @Override
-    public boolean keyDown(int keycode) {
-        return super.keyDown(keycode);
-    }
-
-    @Override
     public void remove() {
     }
 

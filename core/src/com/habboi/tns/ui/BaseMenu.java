@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.habboi.tns.states.MenuState;
+import com.habboi.tns.utils.InputManager;
 
 import java.util.ArrayList;
 
@@ -53,14 +54,14 @@ public abstract class BaseMenu implements Menu {
     }
 
     @Override
-    public boolean keyDown(int keycode) {
-        if (keycode == Input.Keys.DOWN && activeIndex < items.size()-1) {
+    public boolean buttonDown(int buttonCode) {
+        if (buttonCode == InputManager.Down && activeIndex < items.size()-1) {
             activeIndex++;
             return onChange(1);
-        } else if (keycode == Input.Keys.UP && activeIndex > 0) {
+        } else if (buttonCode == InputManager.Up && activeIndex > 0) {
             activeIndex--;
             return onChange(-1);
-        } else if (keycode == Input.Keys.ENTER || keycode == Input.Keys.SPACE) {
+        } else if (buttonCode == InputManager.Select) {
             items.get(activeIndex).action.doAction();
             return true;
         }

@@ -11,6 +11,7 @@ import com.habboi.tns.Game;
 import com.habboi.tns.GameConfig;
 import com.habboi.tns.states.MenuState;
 import com.habboi.tns.utils.FontManager;
+import com.habboi.tns.utils.InputManager;
 import com.habboi.tns.utils.EventEmitter;
 
 import aurelienribon.tweenengine.Tween;
@@ -138,19 +139,19 @@ public class OptionsMenu extends BaseMenu implements Disposable {
     }
 
     @Override
-    public boolean keyDown(int keycode) {
-        if (keycode == Input.Keys.ESCAPE) {
+    public boolean buttonDown(int buttonCode) {
+        if (buttonCode == InputManager.Back) {
             menuState.popMenu();
         }
 
-        if (keycode == Input.Keys.LEFT) {
+        if (buttonCode == InputManager.Left) {
             ((OptionsMenuItem)items.get(activeIndex)).valueChange(-1);
         }
-        if (keycode == Input.Keys.RIGHT) {
+        if (buttonCode == InputManager.Right) {
             ((OptionsMenuItem)items.get(activeIndex)).valueChange(1);
         }
 
-        return super.keyDown(keycode);
+        return super.buttonDown(buttonCode);
     }
 
     @Override

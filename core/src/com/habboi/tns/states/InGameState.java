@@ -24,6 +24,7 @@ import com.habboi.tns.ui.PauseMenu;
 import com.habboi.tns.ui.Rect;
 import com.habboi.tns.ui.Text;
 import com.habboi.tns.utils.FontManager;
+import com.habboi.tns.utils.InputManager;
 import com.habboi.tns.utils.MusicAccessor;
 import com.habboi.tns.utils.MusicWrapper;
 
@@ -201,43 +202,17 @@ public class InGameState extends GameState {
     }
 
     @Override
-    public boolean keyDown(int keycode) {
-        if (keycode == Input.Keys.ESCAPE && ship.state != Ship.State.ENDED) {
-            paused = !paused;
-            return true;
-        }
-
-        if (keycode == Input.Keys.D) {
-            debug = !debug;
-            return true;
-        }
-
-        if (paused) {
-            return pauseMenu.keyDown(keycode);
-        }
-
-        if (ship.canReceiveInput()) {
-            return ship.getController().keyDown(keycode);
-        }
-        return false;
-    }
-
-    @Override
-    public boolean keyUp(int keycode) {
-        if (ship.canReceiveInput()) {
-            return ship.getController().keyUp(keycode);
-        }
-        return false;
-    }
-
-    @Override
     public void update(float dt) {
+        if (InputManager.getInstance().isButtonDown(InputManager.Back) && ship.state != Ship.State.ENDED) {
+            paused = !paused;
+        }
         if (quitFromMenu) {
             if (!gtm.played("level_complete_end")) {
                 gtm.start("level_complete_end");
             }
         }
         if (paused) {
+            InputManager.getInstance().menuInteraction(pauseMenu);
             return;
         }
         if (ship.state == Ship.State.ENDED) {

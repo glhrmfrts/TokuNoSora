@@ -16,6 +16,7 @@ import com.habboi.tns.worlds.Universe;
 import com.habboi.tns.worlds.World;
 import com.habboi.tns.ui.Rect;
 import com.habboi.tns.utils.FontManager;
+import com.habboi.tns.utils.InputManager;
 
 /**
  * The state for the loading screen.

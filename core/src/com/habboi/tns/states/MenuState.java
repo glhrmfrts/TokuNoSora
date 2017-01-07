@@ -21,6 +21,7 @@ import com.habboi.tns.ui.Menu;
 import com.habboi.tns.ui.Rect;
 import com.habboi.tns.ui.Text;
 import com.habboi.tns.utils.FontManager;
+import com.habboi.tns.utils.InputManager;
 import com.habboi.tns.utils.MusicWrapper;
 
 import java.util.Stack;
@@ -107,12 +108,9 @@ public class MenuState extends GameState {
     }
 
     @Override
-    public boolean keyDown(int keycode) {
-        return menuStack.peek().keyDown(keycode);
-    }
-
-    @Override
     public void update(float dt) {
+        InputManager.getInstance().menuInteraction(menuStack.peek());
+
         worldCam.position.x = 0;
         worldCam.position.y = CAM_Y;
         worldCam.position.z -= VEL * dt;

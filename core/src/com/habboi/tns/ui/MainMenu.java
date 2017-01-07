@@ -9,6 +9,7 @@ import com.badlogic.gdx.utils.Disposable;
 import com.habboi.tns.Game;
 import com.habboi.tns.states.MenuState;
 import com.habboi.tns.utils.FontManager;
+import com.habboi.tns.utils.InputManager;
 
 import aurelienribon.tweenengine.Tween;
 import aurelienribon.tweenengine.TweenEquations;
@@ -125,11 +126,11 @@ public class MainMenu extends BaseMenu implements Disposable {
     }
 
     @Override
-    public boolean keyDown(int keycode) {
-        if (keycode == Input.Keys.ESCAPE) {
+    public boolean buttonDown(int buttonCode) {
+        if (buttonCode == InputManager.Back) {
             menuState.getGame().exit();
         }
-        return super.keyDown(keycode);
+        return super.buttonDown(buttonCode);
     }
 
     @Override

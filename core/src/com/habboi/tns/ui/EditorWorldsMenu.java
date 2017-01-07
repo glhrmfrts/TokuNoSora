@@ -12,6 +12,7 @@ import com.habboi.tns.states.EditorState;
 import com.habboi.tns.states.MenuState;
 import com.habboi.tns.ui.BaseMenu;
 import com.habboi.tns.utils.FontManager;
+import com.habboi.tns.utils.InputManager;
 import com.habboi.tns.worlds.Universe;
 import com.habboi.tns.worlds.World;
 
@@ -111,12 +112,12 @@ public class EditorWorldsMenu extends BaseMenu implements Disposable {
     }
 
     @Override
-    public boolean keyDown(int keycode) {
-        if (keycode == Input.Keys.ESCAPE) {
+    public boolean buttonDown(int buttonCode) {
+        if (buttonCode == InputManager.Back) {
             menuState.popMenu();
         }
 
-        return super.keyDown(keycode);
+        return super.buttonDown(buttonCode);
     }
 
     @Override

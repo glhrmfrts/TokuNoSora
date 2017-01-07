@@ -16,6 +16,7 @@ import com.habboi.tns.ui.GameTweenManager;
 import com.habboi.tns.ui.Rect;
 import com.habboi.tns.ui.Text;
 import com.habboi.tns.utils.FontManager;
+import com.habboi.tns.utils.InputManager;
 import com.habboi.tns.worlds.Universe;
 import com.habboi.tns.worlds.World;
 
@@ -100,20 +101,18 @@ public class IntroState extends GameState {
     }
 
     @Override
-    public boolean keyDown(int keycode) {
-        Color c = titleText.getColor();
-        c.a = 1;
-
-        game.setState(new MenuState(game, titleText, music));
-        return true;
-    }
-
-    @Override
     public void resume() {
     }
 
     @Override
     public void update(float dt) {
+        if (InputManager.getInstance().isAnyButtonDown()) {
+            Color c = titleText.getColor();
+            c.a = 1;
+
+            game.setState(new MenuState(game, titleText, music));
+        }
+
         worldCam.position.z -= MenuState.VEL * dt;
         worldCam.lookAt(0, MenuState.CAM_LOOKAT_Y, worldCam.position.z - MenuState.CAM_DIST);
         bgPos.set(worldCam.position);

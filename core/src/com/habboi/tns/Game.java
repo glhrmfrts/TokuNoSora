@@ -2,6 +2,8 @@ package com.habboi.tns;
 
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.ApplicationAdapter;
+import com.badlogic.gdx.controllers.Controller;
+import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
@@ -26,6 +28,7 @@ import com.habboi.tns.ui.GameTweenManager;
 import com.habboi.tns.ui.Rect;
 import com.habboi.tns.utils.FontFileHandleResolver;
 import com.habboi.tns.utils.FontLoader;
+import com.habboi.tns.utils.InputManager;
 
 import java.util.Stack;
 
@@ -68,9 +71,6 @@ public class Game extends ApplicationAdapter {
         height = Gdx.graphics.getHeight();
         exitingRect = new Rect(new Rectangle(0, 0, width, height));
 
-        inputMul = new InputMultiplexer();
-        Gdx.input.setInputProcessor(inputMul);
-
         renderer = new GameRenderer(this);
         sr = new ShapeRenderer();
         sb = new SpriteBatch();
@@ -103,6 +103,10 @@ public class Game extends ApplicationAdapter {
                     menuState.getCurrentMusic().getMusic().stop();
                 }
         });
+
+        for (Controller controller : Controllers.getControllers()) {
+            Gdx.app.log("asdasd", controller.getName());
+        }
 
         stateStack = new Stack<>();
         addState(new LoadingState(this));
@@ -154,38 +158,26 @@ public class Game extends ApplicationAdapter {
     }
 
     public void addState(GameState state) {
-        if (stateStack.size() > 0) {
-            removeInput(stateStack.peek());
-        }
         state.create();
         stateStack.add(state);
         currentState = stateStack.peek();
         stateChanged = true;
-        addInput(state);
     }
 
     public GameState popState() {
         GameState state = stateStack.pop();
-        removeInput(state);
         if (state != null) {
             state.dispose();
         }
         if (stateStack.size() > 0) {
             currentState = stateStack.peek();
             currentState.resume();
-            addInput(currentState);
         } else {
             currentState = null;
         }
         stateChanged = true;
         return state;
     }
-
-    public void addInput(InputProcessor input) {
-        inputMul.addProcessor(input);
-    }
-
-    public void removeInput(InputProcessor input) { inputMul.removeProcessor(input); }
 
     public void exit() {
         exiting = true;
@@ -208,6 +200,8 @@ public class Game extends ApplicationAdapter {
         float delta = (start - lastUpdateTime);
         lastUpdateTime = start;
         fpsTime = delta / 1000;
+
+        InputManager.getInstance().update();
 
         accumUpdateTime += delta;
         while (accumUpdateTime >= STEP) {

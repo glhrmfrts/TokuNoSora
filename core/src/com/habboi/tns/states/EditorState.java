@@ -10,6 +10,7 @@ import com.habboi.tns.Game;
 import com.habboi.tns.level.Level;
 import com.habboi.tns.rendering.GameRenderer;
 import com.habboi.tns.states.GameState;
+import com.habboi.tns.utils.InputManager;
 import com.habboi.tns.worlds.World;
 
 
@@ -46,17 +47,11 @@ public class EditorState extends GameState {
     }
 
     @Override
-    public boolean keyDown(int keycode) {
-        if (keycode == Input.Keys.ESCAPE) {
+    public void update(float dt) {
+        if (InputManager.getInstance().isButtonDown(InputManager.Back)) {
             game.popState();
-            return true;
         }
 
-        return false;
-    }
-
-    @Override
-    public void update(float dt) {
         worldCam.position.x = 0;
         worldCam.position.y = CAM_Y;
         worldCam.position.z -= VEL * dt;

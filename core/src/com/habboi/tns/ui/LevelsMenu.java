@@ -16,6 +16,7 @@ import com.habboi.tns.worlds.World;
 import com.habboi.tns.states.InGameState;
 import com.habboi.tns.states.MenuState;
 import com.habboi.tns.utils.FontManager;
+import com.habboi.tns.utils.InputManager;
 import com.habboi.tns.utils.MusicAccessor;
 import com.habboi.tns.utils.MusicWrapper;
 
@@ -294,11 +295,11 @@ public class LevelsMenu extends BaseMenu implements Disposable {
     }
 
     @Override
-    public boolean keyDown(int keycode) {
+    public boolean buttonDown(int buttonCode) {
         World world = Universe.get().worlds.get(activeWorldIndex);
         ArrayList<LevelMenuItem> currentGroup = itemGroups.get(world);
         boolean ret = false;
-        if (keycode == Input.Keys.RIGHT) {
+        if (buttonCode == InputManager.Right) {
             if (activeWorldIndex < Universe.get().worlds.size() - 1) {
                 prevActiveWorldIndex = activeWorldIndex;
                 activeWorldIndex++;
@@ -306,7 +307,7 @@ public class LevelsMenu extends BaseMenu implements Disposable {
                 activeItemIndex = 0;
                 ret = onChange(0);
             }
-        } else if (keycode == Input.Keys.LEFT) {
+        } else if (buttonCode == InputManager.Left) {
             if (activeWorldIndex > 0) {
                 prevActiveWorldIndex = activeWorldIndex;
                 activeWorldIndex--;
@@ -314,7 +315,7 @@ public class LevelsMenu extends BaseMenu implements Disposable {
                 activeItemIndex = 0;
                 ret = onChange(0);
             }
-        } else if (keycode == Input.Keys.UP) {
+        } else if (buttonCode == InputManager.Up) {
             if (activeItemIndex > 0) {
                 activeItemIndex--;
                 ret = onChange(-1);
@@ -324,7 +325,7 @@ public class LevelsMenu extends BaseMenu implements Disposable {
                 changeGroup();
                 ret = onChange(0);
             }
-        } else if (keycode == Input.Keys.DOWN) {
+        } else if (buttonCode == InputManager.Up) {
             if (activeItemIndex < currentGroup.size() - 1) {
                 activeItemIndex++;
                 ret = onChange(1);
@@ -334,9 +335,9 @@ public class LevelsMenu extends BaseMenu implements Disposable {
                 changeGroup();
                 ret = onChange(0);
             }
-        } else if (keycode == Input.Keys.ENTER) {
+        } else if (buttonCode == InputManager.Select) {
             currentGroup.get(activeItemIndex).action.doAction();
-        } else if (keycode == Input.Keys.ESCAPE) {
+        } else if (buttonCode == InputManager.Back) {
             menuState.popMenu();
         }
         return ret;
