@@ -39,7 +39,6 @@ public class InputManager extends ControllerAdapter implements InputProcessor {
     private int[] prevButtons = new int[NUM_BUTTONS];
     private float[] axis = new float[NUM_AXIS];
     private boolean[] axisMenu = new boolean[NUM_AXIS];
-    private int anyButton;
     private Controller currentController;
 
     public static InputManager getInstance() {
@@ -71,7 +70,12 @@ public class InputManager extends ControllerAdapter implements InputProcessor {
     }
 
     public boolean isAnyButtonDown() {
-        return anyButton > 0;
+        for (int i = 0; i < buttons.length; i++) {
+            if (buttons[i] > 0) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public float getAxis(int axisIndex) {
@@ -148,12 +152,6 @@ public class InputManager extends ControllerAdapter implements InputProcessor {
         if (value != 0)
             System.out.println("axis: " + axisCode + " = " + value);
 
-        if (value == 0 && anyButton > 0) {
-            anyButton--;
-        } else if (value != 0) {
-            anyButton++;
-        }
-
         if (axisCode == Xbox.L_STICK_HORIZONTAL_AXIS) {
             axis[Horizontal] = value;
         }
@@ -169,8 +167,6 @@ public class InputManager extends ControllerAdapter implements InputProcessor {
 
     @Override
     public boolean buttonDown(Controller controller, int buttonCode) {
-        anyButton++;
-
         System.out.println("button: " + buttonCode);
 
         if (buttonCode == Xbox.A) {
@@ -194,10 +190,6 @@ public class InputManager extends ControllerAdapter implements InputProcessor {
 
     @Override
     public boolean buttonUp(Controller controller, int buttonCode) {
-        if (anyButton > 0) {
-            anyButton--;
-        }
-
         if (buttonCode == Xbox.A) {
             buttons[Jump] = 0;
             buttons[Select] = 0;
@@ -218,7 +210,6 @@ public class InputManager extends ControllerAdapter implements InputProcessor {
 
     @Override
     public boolean keyDown(int keycode) {
-        anyButton++;
         switch (keycode) {
         case Input.Keys.LEFT:
             buttons[Left]++;
@@ -258,10 +249,6 @@ public class InputManager extends ControllerAdapter implements InputProcessor {
 
     @Override
     public boolean keyUp(int keycode) {
-        if (anyButton > 0) {
-            anyButton--;
-        }
-
         switch (keycode) {
         case Input.Keys.LEFT:
             buttons[Left] = 0;
