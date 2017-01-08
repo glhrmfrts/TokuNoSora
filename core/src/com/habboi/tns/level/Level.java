@@ -108,7 +108,17 @@ public class Level {
 
         LevelObject obj;
         while ((obj = collisions.pollFirst()) != null) {
-            if (obj.onCollision(ship) && ship.onCollision(obj)) {
+            if (obj instanceof Collectible) {
+                Collectible c = (Collectible)obj;
+                if (!c.collected) {
+                    ship.onCollect(c);
+                    c.collected = true;
+                    c.visible = false;
+                }
+                continue;
+            }
+
+            if (ship.onCollision(obj)) {
                 Shape.CollisionInfo c = obj.shape.getCollisionInfo();
 
                 float velNormal = ship.vel.dot(c.normal);

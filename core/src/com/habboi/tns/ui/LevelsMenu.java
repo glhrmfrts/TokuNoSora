@@ -325,7 +325,7 @@ public class LevelsMenu extends BaseMenu implements Disposable {
                 changeGroup();
                 ret = onChange(0);
             }
-        } else if (buttonCode == InputManager.Up) {
+        } else if (buttonCode == InputManager.Down) {
             if (activeItemIndex < currentGroup.size() - 1) {
                 activeItemIndex++;
                 ret = onChange(1);

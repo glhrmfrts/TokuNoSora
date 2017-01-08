@@ -11,10 +11,6 @@ public abstract class LevelObject {
     public Shape shape;
     public boolean visible = true;
 
-    public boolean onCollision(Ship ship) {
-        return true;
-    }
-
     public abstract void reset();
     public abstract void update(float dt);
 }

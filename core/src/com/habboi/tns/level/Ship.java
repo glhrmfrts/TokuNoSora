@@ -14,6 +14,8 @@ import com.habboi.tns.shapes.TileShape;
 import com.habboi.tns.utils.InputManager;
 import com.habboi.tns.utils.Models;
 
+import java.util.concurrent.TimeUnit;
+
 public class Ship extends LevelObject {
     public enum State {
         WAITING,
@@ -28,6 +30,7 @@ public class Ship extends LevelObject {
     public Vector3 vel = new Vector3();
     public boolean readyToEnd;
     public float raceTime;
+    public long raceTimeMillis;
     public float oxygenLevel;
     public TileShape shape;
 
@@ -94,9 +97,19 @@ public class Ship extends LevelObject {
         return (dir == Math.signum(t - c)) ? c : t;
     }
 
+    public String getTimeText() {
+        long millis = raceTimeMillis;
+        return String.format("%02d:%02d:%02d", 
+            TimeUnit.MILLISECONDS.toMinutes(millis),
+            TimeUnit.MILLISECONDS.toSeconds(millis) - 
+            TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis)),
+            millis % 1000).substring(0, 8);
+    }
+
     public void reset() {
         collected = 0;
         raceTime = 0;
+        raceTimeMillis = 0;
         visible = true;
         fillOxygen = false;
         oxygenLevel = 1;
@@ -185,6 +198,7 @@ public class Ship extends LevelObject {
         raceTime += dt;
         dBounce += dt;
         fillOxygen = false;
+        raceTimeMillis = (long)(raceTime * 1000);
     }
 
     public void doExplode() {
@@ -194,12 +208,12 @@ public class Ship extends LevelObject {
         state = State.EXPLODED;
     }
 
+    public void onCollect(Collectible c) {
+        collected++;
+    }
+
     public boolean onCollision(LevelObject obj) {
         Shape.CollisionInfo c = obj.shape.getCollisionInfo();
-        if (obj.effect == TouchEffect.COLLECT) {
-            collected++;
-            return false;
-        }
         if (obj.effect == TouchEffect.END) {
             if (readyToEnd) {
                 state = State.ENDED;

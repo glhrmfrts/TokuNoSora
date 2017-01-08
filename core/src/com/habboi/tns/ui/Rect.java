@@ -15,8 +15,8 @@ import aurelienribon.tweenengine.TweenEquations;
  */
 public class Rect {
 
-    private final Rectangle rect = new Rectangle();
-    private final Color color = new Color();
+    public final Rectangle rect = new Rectangle();
+    public final Color color = new Color();
 
     static {
         Tween.registerAccessor(Rect.class, new Accessor());

@@ -11,7 +11,7 @@ import com.badlogic.gdx.utils.SharedLibraryLoader;
 import com.habboi.tns.ui.Menu;
 
 /**
- * Map virtual buttons to controller or keyboard real buttons/keys
+ * Map controller/keyboard input to virtual buttons
  */
 public class InputManager extends ControllerAdapter implements InputProcessor {
     // buttons
@@ -374,6 +374,11 @@ public class InputManager extends ControllerAdapter implements InputProcessor {
         return false;
     }
 
+    /**
+     * This class wasn't on libGDX's controllers.mappings package
+     * for some reason, so I copied and pasted from github into here.
+     * I only added the windows mappings, original author is @badlogic.
+     */
     public static class Xbox {
         // Buttons
         public static final int A;
@@ -426,6 +431,7 @@ public class InputManager extends ControllerAdapter implements InputProcessor {
                 R_STICK_VERTICAL_AXIS = 2;
                 R_STICK_HORIZONTAL_AXIS = 3;
             } else if (SharedLibraryLoader.isLinux) {
+                // TODO: set linux mappings
                 A = 0;
                 B = 1;
                 X = 2;

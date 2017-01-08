@@ -20,6 +20,7 @@ import com.habboi.tns.level.ShipCamera;
 import com.habboi.tns.level.ShipController;
 import com.habboi.tns.level.Level;
 import com.habboi.tns.rendering.GameRenderer;
+import com.habboi.tns.ui.HUD;
 import com.habboi.tns.ui.PauseMenu;
 import com.habboi.tns.ui.Rect;
 import com.habboi.tns.ui.Text;
@@ -45,6 +46,7 @@ public class InGameState extends GameState {
     Text levelCompleteText;
     Text raceTimeText;
     Text fpsText;
+    HUD hud;
     GameTweenManager gtm;
     Rect screenRect;
     PauseMenu pauseMenu;
@@ -90,6 +92,8 @@ public class InGameState extends GameState {
         raceTimeText.getColor().a = 0;
         fpsText = new Text(fm.getFont("Neon.ttf", Game.MAIN_FONT_SIZE), "", null, Color.WHITE);
         fpsText.getPos().set(20, 60);
+
+        hud = new HUD();
         
         screenRect = new Rect(new Rectangle(0, 0, game.getWidth(), game.getHeight()));
         pauseMenu = new PauseMenu(this, game);
@@ -217,8 +221,7 @@ public class InGameState extends GameState {
         }
         if (ship.state == Ship.State.ENDED) {
             if (!gtm.played("level_complete")) {
-                DecimalFormat format = new DecimalFormat("00.00");
-                raceTimeText.setValue("time " + format.format(ship.raceTime), true);
+                raceTimeText.setValue("time " + ship.getTimeText(), true);
                 gtm.start("level_complete");
             } else if (!gtm.isActive("level_complete")) {
                 if (InputManager.getInstance().isAnyButtonDown()) {
@@ -244,12 +247,18 @@ public class InGameState extends GameState {
 
         GameRenderer gr = game.getRenderer();
         SpriteBatch sb = game.getSpriteBatch();
+        ShapeRenderer sr = game.getShapeRenderer();
 
         gr.render(level, level.getWorld());
 
         orthoCam.update();
         sb.setProjectionMatrix(orthoCam.combined);
+        sr.setProjectionMatrix(orthoCam.combined);
+
+        hud.renderShapes(ship, sr);
+
         sb.begin();
+        hud.renderSprites(ship, sb);
 
         if (ship.state == Ship.State.ENDED) {
             levelCompleteText.draw(sb, true);
@@ -261,13 +270,11 @@ public class InGameState extends GameState {
             fpsText.setValue("fps " + format.format(game.getFPS()), false);
             fpsText.draw(sb, false);
         }
-        
         sb.end();
-        
+   
         if (paused) {
             pauseMenu.render();
         }
-        ShapeRenderer sr = game.getShapeRenderer();
         screenRect.draw(sr);
     }
 

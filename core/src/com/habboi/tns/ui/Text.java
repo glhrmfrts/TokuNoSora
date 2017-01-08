@@ -17,11 +17,11 @@ public class Text {
         Tween.registerAccessor(Text.class, new Accessor());
     }
 
-    private Vector2 pos = new Vector2();
-    private String value;
-    private BitmapFont font;
-    private BitmapFont.TextBounds bounds;
-    private Color color = new Color();
+    public Vector2 pos = new Vector2();
+    public String value;
+    public BitmapFont font;
+    public BitmapFont.TextBounds bounds;
+    public final Color color = new Color();
 
     public Text(BitmapFont font, String value, Vector2 pos, Color color) {
         this.font = font;

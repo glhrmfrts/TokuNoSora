@@ -11,6 +11,8 @@ public class Collectible extends LevelObject {
     static final float HEIGHT = 0.5f;
     static final float DEPTH = 0.25f;
 
+    public boolean collected;
+
     public Collectible(Vector3 pos, World world) {
         pos.x = pos.x * TileShape.TILE_WIDTH + (WIDTH * 0.5f * TileShape.TILE_WIDTH);
         pos.y = pos.y * TileShape.TILE_HEIGHT + (HEIGHT * 0.5f * TileShape.TILE_HEIGHT) + HEIGHT;
@@ -28,18 +30,11 @@ public class Collectible extends LevelObject {
 
     @Override
     public void reset() {
-        effect = TouchEffect.NONE;
         visible = true;
+        collected = false;
     }
 
     @Override
     public void update(float dt) {
-    }
-
-    @Override
-    public boolean onCollision(Ship ship) {
-        effect = TouchEffect.NONE;
-        visible = false;
-        return false;
     }
 }
