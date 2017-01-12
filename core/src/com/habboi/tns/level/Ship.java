@@ -34,6 +34,8 @@ public class Ship extends LevelObject {
     public float oxygenLevel;
     public TileShape shape;
 
+    public static ShipExplosion explosion;
+
     static final float BODY_WIDTH = 0.60f;
     static final float BODY_HEIGHT = 0.3f;
     static final float BODY_DEPTH = 2.25f;
@@ -78,6 +80,10 @@ public class Ship extends LevelObject {
 
         bounceSound = game.getAssetManager().get("audio/bounce.wav");
         explosionSound = game.getAssetManager().get("audio/explosion.wav");
+
+        if (explosion == null) {
+            explosion = new ShipExplosion();
+        }
     }
 
     public boolean canReceiveInput() {
@@ -137,7 +143,7 @@ public class Ship extends LevelObject {
     public void update(float dt) {
         modelInstance.transform.setTranslation(shape.pos);
 
-        if (state == State.WAITING || state == State.ENDED) {
+        if (state == State.WAITING || state == State.ENDED || state == State.EXPLODED) {
             return;
         }
 
@@ -203,6 +209,9 @@ public class Ship extends LevelObject {
 
     public void doExplode() {
         if (state == State.PLAYABLE) {
+            vel.set(0, 0, 0);
+            visible = false;
+            explosion.explode(shape.pos);
             explosionSound.play(GameConfig.get().getSfxVolume());
         }
         state = State.EXPLODED;
@@ -241,12 +250,12 @@ public class Ship extends LevelObject {
                 return true;
             }
 
-            if (obj.effect == TouchEffect.BOOST) {
+            if (obj.effect == TouchEffect.BOOST && state == State.PLAYABLE) {
                 accelerate(1);
                 return true;
             }
 
-            if (obj.effect == TouchEffect.OXYGEN) {
+            if (obj.effect == TouchEffect.OXYGEN && state == State.PLAYABLE) {
                 fillOxygen = true;
                 return true;
             }

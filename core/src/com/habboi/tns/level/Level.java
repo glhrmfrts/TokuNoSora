@@ -20,8 +20,9 @@ public class Level {
     public float centerX;
     Vector3 shipPos = new Vector3();
 
-    Ship ship;
-    ArrayList<LevelObject> objects = new ArrayList<>();
+    public Ship ship;
+    public ArrayList<LevelObject> objects = new ArrayList<>();
+    
     LinkedList<LevelObject> collisions = new LinkedList<>();
     ArrayList<Tunnel> endTunnels = new ArrayList<>();
 
@@ -87,7 +88,8 @@ public class Level {
     }
 
     public void setShip(Ship ship) {
-      this.ship = ship;
+        this.ship = ship;
+        objects.add(ship.explosion);
     }
 
     public void setWorld(World world) {

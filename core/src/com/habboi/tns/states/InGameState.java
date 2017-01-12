@@ -24,6 +24,7 @@ import com.habboi.tns.ui.HUD;
 import com.habboi.tns.ui.PauseMenu;
 import com.habboi.tns.ui.Rect;
 import com.habboi.tns.ui.Text;
+import com.habboi.tns.utils.EventEmitter;
 import com.habboi.tns.utils.FontManager;
 import com.habboi.tns.utils.InputManager;
 import com.habboi.tns.utils.MusicAccessor;
@@ -174,6 +175,15 @@ public class InGameState extends GameState {
                 }
         });
 
+        EventEmitter.get().listen("ship_explosion_end", new EventEmitter.EventHandler() {
+            @Override
+            public void onEvent(Object data) {
+                if (!gtm.isActive("reset")) {
+                    gtm.start("reset");
+                }
+            }
+        });
+
         Music worldMusic = game.getAssetManager().get(level.getWorld().music);
         worldMusic.setVolume(GameConfig.get().getMusicVolume());
         worldMusic.setLooping(true);
@@ -230,7 +240,7 @@ public class InGameState extends GameState {
                     }
                 }
             }
-        } else if (ship.state == Ship.State.FELL || ship.state == Ship.State.EXPLODED) {
+        } else if (ship.state == Ship.State.FELL) {
             if (!gtm.isActive("reset")) {
                 gtm.start("reset");
             }

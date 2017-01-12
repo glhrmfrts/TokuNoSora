@@ -29,6 +29,7 @@ public final class Models {
     private static Model floorCircleModel;
     private static Model sunModel;
     private static Model shipModel;
+    private static Model triangleModel;
     private static Model planeModel;
     private static Model prismModel;
     private static Model boostTileModel;
@@ -318,6 +319,48 @@ public final class Models {
             return fuelTileModel;
 
         return fuelTileModel = createTileModel(specialColors, solidTileIndices(2), Color.BLUE);
+    }
+
+    public static Model getTriangleModel() {
+        if (triangleModel != null) return triangleModel;
+
+        MeshPartBuilder partBuilder;
+        VertexInfo v1, v2, v3;
+        Vector3 normal;
+
+        final Material material = new Material(new BlendingAttribute(0.75f));
+        material.set(ColorAttribute.createDiffuse(Color.WHITE));
+        material.set(IntAttribute.createCullFace(GL20.GL_NONE));
+
+        mb.begin();
+
+        // create bottom part
+        partBuilder = mb.part("triangle", GL20.GL_TRIANGLES,
+                              VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.ColorPacked,
+                              material);
+        partBuilder.setColor(Color.WHITE);
+        v1 = new VertexInfo().setPos(-1, 0, 1);
+        v2 = new VertexInfo().setPos(1, 0, 1);
+        v3 = new VertexInfo().setPos(0, 0, -1);
+
+        normal = calculateNormal(v1.position, v2.position, v3.position);
+        v1.setNor(normal);
+        v2.setNor(normal);
+        v3.setNor(normal);
+        partBuilder.triangle(v1, v2, v3);
+
+        final Material outlineMaterial = new Material(ColorAttribute.createDiffuse(Color.WHITE));
+        outlineMaterial.set(IntAttribute.createCullFace(GL20.GL_NONE));
+
+        partBuilder = mb.part("outline", GL20.GL_LINES,
+                              VertexAttributes.Usage.Position | VertexAttributes.Usage.ColorPacked,
+                              outlineMaterial);
+        partBuilder.setColor(Color.WHITE);
+        partBuilder.line(-1, 0, 1, 1, 0, 1);
+        partBuilder.line(1, 0, 1, 0, 0, -1);
+        partBuilder.line(0, 0, -1, -1, 0, 1);
+
+        return triangleModel = mb.end();
     }
 
     public static Model getShipModel() {
