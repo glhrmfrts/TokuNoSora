@@ -89,6 +89,8 @@ public class Ship extends LevelObject {
 
         if (explosion == null) {
             explosion = new ShipExplosion();
+        } else {
+            explosion.reset();
         }
 
         reset();
@@ -113,9 +115,9 @@ public class Ship extends LevelObject {
 
     public String getTimeText() {
         long millis = raceTimeMillis;
-        return String.format("%02d:%02d:%02d", 
+        return String.format("%02d:%02d:%02d",
             TimeUnit.MILLISECONDS.toMinutes(millis),
-            TimeUnit.MILLISECONDS.toSeconds(millis) - 
+            TimeUnit.MILLISECONDS.toSeconds(millis) -
             TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis)),
             millis % 1000).substring(0, 8);
     }
@@ -130,13 +132,15 @@ public class Ship extends LevelObject {
         state = State.WAITING;
         shape.pos.set(spawnPos);
         vel.set(0, 0, 0);
+        explosion.reset();
+
         modelInstance.transform.setToRotation(1, 1, 1, 0);
         outlineInstance.transform.setToRotation(1, 1, 1, 0);
 
         modelInstance.transform.setToScaling(BODY_WIDTH*BODY_OFF - 0.1f, BODY_HEIGHT*BODY_OFF, BODY_DEPTH*BODY_OFF);
         modelInstance.transform.rotate(Vector3.Y, 180);
         outlineInstance.transform.setToScaling(BODY_WIDTH - 0.1f, BODY_HEIGHT, BODY_DEPTH);
-        outlineInstance.transform.rotate(Vector3.Y, 180);
+        outlineInstance.transform.rotate(Vector3.Y, 180);        
     }
 
     public void accelerate(float amount) {
