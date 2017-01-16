@@ -6,6 +6,7 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Rectangle;
@@ -53,6 +54,8 @@ public class LoadingState extends GameState {
         am.load("audio/intro.ogg", Music.class);
         am.load("audio/menu.ogg", Music.class);
         am.load("audio/world1.ogg", Music.class);
+        am.load("models/shipbody.obj", Model.class);
+        am.load("models/shipoutline.obj", Model.class);
 
         fm.loadFont(Game.MAIN_FONT, Game.MAIN_FONT_SIZE);
         fm.loadFont(Game.MAIN_FONT, Game.HUGE_FONT_SIZE);

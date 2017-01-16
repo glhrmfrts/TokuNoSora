@@ -33,6 +33,8 @@ public class InputManager extends ControllerAdapter implements InputProcessor {
     public static final int NUM_BUTTONS = 8;
     public static final int NUM_AXIS = 3;
 
+    public static final String TAG = InputManager.class.getName();
+
     private static InputManager instance;
 
     private int[] buttons = new int[NUM_BUTTONS];
@@ -150,7 +152,7 @@ public class InputManager extends ControllerAdapter implements InputProcessor {
     public boolean axisMoved(Controller controller, int axisCode, float value) {
         value = axisDeadZoneValue(value);
         if (value != 0)
-            System.out.println("axis: " + axisCode + " = " + value);
+            Gdx.app.log(TAG, "axis: " + axisCode + " = " + value);
 
         if (axisCode == Xbox.L_STICK_HORIZONTAL_AXIS) {
             axis[Horizontal] = value;
@@ -167,7 +169,7 @@ public class InputManager extends ControllerAdapter implements InputProcessor {
 
     @Override
     public boolean buttonDown(Controller controller, int buttonCode) {
-        System.out.println("button: " + buttonCode);
+        Gdx.app.log(TAG, "button: " + buttonCode);
 
         if (buttonCode == Xbox.A) {
             buttons[Jump]++;
@@ -288,7 +290,7 @@ public class InputManager extends ControllerAdapter implements InputProcessor {
 
     @Override
     public boolean povMoved(Controller controller, int povCode, PovDirection value) {
-        System.out.println("pov: " + povCode + " = " + value);
+        Gdx.app.log(TAG, "pov: " + povCode + " = " + value);
 
         if (povCode == 0) {
             if (value == PovDirection.center) {

@@ -42,6 +42,8 @@ public class Game extends ApplicationAdapter {
     public static final int MAIN_FONT_SIZE = 28;
     public static final int SMALL_FONT_SIZE = 16;
 
+    public static final String TAG = Game.class.getName();
+
     static final float STEP_SECONDS = 0.016f;
     static final float STEP	    = STEP_SECONDS * 1000f;
 
@@ -105,8 +107,10 @@ public class Game extends ApplicationAdapter {
         });
 
         for (Controller controller : Controllers.getControllers()) {
-            Gdx.app.log("asdasd", controller.getName());
+            Gdx.app.log(TAG, controller.getName());
         }
+
+        // Gdx.app.setLogLevel(Application.LOG_NONE);
 
         stateStack = new Stack<>();
         addState(new LoadingState(this));

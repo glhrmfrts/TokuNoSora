@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.habboi.tns.level.Level;
 import com.habboi.tns.level.LevelObject;
+import com.habboi.tns.level.Ship;
 
 public class LevelRenderer {
   private PerspectiveCamera camera;
@@ -35,8 +36,9 @@ public class LevelRenderer {
       }
     }
 
-    if (level.getShip().visible) {
-      modelBatch.render(level.getShip().modelInstance, environment);
+    Ship ship = level.getShip();
+    if (ship.visible) {
+      ship.renderer.render(ship, modelBatch, environment);
     }
   }
 }

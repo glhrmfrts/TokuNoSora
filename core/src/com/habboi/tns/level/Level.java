@@ -97,7 +97,7 @@ public class Level {
     }
 
     private void updatePhysics(float dt) {
-        if (ship.state != Ship.State.ENDED) {
+        if (ship.state != Ship.State.ENDED && ship.state != Ship.State.EXPLODED) {
             ship.vel.y += (GRAVITY * world.gravityFactor) * dt;
         }
         for (LevelObject obj : objects) {

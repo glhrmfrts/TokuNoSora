@@ -2,13 +2,15 @@ package com.habboi.tns.level;
 
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.Renderable;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.habboi.tns.Game;
 import com.habboi.tns.GameConfig;
-import com.habboi.tns.rendering.GameRenderer;
+import com.habboi.tns.rendering.ShipRenderer;
 import com.habboi.tns.shapes.Shape;
 import com.habboi.tns.shapes.TileShape;
 import com.habboi.tns.utils.InputManager;
@@ -33,12 +35,14 @@ public class Ship extends LevelObject {
     public long raceTimeMillis;
     public float oxygenLevel;
     public TileShape shape;
+    public ModelInstance outlineInstance;
 
     public static ShipExplosion explosion;
 
-    static final float BODY_WIDTH = 0.60f;
-    static final float BODY_HEIGHT = 0.3f;
-    static final float BODY_DEPTH = 2.25f;
+    static final float BODY_WIDTH = 0.6f;
+    static final float BODY_HEIGHT = 0.5f;
+    static final float BODY_DEPTH = 2f;
+    static final float BODY_OFF = 0.98f;
     static final float MAX_VEL = 65;
     static final float STEER_VEL = 10;
     static final float STEER_ACCELERATION = 50;
@@ -62,6 +66,7 @@ public class Ship extends LevelObject {
     float dBounce;
     float steerAccul;
     boolean fillOxygen;
+    Quaternion rotationGetter = new Quaternion();
 
     public Ship(Game game, Vector3 pos, ShipController controller) {
         shape = new TileShape(
@@ -74,16 +79,19 @@ public class Ship extends LevelObject {
         this.controller = controller;
         this.game = game;
 
-        modelInstance = new ModelInstance(Models.getShipModel());
-        modelInstance.transform.setToScaling(BODY_WIDTH, BODY_HEIGHT, BODY_DEPTH);
-        Models.setColor(modelInstance, ColorAttribute.Diffuse, COLOR);
-
+        renderer = ShipRenderer.getInstance();
+        
+        modelInstance = new ModelInstance(game.getAssetManager().get("models/shipbody.obj", Model.class));  
+        outlineInstance = new ModelInstance(game.getAssetManager().get("models/shipoutline.obj", Model.class));
+        
         bounceSound = game.getAssetManager().get("audio/bounce.wav");
         explosionSound = game.getAssetManager().get("audio/explosion.wav");
 
         if (explosion == null) {
             explosion = new ShipExplosion();
         }
+
+        reset();
     }
 
     public boolean canReceiveInput() {
@@ -122,6 +130,13 @@ public class Ship extends LevelObject {
         state = State.WAITING;
         shape.pos.set(spawnPos);
         vel.set(0, 0, 0);
+        modelInstance.transform.setToRotation(1, 1, 1, 0);
+        outlineInstance.transform.setToRotation(1, 1, 1, 0);
+
+        modelInstance.transform.setToScaling(BODY_WIDTH*BODY_OFF - 0.1f, BODY_HEIGHT*BODY_OFF, BODY_DEPTH*BODY_OFF);
+        modelInstance.transform.rotate(Vector3.Y, 180);
+        outlineInstance.transform.setToScaling(BODY_WIDTH - 0.1f, BODY_HEIGHT, BODY_DEPTH);
+        outlineInstance.transform.rotate(Vector3.Y, 180);
     }
 
     public void accelerate(float amount) {
@@ -142,6 +157,7 @@ public class Ship extends LevelObject {
 
     public void update(float dt) {
         modelInstance.transform.setTranslation(shape.pos);
+        outlineInstance.transform.setTranslation(shape.pos);
 
         if (state == State.WAITING || state == State.ENDED || state == State.EXPLODED) {
             return;
@@ -238,6 +254,10 @@ public class Ship extends LevelObject {
         if (c.normal.y == 1) {
             floorCollisions++;
 
+            modelInstance.transform.getRotation(rotationGetter);
+            modelInstance.transform.rotate(Vector3.Z, (float)(-rotationGetter.x * 180 / Math.PI));
+            outlineInstance.transform.rotate(Vector3.Z, (float)(-rotationGetter.x * 180 / Math.PI));
+
             if (obj.effect == TouchEffect.EXPLODE) {
                 doExplode();
                 return true;
@@ -272,6 +292,9 @@ public class Ship extends LevelObject {
             if (dx == ds || vel.x == 0) {
                 c.normal.x = c.slide;
                 dSlide = c.slide;
+
+                modelInstance.transform.rotate(Vector3.Z, dSlide);
+                outlineInstance.transform.rotate(Vector3.Z, dSlide);
             }
         }
         return true;

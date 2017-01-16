@@ -70,7 +70,7 @@ public class GameRenderer implements Disposable {
         screenQuad = new ModelInstance(createScreenQuadModel());
         screenQuad.getRenderable(screenQuadRenderable);
 
-        bloom = new BloomEffect(new Vector2(resolution.x / 2, resolution.y / 2));
+        bloom = new BloomEffect(new Vector2(resolution.x / 1.5f, resolution.y / 1.5f));
         fxaa = new FXAAEffect(resolution);
         blur = new BlurEffect(resolution);
 
