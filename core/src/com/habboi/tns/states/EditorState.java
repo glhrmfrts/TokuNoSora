@@ -102,6 +102,7 @@ public class EditorState extends GameState {
                 gridBounds.set(gbMin.set(x, 0, -z - 1), gbMax.set(x + 1, 1, -z));
                 if (Intersector.intersectRayBounds(ray, gridBounds, intersection)) {
                     handleGridIntersection(x, z);
+                    break;
                 }
             }
         }
@@ -197,7 +198,7 @@ class Grid {
 
         for (int z = 0; z < depth + 1; z++) {
           for (int x = 0; x < width + 1; x++) {
-            ModelInstance line = new ModelInstance(verticalLineModel);
+              ModelInstance line = new ModelInstance(verticalLineModel);
               line.transform.setTranslation(x, 0, 0);
               lines.add(line);
           }
