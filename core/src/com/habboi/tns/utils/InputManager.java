@@ -28,20 +28,24 @@ public class InputManager extends ControllerAdapter implements InputProcessor {
     public static final int Horizontal = 0;
     public static final int Vertical = 1;
     public static final int Acceleration = 2;
+    public static final int LookHorizontal = 3;
+    public static final int LookVertical = 4;
 
     public static final float DEAD_ZONE = 0.2f;
     public static final int NUM_BUTTONS = 8;
-    public static final int NUM_AXIS = 3;
+    public static final int NUM_AXIS = 5;
 
     public static final String TAG = InputManager.class.getName();
 
     private static InputManager instance;
 
+    public int screenX, screenY;
     private int[] buttons = new int[NUM_BUTTONS];
     private int[] prevButtons = new int[NUM_BUTTONS];
     private float[] axis = new float[NUM_AXIS];
     private boolean[] axisMenu = new boolean[NUM_AXIS];
     private Controller currentController;
+    private int touchingDown;
 
     public static InputManager getInstance() {
         if (instance == null) {
@@ -78,6 +82,10 @@ public class InputManager extends ControllerAdapter implements InputProcessor {
             }
         }
         return false;
+    }
+
+    public boolean isTouchingDown() {
+        return touchingDown > 0;
     }
 
     public float getAxis(int axisIndex) {
@@ -159,6 +167,12 @@ public class InputManager extends ControllerAdapter implements InputProcessor {
         }
         if (axisCode == Xbox.L_STICK_VERTICAL_AXIS) {
             axis[Vertical] = -value;
+        }
+        if (axisCode == Xbox.R_STICK_HORIZONTAL_AXIS) {
+            axis[LookHorizontal] = value;
+        }
+        if (axisCode == Xbox.R_STICK_VERTICAL_AXIS) {
+            axis[LookVertical] = -value;
         }
         if (axisCode == Xbox.R_TRIGGER || axisCode == Xbox.L_TRIGGER) {
             axis[Acceleration] = -value;
@@ -353,22 +367,28 @@ public class InputManager extends ControllerAdapter implements InputProcessor {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        return false;
+      touchingDown++;
+      return true;
     }
 
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        return false;
+      touchingDown--;
+      return true;
     }
 
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
-        return false;
+      this.screenX = screenX;
+      this.screenY = screenY;
+      return true;
     }
 
     @Override
     public boolean mouseMoved(int screenX, int screenY) {
-        return false;
+      this.screenX = screenX;
+      this.screenY = screenY;
+      return true;
     }
 
     @Override

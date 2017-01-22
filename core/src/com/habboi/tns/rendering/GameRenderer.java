@@ -1,6 +1,7 @@
 package com.habboi.tns.rendering;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.VertexAttributes;
@@ -38,16 +39,17 @@ public class GameRenderer implements Disposable {
     public static int Width = 0;
     public static int Height = 0;
 
+    public Environment environment;
+    public ModelBatch batch;
+    public WorldRenderer worldRenderer;
+    public LevelRenderer levelRenderer;
+
     Game game;
-    Environment environment;
-    ModelBatch batch;
-    LevelRenderer levelRenderer;
     PostProcessor postProcessor;
     Vector2 resolution;
     Rect screenRect;
     ModelInstance screenQuad;
     Renderable screenQuadRenderable = new Renderable();
-    WorldRenderer worldRenderer;
     ShaderEffect fxaa;
     BlurEffect blur;
     BloomEffect bloom;
@@ -114,6 +116,16 @@ public class GameRenderer implements Disposable {
 
     public Renderable getScreenQuadRenderable() {
         return screenQuadRenderable;
+    }
+
+    public void begin(Camera camera) {
+        postProcessor.begin();
+        batch.begin(camera);
+    }
+
+    public void end() {
+        batch.end();
+        postProcessor.end();
     }
 
     public void render(Level level, World world) {

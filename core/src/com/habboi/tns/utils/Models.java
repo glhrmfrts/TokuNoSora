@@ -1346,8 +1346,6 @@ public final class Models {
     }
 
     public static Model createPlaneModel(Color color) {
-        if (planeModel != null) return planeModel;
-
         VertexInfo v1, v2, v3, v4;
         mb.begin();
 
@@ -1368,7 +1366,7 @@ public final class Models {
         partBuilder.setColor(Color.WHITE);
         partBuilder.rect(v1, v2, v3, v4);
 
-        return planeModel = mb.end();
+        return mb.end();
     }
 
     public static void dispose() {

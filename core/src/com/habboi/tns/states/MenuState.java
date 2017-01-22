@@ -35,8 +35,8 @@ public class MenuState extends GameState {
     static final float CAM_Y = 10;
     static final float CAM_LOOKAT_Y = 6;
 
+    public MusicWrapper currentMusic = new MusicWrapper();
     Vector3 bgPos = new Vector3();
-    MusicWrapper currentMusic = new MusicWrapper();
     World world;
     PerspectiveCamera worldCam;
     Text titleText;
@@ -55,16 +55,18 @@ public class MenuState extends GameState {
 
         world = Universe.get().worlds.get(0);
         worldCam = game.getRenderer().getWorldRenderer().getCamera();
+        worldCam.position.x = 0;
+        worldCam.position.y = CAM_Y;
 
         screenRect = game.getRenderer().getScreenRect();
         GameTweenManager.get().register("menu_state_in", new GameTweenManager.GameTween() {
-                @Override
-                public Tween tween() {
-                    return screenRect.getFadeTween(1, 0, 2);
-                }
+        @Override
+        public Tween tween() {
+          return screenRect.getFadeTween(1, 0, 2);
+        }
 
-                @Override
-                public void onComplete() {
+        @Override
+        public void onComplete() {
 
                 }
             });
@@ -74,6 +76,10 @@ public class MenuState extends GameState {
     public void resume() {
         menuStack.peek().resume();
         GameTweenManager.get().start("menu_state_in");
+
+        if (currentMusic.getMusic().isPlaying()) {
+          return;
+        }
 
         Music menuMusic = game.getAssetManager().get("audio/menu.ogg");
         menuMusic.setVolume(GameConfig.get().getMusicVolume());
@@ -111,8 +117,6 @@ public class MenuState extends GameState {
     public void update(float dt) {
         InputManager.getInstance().menuInteraction(menuStack.peek());
 
-        worldCam.position.x = 0;
-        worldCam.position.y = CAM_Y;
         worldCam.position.z -= VEL * dt;
         worldCam.lookAt(0, CAM_LOOKAT_Y, worldCam.position.z - CAM_DIST);
 

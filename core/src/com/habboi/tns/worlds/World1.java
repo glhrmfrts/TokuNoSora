@@ -13,9 +13,6 @@ import com.habboi.tns.rendering.GameRenderer;
 
 import java.util.ArrayList;
 
-/**
- * Created by w7 on 03/07/2016.
- */
 public class World1 extends World {
     static class Line {
         float offset;
@@ -52,6 +49,7 @@ public class World1 extends World {
         addTileModel(4);
         addTileModel(3);
         addTileModel(2);
+        addTileModel(1);
 
         addTunnelModel(new int[]{1, 4});
 

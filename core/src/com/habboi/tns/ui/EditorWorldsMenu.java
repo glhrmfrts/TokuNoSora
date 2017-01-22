@@ -1,16 +1,12 @@
 package com.habboi.tns.ui;
 
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
 import com.habboi.tns.Game;
 import com.habboi.tns.states.EditorState;
 import com.habboi.tns.states.MenuState;
-import com.habboi.tns.ui.BaseMenu;
 import com.habboi.tns.utils.FontManager;
 import com.habboi.tns.utils.InputManager;
 import com.habboi.tns.worlds.Universe;
@@ -18,8 +14,6 @@ import com.habboi.tns.worlds.World;
 
 import aurelienribon.tweenengine.Tween;
 import aurelienribon.tweenengine.TweenEquations;
-import java.util.ArrayList;
-
 
 public class EditorWorldsMenu extends BaseMenu implements Disposable {
     static final int FONT_SIZE = Game.MAIN_FONT_SIZE;
