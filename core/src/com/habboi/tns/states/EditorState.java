@@ -183,6 +183,7 @@ public class EditorState extends GameState {
         handleGridInput(dt);
 
         if (InputManager.getInstance().isButtonDown(InputManager.Back)) {
+            ui.dispose();
             game.popState();
         }
 
