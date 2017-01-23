@@ -76,6 +76,10 @@ public class InputManager extends ControllerAdapter implements InputProcessor {
         multiplexer.addProcessor(processor);
     }
 
+    public void removeInputProcessor(InputProcessor processor) {
+        multiplexer.removeProcessor(processor);
+    }
+
     public boolean isButtonDown(int button) {
         return buttons[button] > 0;
     }

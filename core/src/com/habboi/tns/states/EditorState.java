@@ -388,14 +388,19 @@ class UI {
     }
 
     private void selectModeButton(Button btn, EditorState.Mode mode) {
-      for (Button b : modeButtons) {
-        b.setColor(BUTTON_COLOR);
-      }
-      btn.setColor(BUTTON_SELECTED_COLOR);
-      state.setMode(mode);
+        for (Button b : modeButtons) {
+            b.setColor(BUTTON_COLOR);
+        }
+        btn.setColor(BUTTON_SELECTED_COLOR);
+        state.setMode(mode);
     }
 
     public void render() {
         stage.draw();
+    }
+
+    public void dispose() {
+        InputManager.getInstance().removeInputProcessor(stage);
+        stage.dispose();
     }
 }
