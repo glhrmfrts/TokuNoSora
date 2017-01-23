@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.habboi.tns.Game;
 import com.habboi.tns.GameConfig;
@@ -51,6 +52,8 @@ public class MenuState extends GameState {
 
     @Override
     public void create() {
+        game.getSpriteBatch().setTransformMatrix(new Matrix4().idt());
+        game.getShapeRenderer().setTransformMatrix(new Matrix4().idt());
         addMenu(new MainMenu(this, game));
 
         world = Universe.get().worlds.get(0);
@@ -74,6 +77,12 @@ public class MenuState extends GameState {
 
     @Override
     public void resume() {
+        game.getSpriteBatch().setTransformMatrix(new Matrix4().idt());
+        game.getShapeRenderer().setTransformMatrix(new Matrix4().idt());
+
+        worldCam.position.x = 0;
+        worldCam.position.y = CAM_Y;
+
         menuStack.peek().resume();
         GameTweenManager.get().start("menu_state_in");
 

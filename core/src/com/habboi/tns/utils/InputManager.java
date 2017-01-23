@@ -2,6 +2,7 @@ package com.habboi.tns.utils;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.Controllers;
@@ -46,6 +47,7 @@ public class InputManager extends ControllerAdapter implements InputProcessor {
     private boolean[] axisMenu = new boolean[NUM_AXIS];
     private Controller currentController;
     private int touchingDown;
+    private InputMultiplexer multiplexer = new InputMultiplexer();
 
     public static InputManager getInstance() {
         if (instance == null) {
@@ -63,8 +65,13 @@ public class InputManager extends ControllerAdapter implements InputProcessor {
     }
 
     private InputManager() {
-        Gdx.input.setInputProcessor(this);
+        multiplexer.addProcessor(this);
+        Gdx.input.setInputProcessor(multiplexer);
         Controllers.addListener(this);
+    }
+
+    public void addInputProcessor(InputProcessor processor) {
+        multiplexer.addProcessor(processor);
     }
 
     public boolean isButtonDown(int button) {
@@ -368,27 +375,27 @@ public class InputManager extends ControllerAdapter implements InputProcessor {
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
       touchingDown++;
-      return true;
+      return false;
     }
 
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
       touchingDown--;
-      return true;
+      return false;
     }
 
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
       this.screenX = screenX;
       this.screenY = screenY;
-      return true;
+      return false;
     }
 
     @Override
     public boolean mouseMoved(int screenX, int screenY) {
       this.screenX = screenX;
       this.screenY = screenY;
-      return true;
+      return false;
     }
 
     @Override

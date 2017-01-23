@@ -64,13 +64,21 @@ public class Text {
     }
 
     public void draw(SpriteBatch sb, boolean center) {
+      draw(sb, center, false);
+    }
+
+    public void draw(SpriteBatch sb, boolean center, boolean yUp) {
         if (color.a == 0) return;
 
         float x = pos.x;
         float y = pos.y;
         if (center) {
             x -= bounds.width / 2;
-            y -= bounds.height / 2;
+            if (yUp) {
+              y += bounds.height / 2;
+            } else {
+              y -= bounds.height / 2;
+            }
         }
 
         font.setColor(color);

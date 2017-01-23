@@ -14,23 +14,36 @@ import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.math.collision.Ray;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.habboi.tns.Game;
 import com.habboi.tns.level.Level;
 import com.habboi.tns.rendering.GameRenderer;
 import com.habboi.tns.shapes.TileShape;
+import com.habboi.tns.ui.Button;
+import com.habboi.tns.ui.Text;
+import com.habboi.tns.utils.FontManager;
 import com.habboi.tns.utils.InputManager;
 import com.habboi.tns.utils.Models;
 import com.habboi.tns.worlds.World;
 
 
 public class EditorState extends GameState {
+    public enum Mode {
+      TILE, TUNNEL
+    }
+
     static final float VEL = MenuState.VEL;
     static final float CAM_DIST = MenuState.CAM_DIST;
     static final float CAM_Y = 2;
     static final float CAM_LOOKAT_Y = -2;
     static final float WORLD_DIST = 6;
 
+    Mode mode = Mode.TILE;
     Vector3 bgPos = new Vector3();
     Level level;
     OrthographicCamera orthoCam;
@@ -38,13 +51,16 @@ public class EditorState extends GameState {
     PerspectiveCamera worldCam;
     PerspectiveCamera levelCam;
     Grid grid;
+    UI ui;
     BoundingBox gridBounds = new BoundingBox();
     Vector3 gbMin = new Vector3();
     Vector3 gbMax = new Vector3();
     Vector3 intersection = new Vector3();
-    ModelInstance newTile;
-    Vector3 newTilePos = new Vector3();
-    Vector3 newTileSize = new Vector3();
+    ModelInstance newTileModel;
+    ModelInstance newTunnelModel;
+    ModelInstance newObjectModel;
+    Vector3 newObjectPos = new Vector3();
+    Vector3 newObjectSize = new Vector3();
     float camDist = CAM_DIST;
 
     public EditorState(Game g, World world) {
@@ -68,10 +84,26 @@ public class EditorState extends GameState {
         levelCam = game.getRenderer().getLevelRenderer().getCamera();
         levelCam.position.set(worldCam.position);
 
-        grid = new Grid(20, 50);
+        newTileModel = new ModelInstance(Models.createTileModel(world.colors, Models.solidTileIndices(0)));
+        Models.setColor(newTileModel, ColorAttribute.Diffuse, new Color(0x00000077));
 
-        newTile = new ModelInstance(Models.createTileModel(world.colors, Models.solidTileIndices(0)));
-        Models.setColor(newTile, ColorAttribute.Diffuse, new Color(0x00000077));
+        newTunnelModel = new ModelInstance(Models.createTunnelModel(world.colors, new int[]{0, 0}));
+        Models.setColor(newTunnelModel, ColorAttribute.Diffuse, new Color(0x00000077));
+
+        grid = new Grid(20, 50);
+        ui = new UI(this);
+    }
+
+    public void setMode(Mode m) {
+        mode = m;
+        switch (m) {
+          case TILE:
+            newObjectModel = newTileModel;
+            break;
+          case TUNNEL:
+            newObjectModel = newTunnelModel;
+            break;
+        }
     }
 
     @Override
@@ -109,13 +141,29 @@ public class EditorState extends GameState {
     }
 
     private void handleGridIntersection(int x, int z) {
-        if (!InputManager.getInstance().isTouchingDown()) {
-            newTilePos.set(x, 0, z);
-            newTileSize.set(1, TileShape.TILE_HEIGHT, 1);
-        } else {
-            if (x < (int)newTilePos.x || z < (int)newTilePos.z) return;
+        boolean isDown = InputManager.getInstance().isTouchingDown();
+        switch (mode) {
+          case TILE:
+            if (!isDown) {
+              newObjectPos.set(x, 0, z);
+              newObjectSize.set(1, TileShape.TILE_HEIGHT, 1);
+            } else {
+              if (x < (int) newObjectPos.x || z < (int) newObjectPos.z) return;
 
-            newTileSize.set(x - newTilePos.x + 1, TileShape.TILE_HEIGHT, z - newTilePos.z + 1);
+              newObjectSize.set(x - newObjectPos.x + 1, TileShape.TILE_HEIGHT, z - newObjectPos.z + 1);
+            }
+            break;
+
+          case TUNNEL:
+            if (!isDown) {
+              newObjectPos.set(x + 0.5f, 0.25f, z + 0.5f);
+              newObjectSize.set(1, 1, 1);
+            } else {
+              if (z < (int)newObjectPos.z) return;
+
+              newObjectSize.set(1, 1, z + 0.5f);
+            }
+            break;
         }
     }
 
@@ -157,13 +205,14 @@ public class EditorState extends GameState {
         Gdx.gl.glClear(GL20.GL_DEPTH_BUFFER_BIT);
         grid.render(gr.batch, gr.environment);
 
-        newTile.transform.setToTranslationAndScaling(
-                newTilePos.x, newTilePos.y, -newTilePos.z,
-                newTileSize.x, newTileSize.y, newTileSize.z
+        newObjectModel.transform.setToTranslationAndScaling(
+                newObjectPos.x, newObjectPos.y, -newObjectPos.z,
+                newObjectSize.x, newObjectSize.y, newObjectSize.z
         );
-        gr.batch.render(newTile, gr.environment);
-
+        gr.batch.render(newObjectModel, gr.environment);
         gr.end();
+
+        ui.render();
     }
 
     @Override
@@ -197,15 +246,15 @@ class Grid {
         verticalLineModel = Models.createLineModel(LINE_COLOR, new int[]{0, 0, 0, 0, 0, -depth});
 
         for (int z = 0; z < depth + 1; z++) {
-          for (int x = 0; x < width + 1; x++) {
-              ModelInstance line = new ModelInstance(verticalLineModel);
-              line.transform.setTranslation(x, 0, 0);
-              lines.add(line);
-          }
+            for (int x = 0; x < width + 1; x++) {
+                ModelInstance line = new ModelInstance(verticalLineModel);
+                line.transform.setTranslation(x, 0, 0);
+                lines.add(line);
+            }
 
-          ModelInstance line = new ModelInstance(horizontalLineModel);
-          line.transform.setTranslation(0, 0, -z);
-          lines.add(line);
+            ModelInstance line = new ModelInstance(horizontalLineModel);
+            line.transform.setTranslation(0, 0, -z);
+            lines.add(line);
         }
     }
 
@@ -224,5 +273,84 @@ class Grid {
         for (ModelInstance line : lines) {
             batch.render(line, environment);
         }
+    }
+}
+
+class UI {
+    static final Color BUTTON_COLOR = new Color(0, 0, 0, 0.75f);
+    static final Color BUTTON_PRESSED_COLOR = new Color(0, 0.55f, 0.68f, 1);
+    static final Color BUTTON_SELECTED_COLOR = new Color(0, 0.65f, 0.78f, 1);
+    Stage stage;
+    EditorState state;
+    Array<Button> modeButtons = new Array<>();
+
+    public UI(EditorState state) {
+        this.state = state;
+        this.stage = new Stage(new ScreenViewport(), state.game.getSpriteBatch());
+
+        FontManager fm = FontManager.get();
+        HorizontalGroup modeGroup = new HorizontalGroup();
+        modeGroup.setBounds(0, 0, Gdx.graphics.getWidth(), 30);
+        modeGroup.setPosition(10, 10);
+        modeGroup.space(5).pad(2);
+
+        final Button tileMode = new Button(
+                state.game.getShapeRenderer(),
+                new Text(
+                        fm.getFont(Game.MAIN_FONT, Game.SMALL_FONT_SIZE),
+                        "tile",
+                        null,
+                        Color.WHITE
+                ),
+                20,
+                5,
+                BUTTON_COLOR,
+                BUTTON_PRESSED_COLOR
+        );
+        tileMode.addListener(new ClickListener() {
+          @Override
+          public void clicked(InputEvent ev, float x, float y) {
+            selectModeButton(tileMode, EditorState.Mode.TILE);
+          }
+        });
+        final Button tunnelMode = new Button(
+                state.game.getShapeRenderer(),
+                new Text(
+                        fm.getFont(Game.MAIN_FONT, Game.SMALL_FONT_SIZE),
+                        "tunnel",
+                        null,
+                        Color.WHITE
+                ),
+                20,
+                5,
+                BUTTON_COLOR,
+                BUTTON_PRESSED_COLOR
+        );
+        tunnelMode.addListener(new ClickListener() {
+          @Override
+          public void clicked(InputEvent ev, float x, float y) {
+            selectModeButton(tunnelMode, EditorState.Mode.TUNNEL);
+          }
+        });
+        modeButtons.add(tileMode);
+        modeButtons.add(tunnelMode);
+        modeGroup.addActor(tileMode);
+        modeGroup.addActor(tunnelMode);
+        stage.addActor(modeGroup);
+        InputManager.getInstance().addInputProcessor(stage);
+
+        selectModeButton(tileMode, EditorState.Mode.TILE);
+    }
+
+    private void selectModeButton(Button btn, EditorState.Mode mode) {
+      for (Button b : modeButtons) {
+        b.setColor(BUTTON_COLOR);
+      }
+      btn.setColor(BUTTON_SELECTED_COLOR);
+      state.setMode(mode);
+    }
+
+    public void render() {
+        stage.draw();
     }
 }
