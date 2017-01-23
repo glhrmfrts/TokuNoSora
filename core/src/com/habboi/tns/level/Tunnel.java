@@ -20,7 +20,7 @@ public class Tunnel extends LevelObject {
 
         modelInstance = new ModelInstance(world.getTunnelModel(preset));
         modelInstance.transform.setToScaling(TunnelShape.TUNNEL_WIDTH, TunnelShape.TUNNEL_HEIGHT, depth*TunnelShape.TUNNEL_DEPTH);
-        modelInstance.transform.setTranslation(shape.getPos().x, shape.getPos().y + TileShape.TILE_HEIGHT, shape.getPos().z);
+        modelInstance.transform.setTranslation(shape.getPos().x, shape.getPos().y + TileShape.TILE_HEIGHT, shape.getPos().z + depth/2);
     }
 
     public boolean isShipInside() {

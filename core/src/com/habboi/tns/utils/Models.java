@@ -707,7 +707,7 @@ public final class Models {
 
         final int segments = TUNNEL_SEGMENTS;
         final float deltaTheta = (float)Math.PI / segments;
-        final float backZ = 1;
+        final float backZ = 0;
         final float frontZ = -1;
 
         float theta = 0;
@@ -735,7 +735,7 @@ public final class Models {
             v2.setNor(v2.position.x, v2.position.y, 0);
             v3.setNor(v3.position.x, v3.position.y, 0);
             v4.setNor(v4.position.x, v4.position.y, 0);
-            adjustTunnelVertexScale(v1, v2, v3, v4);
+            adjustTunnelVertexScale(1, v1, v2, v3, v4);
             partBuilder.rect(v1, v2, v3, v4);
 
             // create back part of this segment (visible to player)
@@ -751,7 +751,7 @@ public final class Models {
             v2.setNor(0, 0, 1);
             v3.setNor(0, 0, 1);
             v4.setNor(0, 0, 1);
-            adjustTunnelVertexScale(v1, v2, v3, v4);
+            adjustTunnelVertexScale(1, v1, v2, v3, v4);
             partBuilder.rect(v1, v2, v3, v4);
 
             // create inside part of this segment
@@ -767,7 +767,7 @@ public final class Models {
             v2.setNor(-v2.position.x, -v2.position.y, 0);
             v3.setNor(-v3.position.x, -v3.position.y, 0);
             v4.setNor(-v4.position.x, -v4.position.y, 0);
-            adjustTunnelVertexScale(v1, v2, v3, v4);
+            adjustTunnelVertexScale(1, v1, v2, v3, v4);
             partBuilder.rect(v1, v2, v3, v4);
 
             // create front part of this segment
@@ -783,7 +783,7 @@ public final class Models {
             v2.setNor(0, 0, -1);
             v3.setNor(0, 0, -1);
             v4.setNor(0, 0, -1);
-            adjustTunnelVertexScale(v1, v2, v3, v4);
+            adjustTunnelVertexScale(1, v1, v2, v3, v4);
             partBuilder.rect(v1, v2, v3, v4);
 
             x = nx;
@@ -804,7 +804,7 @@ public final class Models {
 
         final int segments = TUNNEL_SEGMENTS;
         final float deltaTheta = (float)Math.PI / segments;
-        final float backZ = 1;
+        final float backZ = 0;
         final float frontZ = -1;
 
         float theta = 0;
@@ -830,7 +830,7 @@ public final class Models {
             v2 = new VertexInfo().setPos(x, y, frontZ);
             v3 = new VertexInfo().setPos(nx, ny, frontZ);
             v4 = new VertexInfo().setPos(nx, ny, backZ);
-            adjustTunnelVertexScale(v1, v2, v3, v4);
+            adjustTunnelVertexScale(1, v1, v2, v3, v4);
 
             if (i == 0) {
               partBuilder.line(v1, v2);
@@ -848,7 +848,7 @@ public final class Models {
             v2 = new VertexInfo().setPos(ix, iy, frontZ);
             v3 = new VertexInfo().setPos(inx, iny, frontZ);
             v4 = new VertexInfo().setPos(inx, iny, backZ);
-            adjustTunnelVertexScale(v1, v2, v3, v4);
+            adjustTunnelVertexScale(1, v1, v2, v3, v4);
 
             if (i == 0) {
               partBuilder.line(v1, v2);
@@ -867,7 +867,7 @@ public final class Models {
           v2 = new VertexInfo().setPos(inx, iny, backZ);
           v3 = new VertexInfo().setPos(nx, ny, backZ);
           v4 = new VertexInfo().setPos(x, y, backZ);
-          adjustTunnelVertexScale(v1, v2, v3, v4);
+          adjustTunnelVertexScale(1, v1, v2, v3, v4);
           partBuilder.line(v1, v2);
           partBuilder.line(v3, v4);
 
@@ -888,7 +888,7 @@ public final class Models {
           v2 = new VertexInfo().setPos(inx, iny, frontZ);
           v3 = new VertexInfo().setPos(nx, ny, frontZ);
           v4 = new VertexInfo().setPos(x, y, frontZ);
-          adjustTunnelVertexScale(v1, v2, v3, v4);
+          adjustTunnelVertexScale(1, v1, v2, v3, v4);
           partBuilder.line(v1, v2);
           partBuilder.line(v3, v4);
 
@@ -1045,7 +1045,7 @@ public final class Models {
             v2.setNor(-v2.position.x, -v2.position.y, 0);
             v3.setNor(-v3.position.x, -v3.position.y, 0);
             v4.setNor(-v4.position.x, -v4.position.y, 0);
-            adjustTunnelVertexScale(v1, v2, v3, v4);
+            adjustTunnelVertexScale(0.5f, v1, v2, v3, v4);
             adjustTunnelVertexOffset(l, v1, v2, v3, v4);
             partBuilder.rect(v1, v2, v3, v4);
 
@@ -1062,7 +1062,7 @@ public final class Models {
             v2.setNor(0, 0, -1);
             v3.setNor(0, 0, -1);
             v4.setNor(0, 0, -1);
-            adjustTunnelVertexScale(v1, v2, v3, v4);
+            adjustTunnelVertexScale(0.5f, v1, v2, v3, v4);
             adjustTunnelVertexOffset(l, v1, v2, v3, v4);
             partBuilder.rect(v1, v2, v3, v4);
 
@@ -1079,7 +1079,7 @@ public final class Models {
             v2.setNor(0, 0, 1);
             v3.setNor(0, 0, 1);
             v4.setNor(0, 0, 1);
-            adjustTunnelVertexScale(v1, v2, v3, v4);
+            adjustTunnelVertexScale(0.5f, v1, v2, v3, v4);
             adjustTunnelVertexOffset(l, v1, v2, v3, v4);
             partBuilder.rect(v1, v2, v3, v4);
 
@@ -1099,7 +1099,7 @@ public final class Models {
         v2.setNor(0, 0, 1);
         v3.setNor(0, 0, 1);
         v4.setNor(0, 0, 1);
-        adjustTunnelVertexScale(v1, v2, v3, v4);
+        adjustTunnelVertexScale(0.5f, v1, v2, v3, v4);
         adjustTunnelVertexOffset(l, v1, v2, v3, v4);
         partBuilder.rect(v1, v2, v3, v4);
 
@@ -1116,7 +1116,7 @@ public final class Models {
         v2.setNor(0, 0, 1);
         v3.setNor(0, 0, 1);
         v4.setNor(0, 0, 1);
-        adjustTunnelVertexScale(v1, v2, v3, v4);
+        adjustTunnelVertexScale(0.5f, v1, v2, v3, v4);
         adjustTunnelVertexOffset(l, v1, v2, v3, v4);
         partBuilder.rect(v1, v2, v3, v4);
 
@@ -1132,7 +1132,7 @@ public final class Models {
         v2.setNor(0, 0, 1);
         v3.setNor(0, 0, 1);
         v4.setNor(0, 0, 1);
-        adjustTunnelVertexScale(v1, v2, v3, v4);
+        adjustTunnelVertexScale(0.5f, v1, v2, v3, v4);
         adjustTunnelVertexOffset(l, v1, v2, v3, v4);
         partBuilder.rect(v1, v2, v3, v4);
 
@@ -1148,7 +1148,7 @@ public final class Models {
         v2.setNor(0, 0, 1);
         v3.setNor(0, 0, 1);
         v4.setNor(0, 0, 1);
-        adjustTunnelVertexScale(v1, v2, v3, v4);
+        adjustTunnelVertexScale(0.5f, v1, v2, v3, v4);
         adjustTunnelVertexOffset(l, v1, v2, v3, v4);
         partBuilder.rect(v1, v2, v3, v4);
     }
@@ -1254,7 +1254,7 @@ public final class Models {
                 v2 = new VertexInfo().setPos(ix, iy, frontZ);
                 v3 = new VertexInfo().setPos(inx, iny, frontZ);
                 v4 = new VertexInfo().setPos(inx, iny, backZ);
-                adjustTunnelVertexScale(v1, v2, v3, v4);
+                adjustTunnelVertexScale(0.5f, v1, v2, v3, v4);
                 adjustTunnelVertexOffset(l, v1, v2, v3, v4);
 
                 if (i == 0) {
@@ -1274,7 +1274,7 @@ public final class Models {
             v2 = new VertexInfo().setPos(inx, iny, backZ);
             v3 = new VertexInfo().setPos(nx, ny, backZ);
             v4 = new VertexInfo().setPos(x, y, backZ);
-            adjustTunnelVertexScale(v1, v2, v3, v4);
+            adjustTunnelVertexScale(0.5f, v1, v2, v3, v4);
             adjustTunnelVertexOffset(l, v1, v2, v3, v4);
             partBuilder.line(v1, v2);
             partBuilder.line(v3, v4);
@@ -1296,7 +1296,7 @@ public final class Models {
             v2 = new VertexInfo().setPos(inx, iny, frontZ);
             v3 = new VertexInfo().setPos(nx, ny, frontZ);
             v4 = new VertexInfo().setPos(x, y, frontZ);
-            adjustTunnelVertexScale(v1, v2, v3, v4);
+            adjustTunnelVertexScale(0.5f, v1, v2, v3, v4);
             adjustTunnelVertexOffset(l, v1, v2, v3, v4);
             partBuilder.line(v1, v2);
             partBuilder.line(v3, v4);
@@ -1386,16 +1386,16 @@ public final class Models {
         }
     }
 
-    private static void adjustTunnelVertexScale(VertexInfo v1) {
+    private static void adjustTunnelVertexScale(VertexInfo v1, float zScale) {
         v1.position.x *= 0.5f;
         v1.position.y -= 0.5f;
         v1.position.y *= 0.5f;
-        v1.position.z *= 0.5f;
+        v1.position.z *= zScale;
     }
 
-    private static void adjustTunnelVertexScale(VertexInfo... vs) {
+    private static void adjustTunnelVertexScale(float zScale, VertexInfo... vs) {
         for (VertexInfo v : vs) {
-            adjustTunnelVertexScale(v);
+            adjustTunnelVertexScale(v, zScale);
         }
     }
 

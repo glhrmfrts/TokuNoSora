@@ -24,6 +24,8 @@ public class InputManager extends ControllerAdapter implements InputProcessor {
     public static final int Right = 5;
     public static final int Back = 6;
     public static final int Pause = 7;
+    public static final int Action1 = 8;
+    public static final int Action2 = 9;
 
     // axes
     public static final int Horizontal = 0;
@@ -33,7 +35,7 @@ public class InputManager extends ControllerAdapter implements InputProcessor {
     public static final int LookVertical = 4;
 
     public static final float DEAD_ZONE = 0.2f;
-    public static final int NUM_BUTTONS = 8;
+    public static final int NUM_BUTTONS = 10;
     public static final int NUM_AXIS = 5;
 
     public static final String TAG = InputManager.class.getName();
@@ -197,14 +199,20 @@ public class InputManager extends ControllerAdapter implements InputProcessor {
             buttons[Select]++;
             return true;
         }
-
         if (buttonCode == Xbox.B) {
             buttons[Back]++;
             return true;
         }
-
         if (buttonCode == Xbox.START) {
             buttons[Pause]++;
+            return true;
+        }
+        if (buttonCode == Xbox.L_BUMPER) {
+            buttons[Action1]++;
+            return true;
+        }
+        if (buttonCode == Xbox.R_BUMPER) {
+            buttons[Action2]++;
             return true;
         }
 
@@ -218,14 +226,20 @@ public class InputManager extends ControllerAdapter implements InputProcessor {
             buttons[Select] = 0;
             return true;
         }
-
         if (buttonCode == Xbox.B) {
             buttons[Back] = 0;
             return true;
         }
-
         if (buttonCode == Xbox.START) {
             buttons[Pause] = 0;
+            return true;
+        }
+        if (buttonCode == Xbox.L_BUMPER) {
+            buttons[Action1] = 0;
+            return true;
+        }
+        if (buttonCode == Xbox.R_BUMPER) {
+            buttons[Action2] = 0;
             return true;
         }
         return false;

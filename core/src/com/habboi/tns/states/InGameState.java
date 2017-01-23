@@ -85,7 +85,7 @@ public class InGameState extends GameState {
         FontManager fm = FontManager.get();
         levelCompleteText = new Text(fm.getFont("Neon.ttf", Game.MAIN_FONT_SIZE),
                                      "level complete", null, Color.WHITE);
-        levelCompleteText.getPos().set(game.getWidth() / 2, game.getHeight() / 2 + Game.MAIN_FONT_SIZE/2 + 10);
+        levelCompleteText.getPos().set(game.getWidth() / 2, game.getHeight() / 2 + Game.MAIN_FONT_SIZE / 2 + 10);
         levelCompleteText.getColor().a = 0;
         raceTimeText = new Text(fm.getFont("Neon.ttf", Game.MAIN_FONT_SIZE), "", null, Color.WHITE);
         raceTimeText.getPos().set(game.getWidth() / 2, game.getHeight() / 2 - Game.MAIN_FONT_SIZE/2 - 10);
@@ -97,6 +97,8 @@ public class InGameState extends GameState {
         
         screenRect = new Rect(new Rectangle(0, 0, game.getWidth(), game.getHeight()));
         pauseMenu = new PauseMenu(this, game);
+
+        Gdx.input.setCursorCatched(true);
 
         gtm = GameTweenManager.get();
         gtm.register("start", new GameTweenManager.GameTween() {
@@ -159,6 +161,7 @@ public class InGameState extends GameState {
                         LevelScore.get().flush();
                     }
 
+                    Gdx.input.setCursorCatched(false);
                     game.popState();
                 }
         }).register("level_complete_end_music", new GameTweenManager.GameTween() {
