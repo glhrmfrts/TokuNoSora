@@ -56,6 +56,7 @@ public class InGameState extends GameState {
     boolean quitFromMenu;
     boolean debug;
     MusicWrapper music = new MusicWrapper();
+    boolean debugCursorCatched = true;
 
     public InGameState(Game g) {
         this(g, "map1.tl");
@@ -219,6 +220,15 @@ public class InGameState extends GameState {
 
     @Override
     public void update(float dt) {
+        // TODO: remove this dev mode input
+        if (Gdx.input.isKeyJustPressed(Input.Keys.R)) {
+            game.setState(new LoadingLevelState(game, levelName));
+        }
+        if (Gdx.input.isKeyJustPressed(Input.Keys.M)) {
+            debugCursorCatched = !debugCursorCatched;
+            Gdx.input.setCursorCatched(debugCursorCatched);
+        }
+
         if (InputManager.getInstance().isButtonJustDown(InputManager.Pause) && ship.state != Ship.State.ENDED) {
             paused = !paused;
         }

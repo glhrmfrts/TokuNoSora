@@ -1,6 +1,6 @@
 name = Road 1
 number = 1
-world = 0
+world_index = 0
 oxygen_factor = 0.01
 center_x = 3
 ship_pos = 3,3,0
@@ -12,3 +12,173 @@ pos = 3,2,10
 pos = 2,0,0
 size = 2,2,6
 preset = 1
+
+:tile
+pos = 1,0,6
+size = 4,2,100
+preset = 2
+
+:tile
+pos = -2,0,6
+size = 2,2,100
+preset = 2
+
+:tile
+pos = 6,0,6
+size = 2,2,100
+preset = 2
+
+:tile
+pos = -2,3,10
+size = 2,1,10
+preset = 0
+
+:tile
+pos = 6,3,10
+size = 2,1,10
+preset = 0
+
+:tile
+pos = -2,3,30
+size = 2,1,10
+preset = 0
+
+:tile
+pos = 6,3,30
+size = 2,1,10
+preset = 0
+
+:tile
+pos = -2,3,50
+size = 2,1,10
+preset = 0
+
+:tile
+pos = 6,3,50
+size = 2,1,10
+preset = 0
+
+:tile
+pos = -2,3,70
+size = 2,1,10
+preset = 0
+
+:tile
+pos = 6,3,70
+size = 2,1,10
+preset = 0
+
+:tile
+pos = -2,3,90
+size = 2,1,10
+preset = 0
+
+:tile
+pos = 6,3,90
+size = 2,1,10
+preset = 0
+
+:tile
+pos = 1,2,106
+size = 4,2,40
+preset = 0
+
+:tile
+pos = 1,4,146
+size = 4,2,80
+preset = 2
+
+:tile
+pos = 1,6,186
+size = 1.5,6,40
+preset = 2
+
+:tile
+pos = 3.5,6,186
+size = 1.5,6,40
+preset = 2
+
+:tile
+pos = 2.5,4,226
+size = 1,2,40
+preset = 2
+
+:tunnel
+pos = 3,6,226
+depth = 40
+preset = 0
+
+:tile
+pos = 1,4,266
+size = 4,2,40
+preset = 2
+
+:tile
+pos = 1,0,356
+size = 1.5,2,20
+preset = 1
+
+:tile
+pos = 3.5,0,356
+size = 1.5,2,20
+preset = 1
+
+:tile
+pos = 1,-4,426
+size = 1.5,2,20
+preset = 1
+
+:tile
+pos = 3.5,-4,426
+size = 1.5,2,20
+preset = 1
+
+:tile
+pos = 1,-8,486
+size = 4,2,80
+preset = 2
+
+:tile
+pos = 1,-8,566
+size = 4,10,80
+preset = 0
+
+:tile
+pos = -2,-8,556
+size = 3,2,100
+preset = 1
+
+:tile
+pos = 5,-8,556
+size = 3,2,100
+preset = 1
+
+:tile
+pos = -2,-8,656
+size = 3,10,30
+preset = 0
+
+:tile
+pos = 5,-8,656
+size = 3,10,30
+preset = 0
+
+:tile
+pos = 1,-8,646
+size = 4,2,40
+preset = 2
+
+:tile
+pos = 2.5,-8,686
+size = 1,2,40
+preset = 2
+
+:tunnel
+pos = 3,-6,686
+depth = 40
+preset = 0
+end = true
+
+:finish
+pos = 3,-6,726
+radius = 1

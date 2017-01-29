@@ -19,4 +19,17 @@ public enum TouchEffect {
     public Color getColor() {
         return color;
     }
+
+    public static TouchEffect fromName(String name) {
+      switch (name) {
+        case "boost":
+          return TouchEffect.BOOST;
+        case "explode":
+          return TouchEffect.EXPLODE;
+        case "oxygen":
+          return TouchEffect.OXYGEN;
+        default:
+          return TouchEffect.NONE;
+      }
+    }
 }

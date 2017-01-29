@@ -20,9 +20,9 @@ import com.habboi.tns.utils.FontManager;
 import com.habboi.tns.utils.InputManager;
 
 /**
- * The state for the loading screen.
+ * The state for the loading screens.
  */
-public class LoadingState extends GameState {
+public abstract class LoadingState extends GameState {
     Rect loadingBar;
     Rect border;
     float percent;
@@ -45,28 +45,11 @@ public class LoadingState extends GameState {
         loadingBar = new Rect(new Rectangle(x, y, 0, h), Color.WHITE);
         border = new Rect(new Rectangle(x - padding, y - padding, w + padding*2, h + padding*2), Color.WHITE);
 
-        Universe.get().createWorlds();
-        AssetManager am = game.getAssetManager();
-        FontManager fm = FontManager.get();
-        am.load("audio/bounce.wav", Sound.class);
-        am.load("audio/explosion.wav", Sound.class);
-        am.load("audio/select.wav", Sound.class);
-        am.load("audio/intro.ogg", Music.class);
-        am.load("audio/menu.ogg", Music.class);
-        am.load("audio/world1.ogg", Music.class);
-        am.load("models/shipbody.obj", Model.class);
-        am.load("models/shipoutline.obj", Model.class);
-
-        fm.loadFont(Game.MAIN_FONT, Game.MAIN_FONT_SIZE);
-        fm.loadFont(Game.MAIN_FONT, Game.HUGE_FONT_SIZE);
-        fm.loadFont(Game.MAIN_FONT, Game.BIG_FONT_SIZE);
-        fm.loadFont(Game.MAIN_FONT, Game.MEDIUM_FONT_SIZE);
-        fm.loadFont(Game.MAIN_FONT, Game.SMALL_FONT_SIZE);
-        ((LevelLoader) am.getLoader(Level.class)).loadAllLevels(am);
-        for (World world : Universe.get().worlds) {
-            //am.load("audio/" + world.music, Music.class);
-        }
+        loadItems();
     }
+
+    public abstract void loadItems();
+    public abstract void complete();
 
     @Override
     public void resume() {
@@ -86,7 +69,7 @@ public class LoadingState extends GameState {
         AssetManager am = game.getAssetManager();
 
         if (am.update()) {
-            game.setState(new IntroState(game));
+            complete();
         }
 
         percent = Interpolation.linear.apply(percent, am.getProgress(), 0.1f);

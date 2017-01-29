@@ -11,6 +11,7 @@ import com.habboi.tns.Game;
 import com.habboi.tns.level.Level;
 import com.habboi.tns.level.LevelLoader;
 import com.habboi.tns.level.LevelScore;
+import com.habboi.tns.states.LoadingLevelState;
 import com.habboi.tns.worlds.Universe;
 import com.habboi.tns.worlds.World;
 import com.habboi.tns.states.InGameState;
@@ -108,7 +109,18 @@ public class LevelsMenu extends BaseMenu implements Disposable {
                 }
             });
 
-        gtm.register("levels_menu_start_level", new GameTweenManager.GameTween() {
+        gtm.register("levels_menu_start_level", new GameTweenManager.GameTween(new String[]{"levels_menu_start_level_music"}) {
+          @Override
+          public Tween tween() {
+            return game.getRenderer().getScreenRect().getFadeTween(0, 1, 0.5f);
+          }
+
+          @Override
+          public void onComplete() {
+          }
+        });
+
+        gtm.register("levels_menu_start_level_music", new GameTweenManager.GameTween() {
                 @Override
                 public Tween tween() {
                     return Tween.to(menuState.getCurrentMusic(), MusicAccessor.TWEEN_VOLUME, 0.50f)
@@ -118,7 +130,7 @@ public class LevelsMenu extends BaseMenu implements Disposable {
                 @Override
                 public void onComplete() {
                     menuState.getCurrentMusic().getMusic().stop();
-                    game.addState(new InGameState(game, levelToStart));
+                    game.addState(new LoadingLevelState(game, levelToStart));
                 }
             });
         createItems(game);
@@ -128,7 +140,6 @@ public class LevelsMenu extends BaseMenu implements Disposable {
     private void createItems(final Game game) {
         AssetManager am = game.getAssetManager();
         LevelLoader l = (LevelLoader) am.getLoader(Level.class);
-        l.sortLevelsNames(am);
         setSize(game.getWidth() * 1.1f, FONT_SIZE * 4 + 20 * 4);
         setItemSize(game.getWidth()*1.1f, FONT_SIZE + 20);
         setCenter(game.getWidth() / 2, game.getHeight() / 2);
@@ -138,7 +149,7 @@ public class LevelsMenu extends BaseMenu implements Disposable {
         Rectangle bnds = new Rectangle(x, y, itemBounds.width, itemBounds.height);
         World lastWorld = null;
         float top = y;
-        for (final String str : l.getLevelsNames()) {
+        for (final String str : l.getLevelsNames(am)) {
             Level level = am.get(str);
             World world = level.getWorld();
             if (world != lastWorld) {

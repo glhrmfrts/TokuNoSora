@@ -7,115 +7,23 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.assets.loaders.SynchronousAssetLoader;
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.JsonReader;
-import com.badlogic.gdx.utils.JsonValue;
 
+import java.io.BufferedReader;
 import java.util.ArrayList;
-import java.util.Comparator;
 
 /**
  * Loads a level from a file (synchronously because of OpenGL =/).
  */
 public class LevelLoader extends SynchronousAssetLoader<Level, LevelLoader.LevelParameter> {
-    ArrayList<String> levelsNames = new ArrayList<>();
-
-    private Vector3 parseVector3(String str) {
-        String[] parts = str.split(",");
-        float x = Float.parseFloat(parts[0].trim());
-        float y = Float.parseFloat(parts[1].trim());
-        float z = Float.parseFloat(parts[2].trim());
-
-        return new Vector3(x, y, z);
-    }
-
-    private TouchEffect touchEffectFromName(String name) {
-        switch (name) {
-        case "boost":
-            return TouchEffect.BOOST;
-        case "explode":
-            return TouchEffect.EXPLODE;
-        case "oxygen":
-            return TouchEffect.OXYGEN;
-        default:
-            return TouchEffect.NONE;
-        }
-    }
-
     public LevelLoader(FileHandleResolver resolver) {
         super(resolver);
     }
 
     @Override
     public Level load(AssetManager assetManager, String fileName, FileHandle file, LevelParameter parameter) {
-        Level level;
-        JsonValue root = new JsonReader().parse(file);
-        String name = root.getString("name");
-        int number = root.getInt("number");
-        int worldIndex = root.getInt("worldIndex");
-        float oxygenFactor = root.getFloat("oxygenFactor");
-        float centerX = 0;
-
-        try {
-            centerX = root.getFloat("centerX");
-        } catch (Exception e) {}
-
-        Vector3 shipPos = parseVector3(root.getString("shipPos"));
-        level = new Level(name, number, worldIndex, oxygenFactor, centerX, shipPos);
-        JsonValue objects = root.get("objects");
-        for (JsonValue object : objects.iterator()) {
-            if (object.has("tile")) {
-                JsonValue tile = object.get("tile");
-                Vector3 pos = parseVector3(tile.getString("pos"));
-                Vector3 size = parseVector3(tile.getString("size"));
-                int preset = tile.getInt("preset");
-                TouchEffect effect = touchEffectFromName(tile.getString("effect", ""));
-
-                level.addTile(pos, size, preset, effect);
-            } else if (object.has("finish")) {
-                JsonValue finish = object.get("finish");
-                Vector3 pos = parseVector3(finish.getString("pos"));
-                float radius = finish.getFloat("radius");
-
-                level.addFinish(pos, radius);
-            } else if (object.has("tunnel")) {
-                JsonValue tunnel = object.get("tunnel");
-                Vector3 pos = parseVector3(tunnel.getString("pos"));
-                int depth = tunnel.getInt("depth");
-                int preset = tunnel.getInt("preset");
-                boolean end = false;
-                if (tunnel.has("end")) {
-                    end = true;
-                }
-
-                level.addTunnel(pos, depth, preset, end);
-            } else if (object.has("twt")) {
-                JsonValue twt = object.get("twt");
-                Vector3 pos = parseVector3(twt.getString("pos"));
-                Vector3 size = parseVector3(twt.getString("size"));
-                int preset = twt.getInt("preset");
-                int[] tunnels = twt.get("tunnels").asIntArray();
-                TouchEffect effect = touchEffectFromName(twt.getString("effect", ""));
-
-                level.addTileWithTunnels(pos, size, preset, tunnels, effect);
-            } else if (object.has("arrows")) {
-                JsonValue arrows = object.get("arrows");
-                Vector3 pos = parseVector3(arrows.getString("pos"));
-                Vector3 rotation = parseVector3(arrows.getString("rotation"));
-                Vector3 movement = parseVector3(arrows.getString("movement"));
-                float height = arrows.getFloat("height");
-                int depth = arrows.getInt("depth");
-                int color = arrows.getInt("color");
-
-                level.addArrows(pos, rotation, movement, height, depth, color);
-            } else if (object.has("collectible")) {
-                JsonValue collect = object.get("collectible");
-                Vector3 pos = parseVector3(collect.getString("pos"));
-
-                level.addCollectable(pos);
-            }
-        }
+        Level level = new Level();
+        LevelParser.parse(new BufferedReader(file.reader()), level);
         return level;
     }
 
@@ -124,29 +32,19 @@ public class LevelLoader extends SynchronousAssetLoader<Level, LevelLoader.Level
         return null;
     }
 
-    public void loadAllLevels(AssetManager am) {
-        FileHandle handle = Gdx.files.internal(".");
-        for (FileHandle fh : handle.list()) {
-            if (fh.extension().equals("json")) {
-                am.load(fh.name(), Level.class);
-                levelsNames.add(fh.name());
-            }
+    public void preloadAllLevels(AssetManager am) {
+        for (String s : getLevelsNames(am)) {
+          am.load(s, Level.class);
         }
     }
 
-    public void sortLevelsNames(final AssetManager am) {
-        levelsNames.sort(new Comparator<String>() {
-                @Override
-                public int compare(String s, String ss) {
-                    Level l = am.get(s);
-                    Level ll = am.get(ss);
-                    return l.number - ll.number;
-                }
-            });
-    }
-
-    public ArrayList<String> getLevelsNames() {
-        return levelsNames;
+    public ArrayList<String> getLevelsNames(AssetManager am) {
+      ArrayList<String> levelsNames = new ArrayList<>();
+      FileHandle handle = Gdx.files.internal("levels");
+      for (FileHandle fh : handle.list()) {
+        levelsNames.add("levels/" + fh.name());
+      }
+      return levelsNames;
     }
 
     static class LevelParameter extends AssetLoaderParameters<Level> {

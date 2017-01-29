@@ -15,13 +15,14 @@ public class Level {
     String name;
     int number;
     int worldIndex;
-    World world;
     float oxygenFactor;
     public float centerX;
     Vector3 shipPos = new Vector3();
 
     public Ship ship;
     public ArrayList<LevelObject> objects = new ArrayList<>();
+
+    private World world;
     
     LinkedList<LevelObject> collisions = new LinkedList<>();
     ArrayList<Tunnel> endTunnels = new ArrayList<>();
@@ -35,23 +36,22 @@ public class Level {
         this.oxygenFactor = oxygenFactor;
         this.shipPos.set(shipPos);
         this.centerX = centerX;
-        this.world = Universe.get().worlds.get(worldIndex);
     }
 
     public void addArrows(Vector3 pos, Vector3 rotation, Vector3 movement, float height, int depth, int color) {
-        objects.add(new Arrows(pos, rotation, movement, height, depth, color, world));
+        objects.add(new Arrows(pos, rotation, movement, height, depth, color, getWorld()));
     }
 
-    public void addCollectable(Vector3 pos) {
-        objects.add(new Collectible(pos, world));
+    public void addCollectible(Vector3 pos) {
+        objects.add(new Collectible(pos, getWorld()));
     }
 
     public void addTile(Vector3 pos, Vector3 size, int preset, TouchEffect effect) {
-        objects.add(new Tile(pos, size, preset, effect, world));
+        objects.add(new Tile(pos, size, preset, effect, getWorld()));
     }
 
     public void addTunnel(Vector3 pos, float depth, int preset, boolean end) {
-        Tunnel tunnel = new Tunnel(pos, depth, preset, world);
+        Tunnel tunnel = new Tunnel(pos, depth, preset, getWorld());
         if (end) {
             endTunnels.add(tunnel);
         }
@@ -59,7 +59,7 @@ public class Level {
     }
 
     public void addTileWithTunnels(Vector3 pos, Vector3 size, int preset, int[] tunnels, TouchEffect effect) {
-        objects.add(new TileWithTunnels(pos, size, preset, tunnels, effect, world));
+        objects.add(new TileWithTunnels(pos, size, preset, tunnels, effect, getWorld()));
     }
 
     public void addFinish(Vector3 pos, float radius) {
@@ -84,7 +84,10 @@ public class Level {
     }
 
     public World getWorld() {
-        return world;
+      if (world == null) {
+        world = Universe.get().worlds.get(worldIndex);
+      }
+      return world;
     }
 
     public void setShip(Ship ship) {

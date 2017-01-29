@@ -113,7 +113,7 @@ public class Game extends ApplicationAdapter {
         // Gdx.app.setLogLevel(Application.LOG_NONE);
 
         stateStack = new Stack<>();
-        addState(new LoadingState(this));
+        addState(new LoadingAllState(this));
     }
 
     public float getDensity() {
