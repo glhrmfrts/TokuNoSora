@@ -32,7 +32,7 @@ public class Arrows extends LevelObject {
 
     public Arrows(Vector3 pos, Vector3 rotation, Vector3 movement, float height, float pad, int depth, int colorIndex, World world) {
         final float padding = PADDING * pad;
-        this.color = new Color(world.colors.get(colorIndex)).add(0,0,0,0);
+        this.color = new Color(world.colors.get(colorIndex));
         this.height = height;
         this.depth = depth;
         this.alphaSize = depth - 3 + (padding * (depth - 3));

@@ -2,7 +2,7 @@ package com.habboi.tns.rendering.effects;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.glutils.FloatFrameBuffer;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.math.Vector2;
 import com.habboi.tns.rendering.GameRenderer;
@@ -25,8 +25,8 @@ public class BloomEffect extends Effect {
     brightPassShader = Shaders.get(BrightPassShader.class);
     glowShader = Shaders.get(GlowShader.class);
 
-    blurBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, (int)resolution.x, (int)resolution.y, false);
-    brightPassBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, (int)resolution.x, (int)resolution.y, false);
+    blurBuffer = new FloatFrameBuffer((int)resolution.x, (int)resolution.y, false);
+    brightPassBuffer = new FloatFrameBuffer((int)resolution.x, (int)resolution.y, false);
   }
 
   private void doBrightPass(GameRenderer renderer, FrameBuffer inBuffer) {
