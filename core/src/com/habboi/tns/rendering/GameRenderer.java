@@ -29,13 +29,6 @@ import com.habboi.tns.worlds.World;
 public class GameRenderer implements Disposable {
     public static final float FOV = 45f;
 
-    public static final int GraphicLevelNice = 0;
-    public static final int GraphicLevelFast = 1;
-
-    public static final int RenderPassBody = 0;
-    public static final int RenderPassOutline = 1;
-    public static final int RenderPassEffect = 2;
-
     public static int Width = 0;
     public static int Height = 0;
 
@@ -72,7 +65,7 @@ public class GameRenderer implements Disposable {
         screenQuad = new ModelInstance(createScreenQuadModel());
         screenQuad.getRenderable(screenQuadRenderable);
 
-        bloom = new BloomEffect(new Vector2(resolution.x / 1.5f, resolution.y / 1.5f));
+        bloom = new BloomEffect(new Vector2(resolution.x * 0.25f, resolution.y * 0.25f));
         fxaa = new FXAAEffect(resolution);
         blur = new BlurEffect(resolution);
 

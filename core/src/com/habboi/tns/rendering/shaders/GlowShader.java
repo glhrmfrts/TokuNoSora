@@ -8,13 +8,11 @@ import com.badlogic.gdx.graphics.g3d.utils.RenderContext;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 
-/**
- * Created by w7 on 13/06/2016.
- */
 public class GlowShader implements Shader {
   ShaderProgram program;
   int u_sampler0;
   int u_sampler1;
+  int u_exposure;
 
   @Override
   public void init() {
@@ -26,6 +24,7 @@ public class GlowShader implements Shader {
     }
     u_sampler0 = program.getUniformLocation("u_sampler0");
     u_sampler1 = program.getUniformLocation("u_sampler1");
+    u_exposure = program.getUniformLocation("u_exposure");
   }
 
   @Override
@@ -43,6 +42,7 @@ public class GlowShader implements Shader {
     program.begin();
     program.setUniformi(u_sampler0, 0);
     program.setUniformi(u_sampler1, 1);
+    program.setUniformf(u_exposure, 3);
   }
 
   @Override

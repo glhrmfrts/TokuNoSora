@@ -41,7 +41,7 @@ public class BrightPassShader implements Shader {
   public void begin(Camera camera, RenderContext context) {
     program.begin();
     program.setUniformi(u_sampler0, 0);
-    program.setUniformf(u_threshold, 0.7f);
+    program.setUniformf(u_threshold, 1f);
   }
 
   @Override

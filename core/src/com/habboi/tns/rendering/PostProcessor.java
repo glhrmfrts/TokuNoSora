@@ -1,6 +1,6 @@
 package com.habboi.tns.rendering;
 
-import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.glutils.FloatFrameBuffer;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
@@ -25,10 +25,10 @@ public class PostProcessor implements Disposable {
     this.resolution = resolution;
     this.renderer = renderer;
 
-    inDepthBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, (int)resolution.x, (int)resolution.y, true);
-    inTextureBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, (int)resolution.x, (int)resolution.y, false);
-    outDepthBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, (int)resolution.x, (int)resolution.y, true);
-    outTextureBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, (int)resolution.x, (int)resolution.y, false);
+    inDepthBuffer = new FloatFrameBuffer((int)resolution.x, (int)resolution.y, true);
+    inTextureBuffer = new FloatFrameBuffer((int)resolution.x, (int)resolution.y, false);
+    outDepthBuffer = new FloatFrameBuffer((int)resolution.x, (int)resolution.y, true);
+    outTextureBuffer = new FloatFrameBuffer((int)resolution.x, (int)resolution.y, false);
 
     lastDepthBuffer = inDepthBuffer;
     lastTextureBuffer = inTextureBuffer;

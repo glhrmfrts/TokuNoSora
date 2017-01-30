@@ -55,6 +55,5 @@ void main()
 	}
 
 	// apply colour
-	gl_FragColor = clamp(colour, 0.0, 1.0);
-	gl_FragColor.w = 1.0;
+	gl_FragColor = colour;
 }

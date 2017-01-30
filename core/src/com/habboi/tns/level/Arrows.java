@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.math.Vector3;
 import com.habboi.tns.rendering.ArrowsRenderer;
-import com.habboi.tns.rendering.GameRenderer;
 import com.habboi.tns.shapes.TileShape;
 import com.habboi.tns.utils.Models;
 import com.habboi.tns.worlds.World;
@@ -33,7 +32,7 @@ public class Arrows extends LevelObject {
 
     public Arrows(Vector3 pos, Vector3 rotation, Vector3 movement, float height, float pad, int depth, int colorIndex, World world) {
         final float padding = PADDING * pad;
-        this.color = world.colors.get(colorIndex);
+        this.color = new Color(world.colors.get(colorIndex)).add(0,0,0,0);
         this.height = height;
         this.depth = depth;
         this.alphaSize = depth - 3 + (padding * (depth - 3));
@@ -77,7 +76,7 @@ public class Arrows extends LevelObject {
             arrow.instance.transform.rotate(Vector3.Y, rotation.y);
             arrow.instance.transform.rotate(Vector3.Z, rotation.z);
 
-            Models.setColor(arrow.instance, ColorAttribute.Diffuse, this.color);
+            Models.setColor(arrow.instance, ColorAttribute.Diffuse, color);
             arrows.add(arrow);
         }
     }
