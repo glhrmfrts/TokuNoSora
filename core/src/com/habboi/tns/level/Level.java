@@ -38,8 +38,8 @@ public class Level {
         this.centerX = centerX;
     }
 
-    public void addArrows(Vector3 pos, Vector3 rotation, Vector3 movement, float height, int depth, int color) {
-        objects.add(new Arrows(pos, rotation, movement, height, depth, color, getWorld()));
+    public void addArrows(Vector3 pos, Vector3 rotation, Vector3 movement, float height, float pad, int depth, int color) {
+        objects.add(new Arrows(pos, rotation, movement, height, pad, depth, color, getWorld()));
     }
 
     public void addCollectible(Vector3 pos) {

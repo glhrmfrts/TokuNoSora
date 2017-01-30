@@ -31,13 +31,14 @@ public class Arrows extends LevelObject {
     Vector3 movement = new Vector3();
     float size;
 
-    public Arrows(Vector3 pos, Vector3 rotation, Vector3 movement, float height, int depth, int colorIndex, World world) {
+    public Arrows(Vector3 pos, Vector3 rotation, Vector3 movement, float height, float pad, int depth, int colorIndex, World world) {
+        final float padding = PADDING * pad;
         this.color = world.colors.get(colorIndex);
         this.height = height;
         this.depth = depth;
-        this.alphaSize = depth - 3 + (PADDING * (depth - 3));
+        this.alphaSize = depth - 3 + (padding * (depth - 3));
         this.halfAlphaSize = alphaSize / 2;
-        this.size = depth + (PADDING * depth);
+        this.size = depth + (padding * depth);
         this.halfSize = size / 2;
         this.pos.set(pos.x, pos.y, -pos.z);
         this.rotation.set(rotation);
@@ -46,9 +47,11 @@ public class Arrows extends LevelObject {
         this.baseY = pos.y;
         this.baseZ = -pos.z;
         this.renderer = ArrowsRenderer.getInstance();
-
+        
         if (movement.x == -1) {
-            this.baseX = pos.x + depth + (PADDING * depth) + 0.5f;
+            this.baseX = pos.x + depth + (padding * depth) + 0.5f;
+        } else if (movement.x == 1) {
+            this.baseX -= 0.5f + padding * depth;
         }
 
         for (int i = 0; i < depth; i++) {
@@ -58,9 +61,9 @@ public class Arrows extends LevelObject {
                                            baseZ * TileShape.TILE_DEPTH
                                            );
             if (movement.x != 0) {
-                position.x = (baseX + (i * Math.signum(movement.x))) * TileShape.TILE_WIDTH + (PADDING * i * Math.signum(movement.x));
+                position.x = (baseX + (i * movement.x) * TileShape.TILE_WIDTH + (padding * i * movement.x));
             } else if (movement.z != 0) {
-                position.z = (baseZ - (i * Math.signum(movement.z))) * TileShape.TILE_DEPTH - (PADDING * i * Math.signum(movement.z));
+                position.z = (baseZ - (i * movement.z) * TileShape.TILE_DEPTH - (padding * i * movement.z));
             }
 
             Arrow arrow = new Arrow(
@@ -91,7 +94,7 @@ public class Arrows extends LevelObject {
     public void update(float dt) {
         for (Arrow arrow : arrows) {
             if (movement.x != 0) {
-                float center = baseX - halfSize;
+                float center = baseX + halfSize * movement.x;
 
                 if (arrow.pos.x < center - halfAlphaSize) {
                     float d = Math.abs(arrow.pos.x - (center - halfAlphaSize));
@@ -103,9 +106,12 @@ public class Arrows extends LevelObject {
                     arrow.color.a = 1;
                 }
 
-                arrow.pos.x -= SPEED * dt;
-                if (arrow.pos.x < center - halfSize) {
+                arrow.pos.x += SPEED * movement.x * dt;
+                if (movement.x == -1 && arrow.pos.x < center - halfSize) {
                     arrow.pos.x = center + halfSize;
+                }
+                if (movement.x == 1 && arrow.pos.x > center + halfSize) {
+                    arrow.pos.x = center - halfSize;
                 }
             } else if (movement.z != 0) {
                 float center = baseZ - halfSize;

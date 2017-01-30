@@ -14,7 +14,7 @@ public class Collectible extends LevelObject {
     public boolean collected;
 
     public Collectible(Vector3 pos, World world) {
-        pos.x = pos.x * TileShape.TILE_WIDTH + (WIDTH * 0.5f * TileShape.TILE_WIDTH);
+        pos.x = pos.x * TileShape.TILE_WIDTH;
         pos.y = pos.y * TileShape.TILE_HEIGHT + (HEIGHT * 0.5f * TileShape.TILE_HEIGHT) + HEIGHT;
         pos.z = -pos.z * TileShape.TILE_DEPTH + (DEPTH * 0.5f * TileShape.TILE_DEPTH);
 

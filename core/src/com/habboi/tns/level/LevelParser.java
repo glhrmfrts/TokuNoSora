@@ -18,6 +18,7 @@ public class LevelParser {
     level.worldIndex = Integer.valueOf(tempFields.get("world_index"));
     level.shipPos = parseVector3(tempFields.get("ship_pos"));
     level.centerX = Integer.valueOf(tempFields.getOrDefault("center_x", "0"));
+    level.oxygenFactor = Float.valueOf(tempFields.get("oxygen_factor"));
 
     parseObjects(reader, level);
   }
@@ -29,6 +30,8 @@ public class LevelParser {
       while ((line = reader.readLine()) != null) {
         line = line.trim();
         if (line.isEmpty()) return;
+
+        if (line.charAt(0) == '#') continue;
 
         String[] spl = line.split("=");
         if (spl.length != 2) return;
@@ -69,7 +72,6 @@ public class LevelParser {
       int depth = Integer.valueOf(tempFields.get("depth"));
       int preset = Integer.valueOf(tempFields.get("preset"));
 
-      System.out.println(tempFields.containsKey("end"));
       level.addTunnel(pos, depth, preset, tempFields.containsKey("end"));
 
       tempFields.remove("end");
@@ -89,11 +91,12 @@ public class LevelParser {
       Vector3 pos = parseVector3(tempFields.get("pos"));
       Vector3 rotation = parseVector3(tempFields.get("rotation"));
       Vector3 movement = parseVector3(tempFields.get("movement"));
-      float height = Integer.valueOf(tempFields.get("height"));
+      float height = Integer.valueOf(tempFields.getOrDefault("height", "1"));
+      float pad = Float.valueOf(tempFields.getOrDefault("pad", "1"));
       int depth = Integer.valueOf(tempFields.get("depth"));
       int color = Integer.valueOf(tempFields.get("color"));
 
-      level.addArrows(pos, rotation, movement, height, depth, color);
+      level.addArrows(pos, rotation, movement, height, pad, depth, color);
     }
   }
 
@@ -102,6 +105,10 @@ public class LevelParser {
 
     try {
       while ((line = reader.readLine()) != null) {
+        line = line.trim();
+        if (line.isEmpty()) continue;
+
+        if (line.charAt(0) == '#') continue;
         if (line.charAt(0) != ':') return;
 
         parseObject(reader, level, line.substring(1));

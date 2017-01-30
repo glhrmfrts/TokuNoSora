@@ -3,7 +3,7 @@ number = 1
 world_index = 0
 oxygen_factor = 0.01
 center_x = 3
-ship_pos = 3,3,0
+ship_pos = 3,20,0
 
 :collectible
 pos = 3,2,10
@@ -17,6 +17,24 @@ preset = 1
 pos = 1,0,6
 size = 4,2,100
 preset = 2
+
+:arrows
+pos = 0,6,6
+rotation = 0,0,-90
+movement = 0,0,1
+depth = 10
+height = 1
+color = 1
+pad = 3
+
+:arrows
+pos = 6,6,6
+rotation = 0,0,-90
+movement = 0,0,1
+depth = 10
+height = 1
+color = 1
+pad = 3
 
 :tile
 pos = -2,0,6
@@ -78,6 +96,9 @@ pos = 6,3,90
 size = 2,1,10
 preset = 0
 
+
+# AFTER START SECTION
+
 :tile
 pos = 1,2,106
 size = 4,2,40
@@ -112,6 +133,9 @@ preset = 0
 pos = 1,4,266
 size = 4,2,40
 preset = 2
+
+
+# JUMP AFTER TUNNEL
 
 :tile
 pos = 1,0,356
@@ -153,6 +177,26 @@ pos = 5,-8,556
 size = 3,2,100
 preset = 1
 
+
+# WALLS BEFORE FINISH
+:arrows
+pos = -2,-6,656
+rotation = 0,-90,-90
+movement = 1,0,0
+depth = 3
+height = 1
+color = 1
+pad = 0.5
+
+:arrows
+pos = 5,-6,656
+rotation = 0,90,-90
+movement = -1,0,0
+depth = 3
+height = 1
+color = 1
+pad = 0.5
+
 :tile
 pos = -2,-8,656
 size = 3,10,30
@@ -163,11 +207,15 @@ pos = 5,-8,656
 size = 3,10,30
 preset = 0
 
+
+# GROUND BEFORE FINISH
 :tile
 pos = 1,-8,646
 size = 4,2,40
 preset = 2
 
+
+# FINISH
 :tile
 pos = 2.5,-8,686
 size = 1,2,40
