@@ -79,6 +79,8 @@ public class InGameState extends GameState {
 
         ShipController sc = new ShipController(false);
         ship = new Ship(game, level.getShipPos(), sc);
+        ship.addToScene(scene);
+
         shipCam = new ShipCamera(ship, scene.getCamera());
 
         level.setShip(ship);

@@ -14,6 +14,7 @@ public class Collectible extends LevelObject {
     static final float DEPTH = 0.25f;
 
     public boolean collected;
+    public Fragment fragment;
 
     public Collectible(Vector3 pos, World world) {
         pos.x = pos.x * TileShape.TILE_WIDTH;
@@ -25,19 +26,19 @@ public class Collectible extends LevelObject {
         TileShape tileShape = new TileShape(pos, new Vector3(WIDTH * 2, HEIGHT * 2, DEPTH * 2));
         shape = tileShape;
 
-        modelInstance = new ModelInstance(Models.getPrismModel());
-        modelInstance.transform.setToScaling(tileShape.half);
-        modelInstance.transform.setTranslation(pos);
+        fragment = new Fragment(new ModelInstance(Models.getPrismModel()));
+        fragment.modelInstance.transform.setToScaling(tileShape.half);
+        fragment.modelInstance.transform.setTranslation(pos);
     }
 
     @Override
     public void addToScene(Scene scene) {
-        scene.add(new Fragment(modelInstance));
+        scene.add(fragment);
     }
 
     @Override
     public void reset() {
-        visible = true;
+        fragment.visible = true;
         collected = false;
     }
 

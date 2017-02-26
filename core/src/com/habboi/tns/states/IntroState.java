@@ -48,6 +48,8 @@ public class IntroState extends GameState {
         world = Universe.get().worlds.get(0);
 
         scene = new Scene(game.getWidth(), game.getHeight());
+        world.addToScene(scene);
+
         worldCam = scene.getCamera();
         worldCam.position.set(0, MenuState.CAM_Y, 0);
         worldCam.lookAt(0, MenuState.CAM_LOOKAT_Y, -MenuState.CAM_DIST);

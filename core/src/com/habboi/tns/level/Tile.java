@@ -11,6 +11,8 @@ import com.habboi.tns.worlds.World;
 
 public class Tile extends LevelObject {
 
+    public Fragment fragment;
+
     public Tile(Vector3 pos, Vector3 size, int preset, TouchEffect effect, World world) {
         size.x *= TileShape.TILE_WIDTH;
         size.y *= TileShape.TILE_HEIGHT;
@@ -40,14 +42,14 @@ public class Tile extends LevelObject {
                 model = world.getTileModel(preset);
         }
 
-        modelInstance = new ModelInstance(model);
-        modelInstance.transform.setToScaling(size.x, size.y, size.z);
-        modelInstance.transform.setTranslation(tileShape.pos.x - size.x / 2, tileShape.pos.y - size.y / 2, tileShape.pos.z + size.z / 2);
+        fragment = new Fragment(new ModelInstance(model));
+        fragment.modelInstance.transform.setToScaling(size.x, size.y, size.z);
+        fragment.modelInstance.transform.setTranslation(tileShape.pos.x - size.x / 2, tileShape.pos.y - size.y / 2, tileShape.pos.z + size.z / 2);
     }
 
     @Override
     public void addToScene(Scene scene) {
-        scene.add(new Fragment(modelInstance));
+        scene.add(fragment);
     }
 
     @Override

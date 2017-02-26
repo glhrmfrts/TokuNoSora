@@ -10,6 +10,8 @@ public class Scene {
 
   public Scene(float width, float height) {
     camera = new PerspectiveCamera(45, width, height);
+    camera.near = 0.1f;
+    camera.far = 1000f;
   }
 
   public void add(Fragment fragment) {
@@ -17,6 +19,7 @@ public class Scene {
   }
 
   public PerspectiveCamera getCamera() {
+    camera.update();
     return camera;
   }
 

@@ -20,6 +20,7 @@ public class World1 extends World {
 
         public Line(ModelInstance modelInstance) {
             super(modelInstance);
+            glow = true;
         }
     }
 
@@ -117,22 +118,22 @@ public class World1 extends World {
     public void update(Vector3 shipPos, float vel, float dt) {
         float offset = vel * dt * 2;
 
-        planeInstance.transform.setTranslation(centerX, shipPos.y + DISTANCE_Y - 0.5f, shipPos.z);
+        planeInstance.transform.setTranslation(centerX, DISTANCE_Y - 0.5f, shipPos.z);
 
         final float base = shipPos.z - DEPTH/1.1f;
         for (int i = 0; i < count; i++) {
           Line line = lines.get(i);
           line.offset += offset;
           line.offset %= DEPTH;
-          line.modelInstance.transform.setTranslation(centerX, shipPos.y + DISTANCE_Y, base + line.offset);
+          line.modelInstance.transform.setTranslation(centerX, DISTANCE_Y, base + line.offset);
         }
 
         for (int i = 0; i < verticalCount; i++) {
           Line line = verticalLines.get(i);
-          line.modelInstance.transform.setTranslation(centerX - (WIDTH * 0.5f) + line.offset, shipPos.y + DISTANCE_Y, shipPos.z + DEPTH * 0.25f);
+          line.modelInstance.transform.setTranslation(centerX - (WIDTH * 0.5f) + line.offset, DISTANCE_Y, shipPos.z + DEPTH * 0.25f);
         }
 
-        sunInstance.transform.setTranslation(centerX, shipPos.y + DISTANCE_Y, shipPos.z - DEPTH);
+        sunInstance.transform.setTranslation(centerX, DISTANCE_Y, shipPos.z - DEPTH);
     }
 
     @Override

@@ -23,6 +23,7 @@ public class World2 extends World {
 
         public Rect(ModelInstance modelInstance) {
             super(modelInstance);
+            glow = true;
         }
     }
 

@@ -36,7 +36,8 @@ public class Ship extends LevelObject {
     public long raceTimeMillis;
     public float oxygenLevel;
     public TileShape shape;
-    public ModelInstance outlineInstance;
+    public Fragment body;
+    public Fragment outline;
 
     public static ShipExplosion explosion;
 
@@ -80,8 +81,8 @@ public class Ship extends LevelObject {
         this.controller = controller;
         this.game = game;
         
-        modelInstance = new ModelInstance(game.getAssetManager().get("models/shipbody.obj", Model.class));  
-        outlineInstance = new ModelInstance(game.getAssetManager().get("models/shipoutline.obj", Model.class));
+        body = new Fragment(new ModelInstance(game.getAssetManager().get("models/shipbody.obj", Model.class)));
+        outline = new Fragment(new ModelInstance(game.getAssetManager().get("models/shipoutline.obj", Model.class)));
         
         bounceSound = game.getAssetManager().get("audio/bounce.wav");
         explosionSound = game.getAssetManager().get("audio/explosion.wav");
@@ -97,8 +98,9 @@ public class Ship extends LevelObject {
 
     @Override
     public void addToScene(Scene scene) {
-        scene.add(new Fragment(modelInstance));
-        scene.add(new Fragment(outlineInstance));
+        scene.add(body);
+        scene.add(outline);
+        explosion.addToScene(scene);
     }
 
     public boolean canReceiveInput() {
@@ -131,7 +133,8 @@ public class Ship extends LevelObject {
         collected = 0;
         raceTime = 0;
         raceTimeMillis = 0;
-        visible = true;
+        body.visible = true;
+        outline.visible = true;
         fillOxygen = false;
         oxygenLevel = 1;
         state = State.WAITING;
@@ -139,13 +142,13 @@ public class Ship extends LevelObject {
         vel.set(0, 0, 0);
         explosion.reset();
 
-        modelInstance.transform.setToRotation(1, 1, 1, 0);
-        outlineInstance.transform.setToRotation(1, 1, 1, 0);
+        body.modelInstance.transform.setToRotation(1, 1, 1, 0);
+        outline.modelInstance.transform.setToRotation(1, 1, 1, 0);
 
-        modelInstance.transform.setToScaling(BODY_WIDTH*BODY_OFF - 0.1f, BODY_HEIGHT*BODY_OFF, BODY_DEPTH*BODY_OFF);
-        modelInstance.transform.rotate(Vector3.Y, 180);
-        outlineInstance.transform.setToScaling(BODY_WIDTH - 0.1f, BODY_HEIGHT, BODY_DEPTH);
-        outlineInstance.transform.rotate(Vector3.Y, 180);        
+        body.modelInstance.transform.setToScaling(BODY_WIDTH*BODY_OFF - 0.1f, BODY_HEIGHT*BODY_OFF, BODY_DEPTH*BODY_OFF);
+        body.modelInstance.transform.rotate(Vector3.Y, 180);
+        outline.modelInstance.transform.setToScaling(BODY_WIDTH - 0.1f, BODY_HEIGHT, BODY_DEPTH);
+        outline.modelInstance.transform.rotate(Vector3.Y, 180);
     }
 
     public void accelerate(float amount) {
@@ -165,8 +168,8 @@ public class Ship extends LevelObject {
     }
 
     public void update(float dt) {
-        modelInstance.transform.setTranslation(shape.pos);
-        outlineInstance.transform.setTranslation(shape.pos);
+        body.modelInstance.transform.setTranslation(shape.pos);
+        outline.modelInstance.transform.setTranslation(shape.pos);
 
         if (state == State.WAITING || state == State.ENDED || state == State.EXPLODED) {
             return;
@@ -235,7 +238,8 @@ public class Ship extends LevelObject {
     public void doExplode() {
         if (state == State.PLAYABLE) {
             vel.set(0, 0, 0);
-            visible = false;
+            body.visible = false;
+            outline.visible = false;
             explosion.explode(shape.pos);
             explosionSound.play(GameConfig.get().getSfxVolume());
         }
@@ -252,7 +256,8 @@ public class Ship extends LevelObject {
             if (readyToEnd) {
                 state = State.ENDED;
                 finish = (Finish) obj;
-                visible = false;
+                body.visible = false;
+                outline.visible = false;
             }
             return false;
         }
@@ -263,9 +268,9 @@ public class Ship extends LevelObject {
         if (c.normal.y == 1) {
             floorCollisions++;
 
-            modelInstance.transform.getRotation(rotationGetter);
-            modelInstance.transform.rotate(Vector3.Z, (float)(-rotationGetter.x * 180 / Math.PI));
-            outlineInstance.transform.rotate(Vector3.Z, (float)(-rotationGetter.x * 180 / Math.PI));
+            body.modelInstance.transform.getRotation(rotationGetter);
+            body.modelInstance.transform.rotate(Vector3.Z, (float)(-rotationGetter.x * 180 / Math.PI));
+            outline.modelInstance.transform.rotate(Vector3.Z, (float)(-rotationGetter.x * 180 / Math.PI));
 
             if (obj.effect == TouchEffect.EXPLODE) {
                 doExplode();
@@ -302,8 +307,8 @@ public class Ship extends LevelObject {
                 c.normal.x = c.slide;
                 dSlide = c.slide;
 
-                modelInstance.transform.rotate(Vector3.Z, dSlide);
-                outlineInstance.transform.rotate(Vector3.Z, dSlide);
+                body.modelInstance.transform.rotate(Vector3.Z, dSlide);
+                outline.modelInstance.transform.rotate(Vector3.Z, dSlide);
             }
         }
         return true;

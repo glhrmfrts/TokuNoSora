@@ -127,7 +127,7 @@ public class Level {
                 if (!c.collected) {
                     ship.onCollect(c);
                     c.collected = true;
-                    c.visible = false;
+                    c.fragment.visible = false;
                 }
                 continue;
             }

@@ -1,6 +1,7 @@
 package com.habboi.tns.rendering;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -38,13 +39,11 @@ import java.util.ArrayList;
 
 public class Renderer implements Disposable {
     public static final float FOV = 45f;
-    public static final int RENDER_PASSES = 3;
 
     public static final int GraphicLevelNice = 0;
     public static final int GraphicLevelFast = 1;
 
     Game game;
-    PerspectiveCamera worldCam;
     Environment environment;
     ModelBatch batch;
     SpriteBatch sb;
@@ -64,10 +63,6 @@ public class Renderer implements Disposable {
 
     public Renderer(Game g) {
         game = g;
-
-        worldCam = new PerspectiveCamera(FOV, g.getWidth(), g.getHeight());
-        worldCam.near = 0.1f;
-        worldCam.far = 1000f;
 
         environment = new Environment();
         environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.4f, 0.4f, 0.4f, 1f));
@@ -92,7 +87,6 @@ public class Renderer implements Disposable {
         shaderBlur.init();
         shaderGlow.init();
         shaderFXAA.init();
-        shaderFXAA.setResolution(resolution);
         shaderBlur.begin(null, null);
         shaderBlur.setImageSize(new Vector2(game.getWidth(), game.getHeight()));
         shaderBlur.end();
@@ -100,6 +94,8 @@ public class Renderer implements Disposable {
         resolution = new Vector2(game.getWidth(), game.getHeight());
         screenRect = new Rect(new Rectangle(0, 0, game.getWidth(), game.getHeight()));
         screenSurface = new ModelInstance(createScreenSurfaceModel());
+
+        shaderFXAA.setResolution(resolution);
 
         Gdx.gl.glLineWidth(2);
     }
@@ -121,10 +117,6 @@ public class Renderer implements Disposable {
         partBuilder.rect(v1, v2, v3, v4);
 
         return mb.end();
-    }
-
-    public PerspectiveCamera getWorldCam() {
-        return worldCam;
     }
 
     public Rect getScreenRect() {
@@ -199,10 +191,10 @@ public class Renderer implements Disposable {
         Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
     }
 
-    public void drawGlowingGeometry(FrameBuffer out) {
+    public void drawGlowingGeometry(Camera cam, FrameBuffer out) {
         if (out != null) out.begin();
 
-        shaderBasic.begin(worldCam, null);
+        shaderBasic.begin(cam, null);
 
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
@@ -228,11 +220,14 @@ public class Renderer implements Disposable {
     public void render(Scene scene) {
         occludingFragments.clear();
         glowingFragments.clear();
+
         depthBuffers.get(0).begin();
-        batch.begin(worldCam);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
+
+        batch.begin(scene.getCamera());
 
         for (Fragment fragment : scene.getFragments()) {
-            if (!fragment.visible) return;
+            if (!fragment.visible) continue;
 
             batch.render(fragment.modelInstance, environment);
             if (fragment.glow) {
@@ -247,7 +242,7 @@ public class Renderer implements Disposable {
 
         boolean isNice = GameConfig.get().getGraphicLevel() == GraphicLevelNice;
         if (isNice) {
-            drawGlowingGeometry(depthBuffers.get(1));
+            drawGlowingGeometry(scene.getCamera(), depthBuffers.get(1));
         }
 
         // the only renderable used from here on is the screen surface
@@ -255,7 +250,7 @@ public class Renderer implements Disposable {
 
         Gdx.gl.glDepthMask(false);
         if (isNice) {
-            drawBlur(depthBuffers.get(1), textureBuffers.get(0));
+            drawBlur(depthBuffers.get(1), textureBuffers.get(0), 10, 0.50f, 0.1f);
             drawGlowMap(depthBuffers.get(0), textureBuffers.get(0), textureBuffers.get(1));
             drawBlur(textureBuffers.get(1), textureBuffers.get(0), 10, 0.25f, 0.1f);
             drawFXAA(textureBuffers.get(0), null);

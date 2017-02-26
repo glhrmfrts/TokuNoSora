@@ -36,10 +36,10 @@ public class ShipExplosion extends LevelObject {
     public ArrayList<Triangle> triangles = new ArrayList<>();
 
     public ShipExplosion() {
-        visible = false;
-    
         for (int i = 0; i < TRIANGLE_COUNT; i++) {
             Triangle triangle = new Triangle(new ModelInstance(Models.getTriangleModel()));
+            triangle.visible = false;
+
             triangle.modelInstance.transform.setToScaling(0.25f, 0.25f, 0.25f);
 
             Models.setColor(triangle.modelInstance, ColorAttribute.Diffuse, Ship.COLOR);
@@ -71,11 +71,12 @@ public class ShipExplosion extends LevelObject {
 
     public void explode(Vector3 pos) {
         isExploding = true;
-        visible = true;
         time = 0;
         origin = pos;
 
         for (Triangle t : triangles) {
+            t.visible = true;
+
             t.pos.set(pos.x, pos.y, pos.z);
             t.vel.set(randomVel(), randomVel(1), randomVel());
             t.modelInstance.transform.rotate(Vector3.X, randomRot());
@@ -108,7 +109,9 @@ public class ShipExplosion extends LevelObject {
         if (time >= TIME) {
             time = 0;
             isExploding = false;
-            visible = false;
+            for (Triangle t : triangles) {
+                t.visible = false;
+            }
 
             System.out.println("explosionEnd");
             EventEmitter.get().notify("ship_explosion_end", null);

@@ -265,11 +265,13 @@ public class InputManager extends ControllerAdapter implements InputProcessor {
         case Input.Keys.UP:
             buttons[Up]++;
             axis[Vertical] = 1;
+            axis[Acceleration] = 1;
             return true;
 
         case Input.Keys.DOWN:
             buttons[Down]++;
             axis[Vertical] = -1;
+            axis[Acceleration] = -1;
             return true;
 
         case Input.Keys.SPACE:
@@ -304,11 +306,13 @@ public class InputManager extends ControllerAdapter implements InputProcessor {
         case Input.Keys.UP:
             buttons[Up] = 0;
             axis[Vertical] = 0;
+            axis[Acceleration] = 0;
             return true;
 
         case Input.Keys.DOWN:
             buttons[Down] = 0;
             axis[Vertical] = 0;
+            axis[Acceleration] = 0;
             return true;
 
         case Input.Keys.SPACE:

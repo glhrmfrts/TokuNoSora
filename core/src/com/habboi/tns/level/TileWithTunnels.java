@@ -10,6 +10,8 @@ import com.habboi.tns.worlds.World;
 
 public class TileWithTunnels extends LevelObject {
 
+    public Fragment fragment;
+
     public TileWithTunnels(Vector3 pos, Vector3 size, int preset, int[] tunnels, TouchEffect effect, World world) {
         size.x *= TileShape.TILE_WIDTH;
         size.y *= TileShape.TILE_HEIGHT;
@@ -22,13 +24,13 @@ public class TileWithTunnels extends LevelObject {
         this.shape = new TWTShape(pos, size, tunnels);
         this.effect = effect;
 
-        modelInstance = new ModelInstance(world.getTileWithTunnelsModel(size, tunnels, preset));
-        modelInstance.transform.setTranslation(pos.x, pos.y, pos.z);
+        fragment = new Fragment(new ModelInstance(world.getTileWithTunnelsModel(size, tunnels, preset)));
+        fragment.modelInstance.transform.setTranslation(pos.x, pos.y, pos.z);
     }
 
     @Override
     public void addToScene(Scene scene) {
-        scene.add(new Fragment(modelInstance));
+        scene.add(fragment);
     }
     
     @Override
