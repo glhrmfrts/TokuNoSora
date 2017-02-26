@@ -4,7 +4,8 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.math.Vector3;
-import com.habboi.tns.rendering.ShipExplosionRenderer;
+import com.habboi.tns.rendering.Fragment;
+import com.habboi.tns.rendering.Scene;
 import com.habboi.tns.utils.EventEmitter;
 import com.habboi.tns.utils.Models;
 
@@ -20,10 +21,13 @@ public class ShipExplosion extends LevelObject {
     static final float MAX_ROT = 90f;
     static final Random rand = new Random();
 
-    public static class Triangle {
+    public static class Triangle extends Fragment {
         public Vector3 pos = new Vector3();
         public Vector3 vel = new Vector3();
-        public ModelInstance modelInstance;
+
+        public Triangle(ModelInstance modelInstance) {
+            super(modelInstance);
+        }
     }
 
     public float time;
@@ -32,17 +36,22 @@ public class ShipExplosion extends LevelObject {
     public ArrayList<Triangle> triangles = new ArrayList<>();
 
     public ShipExplosion() {
-        renderer = ShipExplosionRenderer.getInstance();
         visible = false;
     
         for (int i = 0; i < TRIANGLE_COUNT; i++) {
-            Triangle triangle = new Triangle();
-            triangle.modelInstance = new ModelInstance(Models.getTriangleModel());
+            Triangle triangle = new Triangle(new ModelInstance(Models.getTriangleModel()));
             triangle.modelInstance.transform.setToScaling(0.25f, 0.25f, 0.25f);
 
             Models.setColor(triangle.modelInstance, ColorAttribute.Diffuse, Ship.COLOR);
 
             triangles.add(triangle);
+        }
+    }
+
+    @Override
+    public void addToScene(Scene scene) {
+        for (Triangle t : triangles) {
+            scene.add(t);
         }
     }
 

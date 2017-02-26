@@ -28,6 +28,7 @@ import com.badlogic.gdx.utils.Disposable;
 import com.habboi.tns.Game;
 import com.habboi.tns.GameConfig;
 import com.habboi.tns.level.Level;
+import com.habboi.tns.rendering.shaders.BasicShader;
 import com.habboi.tns.rendering.shaders.BlurShader;
 import com.habboi.tns.rendering.shaders.FXAAShader;
 import com.habboi.tns.rendering.shaders.GlowShader;
@@ -50,7 +51,6 @@ public class Renderer implements Disposable {
     Renderable tmpRenderable = new Renderable();
     FrameBuffer blurTempBuffer;
     BasicShader shaderBasic;
-    Basic2DShader shaderBasic2D;
     GlowShader shaderGlow;
     BlurShader shaderBlur;
     FXAAShader shaderFXAA;
@@ -84,12 +84,10 @@ public class Renderer implements Disposable {
         textureBuffers.add(new FrameBuffer(Pixmap.Format.RGBA8888, buffersWidth, buffersHeight, false));
         blurTempBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, buffersWidth, buffersHeight, false);
 
-        shaderBasic2D = new Basic2DShader();
         shaderBasic = new BasicShader();
         shaderBlur = new BlurShader();
         shaderGlow = new GlowShader();
         shaderFXAA = new FXAAShader();
-        shaderBasic2D.init();
         shaderBasic.init();
         shaderBlur.init();
         shaderGlow.init();
@@ -210,14 +208,14 @@ public class Renderer implements Disposable {
 
         Gdx.gl.glDisable(GL20.GL_CULL_FACE);
         Gdx.gl.glColorMask(false, false, false, false);
-        for (ModelInstance inst : occludingFragments) {
-            inst.getRenderable(tmpRenderable);
+        for (Fragment f : occludingFragments) {
+            f.modelInstance.getRenderable(tmpRenderable);
             shaderBasic.render(tmpRenderable);
         }
 
         Gdx.gl.glColorMask(true, true, true, true);
-        for (ModelInstance inst : glowingFragments) {
-            inst.getRenderable(tmpRenderable);
+        for (Fragment f : glowingFragments) {
+            f.modelInstance.getRenderable(tmpRenderable);
             shaderBasic.render(tmpRenderable);
         }
         Gdx.gl.glEnable(GL20.GL_CULL_FACE);
@@ -268,34 +266,12 @@ public class Renderer implements Disposable {
         Gdx.gl.glDepthMask(true);
     }
 
-    public void setDiffuseColor(ModelInstance instance, Color color) {
-        instance.getRenderable(tmpRenderable);
-        ColorAttribute colorAttribute = (ColorAttribute) tmpRenderable.material.get(ColorAttribute.Diffuse);
-        colorAttribute.color.set(color);
-    }
-
-    public void beginOrtho() {
-        sb.begin();
-        sb.setShader(shaderBasic2D.getShaderProgram());
-    }
-
-    public void beginOrtho(Matrix4 projection) {
-        sb.begin();
-        sb.setProjectionMatrix(projection);
-        sb.setShader(shaderBasic2D.getShaderProgram());
-    }
-
-    public void endOrtho() {
-        sb.end();
-    }
-
     @Override
     public void dispose() {
         batch.dispose();
         shaderGlow.dispose();
         shaderBlur.dispose();
         shaderBasic.dispose();
-        shaderBasic2D.dispose();
 
         for (FrameBuffer buffer : depthBuffers) {
             buffer.dispose();

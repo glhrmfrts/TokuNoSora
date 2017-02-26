@@ -6,7 +6,6 @@ import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -16,6 +15,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.habboi.tns.level.Level;
 import com.habboi.tns.level.LevelLoader;
+import com.habboi.tns.rendering.Renderer;
 import com.habboi.tns.states.MenuState;
 import com.habboi.tns.utils.Models;
 import com.habboi.tns.utils.FontManager;
@@ -23,7 +23,6 @@ import com.habboi.tns.utils.MusicAccessor;
 import com.habboi.tns.utils.Shaders;
 import com.habboi.tns.worlds.Universe;
 import com.habboi.tns.states.*;
-import com.habboi.tns.rendering.GameRenderer;
 import com.habboi.tns.ui.GameTweenManager;
 import com.habboi.tns.ui.Rect;
 import com.habboi.tns.utils.FontFileHandleResolver;
@@ -51,7 +50,7 @@ public class Game extends ApplicationAdapter {
     long lastUpdateTime = -1;
 
     InputMultiplexer inputMul;
-    GameRenderer renderer;
+    Renderer renderer;
     ShapeRenderer sr;
     SpriteBatch sb;
     Rect exitingRect;
@@ -73,7 +72,7 @@ public class Game extends ApplicationAdapter {
         height = Gdx.graphics.getHeight();
         exitingRect = new Rect(new Rectangle(0, 0, width, height));
 
-        renderer = new GameRenderer(this);
+        renderer = new Renderer(this);
         sr = new ShapeRenderer();
         sb = new SpriteBatch();
 
@@ -139,7 +138,7 @@ public class Game extends ApplicationAdapter {
         return 1f / fpsTime;
     }
 
-    public GameRenderer getRenderer() {
+    public Renderer getRenderer() {
         return renderer;
     }
 

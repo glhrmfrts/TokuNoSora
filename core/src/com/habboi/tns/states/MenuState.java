@@ -13,9 +13,10 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.habboi.tns.Game;
 import com.habboi.tns.GameConfig;
+import com.habboi.tns.rendering.Renderer;
+import com.habboi.tns.rendering.Scene;
 import com.habboi.tns.worlds.Universe;
 import com.habboi.tns.worlds.World;
-import com.habboi.tns.rendering.GameRenderer;
 import com.habboi.tns.ui.GameTweenManager;
 import com.habboi.tns.ui.MainMenu;
 import com.habboi.tns.ui.Menu;
@@ -43,6 +44,7 @@ public class MenuState extends GameState {
     Text titleText;
     Stack<Menu> menuStack = new Stack<>();
     Rect screenRect;
+    Scene scene;
 
     public MenuState(Game g, Text t, Music m) {
         super(g);
@@ -56,8 +58,12 @@ public class MenuState extends GameState {
         game.getShapeRenderer().setTransformMatrix(new Matrix4().idt());
         addMenu(new MainMenu(this, game));
 
+        scene = new Scene(game.getWidth(), game.getHeight());
+
         world = Universe.get().worlds.get(0);
-        worldCam = game.getRenderer().getWorldRenderer().getCamera();
+        world.addToScene(scene);
+
+        worldCam = scene.getCamera();
         worldCam.position.x = 0;
         worldCam.position.y = CAM_Y;
 
@@ -140,10 +146,10 @@ public class MenuState extends GameState {
     public void render() {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
-        GameRenderer gr = game.getRenderer();
+        Renderer gr = game.getRenderer();
         SpriteBatch sb = game.getSpriteBatch();
 
-        gr.render(world);
+        gr.render(scene);
 
         menuStack.peek().render();
 

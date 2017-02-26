@@ -6,20 +6,19 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.habboi.tns.Game;
 import com.habboi.tns.GameConfig;
 import com.habboi.tns.level.LevelScore;
+import com.habboi.tns.rendering.Renderer;
+import com.habboi.tns.rendering.Scene;
 import com.habboi.tns.ui.GameTweenManager;
 import com.habboi.tns.level.Ship;
 import com.habboi.tns.level.ShipCamera;
 import com.habboi.tns.level.ShipController;
 import com.habboi.tns.level.Level;
-import com.habboi.tns.rendering.GameRenderer;
 import com.habboi.tns.ui.PauseMenu;
 import com.habboi.tns.ui.Rect;
 import com.habboi.tns.ui.Text;
@@ -50,6 +49,7 @@ public class InGameState extends GameState {
     GameTweenManager gtm;
     Rect screenRect;
     PauseMenu pauseMenu;
+    Scene scene;
     float bestTimeForLevel;
     int timesLevelCompleted;
     boolean paused;
@@ -74,12 +74,12 @@ public class InGameState extends GameState {
         level = game.getAssetManager().get(levelName);
         level.getWorld().reset();
 
+        scene = new Scene(game.getWidth(), game.getHeight());
+        level.addToScene(scene);
+
         ShipController sc = new ShipController(false);
         ship = new Ship(game, level.getShipPos(), sc);
-        shipCam = new ShipCamera(ship, new PerspectiveCamera[] {
-                game.getRenderer().getLevelRenderer().getCamera(),
-                game.getRenderer().getWorldRenderer().getCamera()
-        });
+        shipCam = new ShipCamera(ship, scene.getCamera());
 
         level.setShip(ship);
 
@@ -267,11 +267,11 @@ public class InGameState extends GameState {
     public void render() {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
-        GameRenderer gr = game.getRenderer();
+        Renderer gr = game.getRenderer();
         SpriteBatch sb = game.getSpriteBatch();
         ShapeRenderer sr = game.getShapeRenderer();
 
-        gr.render(level, level.getWorld());
+        gr.render(scene);
 
         orthoCam.update();
         sb.setProjectionMatrix(orthoCam.combined);

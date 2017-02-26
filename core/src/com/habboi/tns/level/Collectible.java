@@ -2,6 +2,8 @@ package com.habboi.tns.level;
 
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.habboi.tns.rendering.Fragment;
+import com.habboi.tns.rendering.Scene;
 import com.habboi.tns.shapes.TileShape;
 import com.habboi.tns.utils.Models;
 import com.habboi.tns.worlds.World;
@@ -26,6 +28,11 @@ public class Collectible extends LevelObject {
         modelInstance = new ModelInstance(Models.getPrismModel());
         modelInstance.transform.setToScaling(tileShape.half);
         modelInstance.transform.setTranslation(pos);
+    }
+
+    @Override
+    public void addToScene(Scene scene) {
+        scene.add(new Fragment(modelInstance));
     }
 
     @Override

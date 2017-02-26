@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.math.Vector3;
-import com.habboi.tns.rendering.ArrowsRenderer;
+import com.habboi.tns.rendering.Scene;
 import com.habboi.tns.shapes.TileShape;
 import com.habboi.tns.utils.Models;
 import com.habboi.tns.worlds.World;
@@ -45,7 +45,6 @@ public class Arrows extends LevelObject {
         this.baseX = pos.x;
         this.baseY = pos.y;
         this.baseZ = -pos.z;
-        this.renderer = ArrowsRenderer.getInstance();
         
         if (movement.x == -1) {
             this.baseX = pos.x + depth + (padding * depth) + 0.5f;
@@ -71,18 +70,25 @@ public class Arrows extends LevelObject {
                                     position
                                     );
 
-            arrow.instance.transform.setToScaling(1, height, 1);
-            arrow.instance.transform.rotate(Vector3.X, rotation.x);
-            arrow.instance.transform.rotate(Vector3.Y, rotation.y);
-            arrow.instance.transform.rotate(Vector3.Z, rotation.z);
+            arrow.modelInstance.transform.setToScaling(1, height, 1);
+            arrow.modelInstance.transform.rotate(Vector3.X, rotation.x);
+            arrow.modelInstance.transform.rotate(Vector3.Y, rotation.y);
+            arrow.modelInstance.transform.rotate(Vector3.Z, rotation.z);
 
-            Models.setColor(arrow.instance, ColorAttribute.Diffuse, color);
+            Models.setColor(arrow.modelInstance, ColorAttribute.Diffuse, color);
             arrows.add(arrow);
         }
     }
 
     public ArrayList<Arrow> getArrows() {
         return arrows;
+    }
+
+    @Override
+    public void addToScene(Scene scene) {
+      for (Arrow a : arrows) {
+        scene.add(a);
+      }
     }
 
     @Override
@@ -131,7 +137,8 @@ public class Arrows extends LevelObject {
                 }
             }
 
-            arrow.instance.transform.setTranslation(arrow.pos);
+            arrow.modelInstance.transform.setTranslation(arrow.pos);
+            Models.setColor(arrow.modelInstance, ColorAttribute.Diffuse, arrow.color);
         }
     }
 }

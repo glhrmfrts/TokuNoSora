@@ -8,15 +8,19 @@ import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Disposable;
+import com.habboi.tns.rendering.Fragment;
+import com.habboi.tns.rendering.Scene;
 import com.habboi.tns.utils.Models;
-import com.habboi.tns.rendering.GameRenderer;
 
 import java.util.ArrayList;
 
 public class World1 extends World {
-    static class Line {
+    static class Line extends Fragment {
         float offset;
-        ModelInstance instance;
+
+        public Line(ModelInstance modelInstance) {
+            super(modelInstance);
+        }
     }
 
     static final float DEPTH = 800f;
@@ -58,38 +62,45 @@ public class World1 extends World {
         spread = DEPTH / count;
         planeInstance = new ModelInstance(Models.createPlaneModel(colors.get(0)));
         planeInstance.transform.setToScaling(WIDTH, 1, DEPTH);
-        instances.add(planeInstance);
 
         Model lineModel = Models.createLineModel(colors.get(1), new int[]{-1, 0, 0, 1, 0, 0});
         for (int i = 0; i < count; i++) {
-            Line line = new Line();
+            Line line = new Line(new ModelInstance(lineModel));
             line.offset = spread * i;
-            line.instance = new ModelInstance(lineModel);
-            line.instance.transform.setToScaling(WIDTH, 1, 1);
+            line.modelInstance.transform.setToScaling(WIDTH, 1, 1);
             lines.add(line);
-            instances.add(line.instance);
 
-            Models.setColor(line.instance, ColorAttribute.Emissive, colors.get(1));
+            Models.setColor(line.modelInstance, ColorAttribute.Emissive, colors.get(1));
         }
 
         Model verticalLineModel = Models.createLineModel(colors.get(1), new int[]{0, 0, -1, 0, 0, 1});
         verticalCount = (int)(WIDTH / (int)spread);
         for (int i = 0; i < verticalCount; i++) {
-            Line line = new Line();
+            Line line = new Line(new ModelInstance(verticalLineModel));
             line.offset = spread * i;
-            line.instance = new ModelInstance(verticalLineModel);
-            line.instance.transform.setToScaling(1, 1, DEPTH);
+            line.modelInstance.transform.setToScaling(1, 1, DEPTH);
             verticalLines.add(line);
-            instances.add(line.instance);
 
-            Models.setColor(line.instance, ColorAttribute.Emissive, colors.get(1));
+            Models.setColor(line.modelInstance, ColorAttribute.Emissive, colors.get(1));
         }
 
         sunInstance = new ModelInstance(Models.getSunModel());
         sunInstance.transform.setToScaling(SUN_RADIUS, SUN_RADIUS, 1);
-        instances.add(sunInstance);
 
         background = new Texture(Gdx.files.internal("background.jpg"));
+    }
+
+    @Override
+    public void addToScene(Scene scene) {
+        for (Line line : lines) {
+            scene.add(line);
+        }
+        for (Line line : verticalLines) {
+            scene.add(line);
+        }
+
+        scene.add(new Fragment(sunInstance).glow(true));
+        scene.add(new Fragment(planeInstance).glow(true));
     }
 
     @Override
@@ -113,12 +124,12 @@ public class World1 extends World {
           Line line = lines.get(i);
           line.offset += offset;
           line.offset %= DEPTH;
-          line.instance.transform.setTranslation(centerX, shipPos.y + DISTANCE_Y, base + line.offset);
+          line.modelInstance.transform.setTranslation(centerX, shipPos.y + DISTANCE_Y, base + line.offset);
         }
 
         for (int i = 0; i < verticalCount; i++) {
           Line line = verticalLines.get(i);
-          line.instance.transform.setTranslation(centerX - (WIDTH * 0.5f) + line.offset, shipPos.y + DISTANCE_Y, shipPos.z + DEPTH * 0.25f);
+          line.modelInstance.transform.setTranslation(centerX - (WIDTH * 0.5f) + line.offset, shipPos.y + DISTANCE_Y, shipPos.z + DEPTH * 0.25f);
         }
 
         sunInstance.transform.setTranslation(centerX, shipPos.y + DISTANCE_Y, shipPos.z - DEPTH);
@@ -126,7 +137,7 @@ public class World1 extends World {
 
     @Override
     public void dispose() {
-        lines.get(0).instance.model.dispose();
+        lines.get(0).modelInstance.model.dispose();
         lines.clear();
     }
 }

@@ -3,7 +3,8 @@ package com.habboi.tns.level;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.habboi.tns.rendering.GameRenderer;
+import com.habboi.tns.rendering.Fragment;
+import com.habboi.tns.rendering.Scene;
 import com.habboi.tns.shapes.Shape;
 import com.habboi.tns.shapes.TileShape;
 import com.habboi.tns.shapes.TunnelShape;
@@ -25,6 +26,11 @@ public class Tunnel extends LevelObject {
 
     public boolean isShipInside() {
         return ((TunnelShape)shape).isInside;
+    }
+
+    @Override
+    public void addToScene(Scene scene) {
+        scene.add(new Fragment(modelInstance));
     }
 
     @Override

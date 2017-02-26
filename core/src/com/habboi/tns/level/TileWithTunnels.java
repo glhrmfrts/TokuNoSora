@@ -2,6 +2,8 @@ package com.habboi.tns.level;
 
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Vector3;
+import com.habboi.tns.rendering.Fragment;
+import com.habboi.tns.rendering.Scene;
 import com.habboi.tns.shapes.TileShape;
 import com.habboi.tns.shapes.TWTShape;
 import com.habboi.tns.worlds.World;
@@ -22,6 +24,11 @@ public class TileWithTunnels extends LevelObject {
 
         modelInstance = new ModelInstance(world.getTileWithTunnelsModel(size, tunnels, preset));
         modelInstance.transform.setTranslation(pos.x, pos.y, pos.z);
+    }
+
+    @Override
+    public void addToScene(Scene scene) {
+        scene.add(new Fragment(modelInstance));
     }
     
     @Override

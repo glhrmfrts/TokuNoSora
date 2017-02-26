@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Disposable;
-import com.habboi.tns.rendering.GameRenderer;
+import com.habboi.tns.rendering.Scene;
 import com.habboi.tns.utils.Models;
 
 import java.util.ArrayList;
@@ -28,7 +28,6 @@ public abstract class World implements Disposable {
     ArrayList<int[][]> tilePresets = new ArrayList<>();
     ArrayList<Model> tunnelModels = new ArrayList<>();
     Map<String, Model> tileWithTunnelsModels = new HashMap<>();
-    ArrayList<ModelInstance> instances = new ArrayList<>();
 
     public World(float gravityFactor, float oxygenFactor, String name, String music) {
         this.gravityFactor = gravityFactor;
@@ -48,10 +47,6 @@ public abstract class World implements Disposable {
     public void addTileModel(int[][] model) {
         tilePresets.add(model);
         tileModels.add(Models.createTileModel(colors, model));
-    }
-
-    public ArrayList<ModelInstance> getInstances() {
-      return instances;
     }
 
     public Model getTileModel(int i) {
@@ -77,6 +72,7 @@ public abstract class World implements Disposable {
         return tunnelModels.get(i);
     }
 
+    public abstract void addToScene(Scene scene);
     public abstract void reset();
     public abstract void update(Vector3 shipPos, float vel, float dt);
     public abstract void setCenterX(float centerX);

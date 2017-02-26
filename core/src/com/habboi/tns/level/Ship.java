@@ -10,7 +10,8 @@ import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.habboi.tns.Game;
 import com.habboi.tns.GameConfig;
-import com.habboi.tns.rendering.ShipRenderer;
+import com.habboi.tns.rendering.Fragment;
+import com.habboi.tns.rendering.Scene;
 import com.habboi.tns.shapes.Shape;
 import com.habboi.tns.shapes.TileShape;
 import com.habboi.tns.utils.InputManager;
@@ -78,8 +79,6 @@ public class Ship extends LevelObject {
         this.spawnPos.set(shape.pos);
         this.controller = controller;
         this.game = game;
-
-        renderer = ShipRenderer.getInstance();
         
         modelInstance = new ModelInstance(game.getAssetManager().get("models/shipbody.obj", Model.class));  
         outlineInstance = new ModelInstance(game.getAssetManager().get("models/shipoutline.obj", Model.class));
@@ -94,6 +93,12 @@ public class Ship extends LevelObject {
         }
 
         reset();
+    }
+
+    @Override
+    public void addToScene(Scene scene) {
+        scene.add(new Fragment(modelInstance));
+        scene.add(new Fragment(outlineInstance));
     }
 
     public boolean canReceiveInput() {

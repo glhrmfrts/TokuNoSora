@@ -3,6 +3,8 @@ package com.habboi.tns.level;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Vector3;
+import com.habboi.tns.rendering.Fragment;
+import com.habboi.tns.rendering.Scene;
 import com.habboi.tns.shapes.TileShape;
 import com.habboi.tns.utils.Models;
 import com.habboi.tns.worlds.World;
@@ -41,6 +43,11 @@ public class Tile extends LevelObject {
         modelInstance = new ModelInstance(model);
         modelInstance.transform.setToScaling(size.x, size.y, size.z);
         modelInstance.transform.setTranslation(tileShape.pos.x - size.x / 2, tileShape.pos.y - size.y / 2, tileShape.pos.z + size.z / 2);
+    }
+
+    @Override
+    public void addToScene(Scene scene) {
+        scene.add(new Fragment(modelInstance));
     }
 
     @Override

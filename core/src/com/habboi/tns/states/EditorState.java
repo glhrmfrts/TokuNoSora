@@ -22,7 +22,9 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.habboi.tns.Game;
 import com.habboi.tns.level.Level;
-import com.habboi.tns.rendering.GameRenderer;
+import com.habboi.tns.rendering.Fragment;
+import com.habboi.tns.rendering.Renderer;
+import com.habboi.tns.rendering.Scene;
 import com.habboi.tns.shapes.TileShape;
 import com.habboi.tns.ui.Button;
 import com.habboi.tns.ui.Text;
@@ -49,7 +51,6 @@ public class EditorState extends GameState {
     OrthographicCamera orthoCam;
     World world;
     PerspectiveCamera worldCam;
-    PerspectiveCamera levelCam;
     Grid grid;
     UI ui;
     BoundingBox gridBounds = new BoundingBox();
@@ -61,6 +62,7 @@ public class EditorState extends GameState {
     ModelInstance newObjectModel;
     Vector3 newObjectPos = new Vector3();
     Vector3 newObjectSize = new Vector3();
+    Scene scene;
     float camDist = CAM_DIST;
 
     public EditorState(Game g, World world) {
@@ -76,19 +78,21 @@ public class EditorState extends GameState {
         level = new Level();
         level.setWorld(world);
 
-        worldCam = game.getRenderer().getWorldRenderer().getCamera();
+        scene = new Scene(game.getWidth(), game.getHeight());
+        level.addToScene(scene);
+
+        worldCam = scene.getCamera();
         worldCam.position.x = 0;
         worldCam.position.y = CAM_Y;
         worldCam.position.z = 0;
 
-        levelCam = game.getRenderer().getLevelRenderer().getCamera();
-        levelCam.position.set(worldCam.position);
-
         newTileModel = new ModelInstance(Models.createTileModel(world.colors, Models.solidTileIndices(0)));
         Models.setColor(newTileModel, ColorAttribute.Diffuse, new Color(0x00000077));
+        scene.add(new Fragment(newTileModel));
 
         newTunnelModel = new ModelInstance(Models.createTunnelModel(world.colors, new int[]{0, 0}));
         Models.setColor(newTunnelModel, ColorAttribute.Diffuse, new Color(0x00000077));
+        scene.add(new Fragment(newTunnelModel));
 
         grid = new Grid(20, 50);
         ui = new UI(this);
@@ -131,7 +135,7 @@ public class EditorState extends GameState {
     }
 
     private void handleGridInput(float dt) {
-        Ray ray = levelCam.getPickRay(InputManager.getInstance().screenX, InputManager.getInstance().screenY);
+        Ray ray = worldCam.getPickRay(InputManager.getInstance().screenX, InputManager.getInstance().screenY);
 
         for (int z = 0; z < grid.depth; z++) {
             for (int x = 0; x < grid.width; x++) {
@@ -188,9 +192,7 @@ public class EditorState extends GameState {
         }
 
         worldCam.lookAt(worldCam.position.x, CAM_LOOKAT_Y, worldCam.position.z - camDist);
-        levelCam.lookAt(worldCam.position.x, CAM_LOOKAT_Y, worldCam.position.z - camDist);
 
-        levelCam.position.set(worldCam.position);
         bgPos.set(worldCam.position);
         bgPos.y -= WORLD_DIST;
 
@@ -203,24 +205,15 @@ public class EditorState extends GameState {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
         worldCam.update();
-        levelCam.update();
-
-        // need to render things manually
-        GameRenderer gr = game.getRenderer();
-        gr.begin(worldCam);
-
-        gr.worldRenderer.render(world, game.getSpriteBatch(), gr.batch, gr.environment);
-        gr.batch.setCamera(levelCam);
-
-        Gdx.gl.glClear(GL20.GL_DEPTH_BUFFER_BIT);
-        grid.render(gr.batch, gr.environment);
 
         newObjectModel.transform.setToTranslationAndScaling(
                 newObjectPos.x, newObjectPos.y, -newObjectPos.z,
                 newObjectSize.x, newObjectSize.y, newObjectSize.z
         );
-        gr.batch.render(newObjectModel, gr.environment);
-        gr.end();
+
+        // need to render things manually
+        Renderer gr = game.getRenderer();
+        gr.render(scene);
 
         ui.render();
     }
@@ -267,11 +260,18 @@ class Grid {
 
             ModelInstance line = new ModelInstance(horizontalLineModel);
             line.transform.setTranslation(0, 0, -z);
-            lines.add(line);
+          lines.add(line);
         }
     }
 
-    public void setY(float y) {
+    public void addToScene(Scene scene) {
+        scene.add(new Fragment(planeInstance));
+      for (ModelInstance line : lines) {
+            scene.add(new Fragment(line));
+      }
+    }
+
+  public void setY(float y) {
         this.y = y;
 
         planeInstance.transform.getTranslation(translation);
@@ -291,13 +291,6 @@ class Grid {
         verticalLineModel.dispose();
         lines.clear();
         createModels();
-    }
-
-    public void render(ModelBatch batch, Environment environment) {
-        batch.render(planeInstance, environment);
-        for (ModelInstance line : lines) {
-            batch.render(line, environment);
-        }
     }
 }
 

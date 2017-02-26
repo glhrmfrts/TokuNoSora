@@ -8,8 +8,9 @@ import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.Renderable;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.math.Vector3;
+import com.habboi.tns.rendering.Fragment;
+import com.habboi.tns.rendering.Scene;
 import com.habboi.tns.utils.Models;
-import com.habboi.tns.rendering.GameRenderer;
 
 import java.util.ArrayList;
 
@@ -17,9 +18,12 @@ import java.util.ArrayList;
  * Created by w7 on 03/07/2016.
  */
 public class World2 extends World {
-    static class Rect {
+    static class Rect extends Fragment {
         float zOffset;
-        ModelInstance instance;
+
+        public Rect(ModelInstance modelInstance) {
+            super(modelInstance);
+        }
     }
 
     static final float DEPTH = 800f;
@@ -62,15 +66,20 @@ public class World2 extends World {
         spread = DEPTH / count;
         Model rectModel = Models.createLineRectModel(colors.get(3));
         for (int i = 0; i < count; i++) {
-            Rect rect = new Rect();
+            Rect rect = new Rect(new ModelInstance(rectModel));
             rect.zOffset = spread * i;
-            rect.instance = new ModelInstance(rectModel);
-            rect.instance.transform.setToScaling(WIDTH, HEIGHT, 1);
+            rect.modelInstance.transform.setToScaling(WIDTH, HEIGHT, 1);
             rects.add(rect);
-            instances.add(rect.instance);
         }
 
         background = new Texture(Gdx.files.internal("background.jpg"));
+    }
+
+    @Override
+    public void addToScene(Scene scene) {
+        for (Rect rect : rects) {
+            scene.add(rect);
+        }
     }
 
     @Override
@@ -97,22 +106,22 @@ public class World2 extends World {
         }
 
         int rev = count - litRect;
-        Models.setColor(rects.get(rev % count).instance, ColorAttribute.Diffuse, colors.get(1));
-        Models.setColor(rects.get((rev + 1) % count).instance, ColorAttribute.Diffuse, colors.get(3));
+        Models.setColor(rects.get(rev % count).modelInstance, ColorAttribute.Diffuse, colors.get(1));
+        Models.setColor(rects.get((rev + 1) % count).modelInstance, ColorAttribute.Diffuse, colors.get(3));
 
         final float base = shipPos.z - DEPTH/1.1f;
         for (int i = 0; i < count; i++) {
           Rect rect = rects.get(i);
           rect.zOffset += offset;
           rect.zOffset %= DEPTH;
-          rect.instance.transform.setTranslation(centerX, 0, base + rect.zOffset);
+          rect.modelInstance.transform.setTranslation(centerX, 0, base + rect.zOffset);
         }
         offset = 0;
     }
 
     @Override
     public void dispose() {
-        rects.get(0).instance.model.dispose();
+        rects.get(0).modelInstance.model.dispose();
         rects.clear();
     }
 }

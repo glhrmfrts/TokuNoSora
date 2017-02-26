@@ -1,6 +1,7 @@
 package com.habboi.tns.level;
 
 import com.badlogic.gdx.math.Vector3;
+import com.habboi.tns.rendering.Scene;
 import com.habboi.tns.shapes.Shape;
 import com.habboi.tns.worlds.Universe;
 import com.habboi.tns.worlds.World;
@@ -65,6 +66,14 @@ public class Level {
     public void addFinish(Vector3 pos, float radius) {
         Finish finish = new Finish(pos, radius);
         objects.add(finish);
+    }
+
+    public void addToScene(Scene scene) {
+      world.addToScene(scene);
+
+      for (LevelObject obj : objects) {
+        obj.addToScene(scene);
+      }
     }
 
     public String getName() {

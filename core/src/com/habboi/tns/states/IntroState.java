@@ -11,7 +11,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
 import com.habboi.tns.Game;
 import com.habboi.tns.GameConfig;
-import com.habboi.tns.rendering.GameRenderer;
+import com.habboi.tns.rendering.Renderer;
+import com.habboi.tns.rendering.Scene;
 import com.habboi.tns.ui.GameTweenManager;
 import com.habboi.tns.ui.Rect;
 import com.habboi.tns.ui.Text;
@@ -36,6 +37,7 @@ public class IntroState extends GameState {
     Text titleText;
     World world;
     PerspectiveCamera worldCam;
+    Scene scene;
 
     public IntroState(Game g) {
         super(g);
@@ -45,7 +47,8 @@ public class IntroState extends GameState {
     public void create() {
         world = Universe.get().worlds.get(0);
 
-        worldCam = game.getRenderer().getWorldRenderer().getCamera();
+        scene = new Scene(game.getWidth(), game.getHeight());
+        worldCam = scene.getCamera();
         worldCam.position.set(0, MenuState.CAM_Y, 0);
         worldCam.lookAt(0, MenuState.CAM_LOOKAT_Y, -MenuState.CAM_DIST);
 
@@ -144,10 +147,10 @@ public class IntroState extends GameState {
     public void render() {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
-        GameRenderer gr = game.getRenderer();
+        Renderer gr = game.getRenderer();
         SpriteBatch sb = game.getSpriteBatch();
 
-        gr.render(world);
+        gr.render(scene);
 
         sb.begin();
         titleText.draw(sb, true);
