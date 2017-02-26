@@ -101,7 +101,7 @@ public class World1 extends World {
         }
 
         scene.add(new Fragment(sunInstance).glow(true));
-        scene.add(new Fragment(planeInstance).glow(true));
+        scene.add(new Fragment(planeInstance));
     }
 
     @Override

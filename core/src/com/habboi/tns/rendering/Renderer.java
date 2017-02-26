@@ -2,7 +2,6 @@ package com.habboi.tns.rendering;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -20,15 +19,12 @@ import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder.VertexInfo;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import com.habboi.tns.Game;
 import com.habboi.tns.GameConfig;
-import com.habboi.tns.level.Level;
 import com.habboi.tns.rendering.shaders.BasicShader;
 import com.habboi.tns.rendering.shaders.BlurShader;
 import com.habboi.tns.rendering.shaders.FXAAShader;
@@ -77,7 +73,10 @@ public class Renderer implements Disposable {
         depthBuffers.add(new FrameBuffer(Pixmap.Format.RGBA8888, buffersWidth, buffersHeight, true));
         textureBuffers.add(new FrameBuffer(Pixmap.Format.RGBA8888, buffersWidth, buffersHeight, false));
         textureBuffers.add(new FrameBuffer(Pixmap.Format.RGBA8888, buffersWidth, buffersHeight, false));
-        blurTempBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, buffersWidth, buffersHeight, false);
+        textureBuffers.add(new FrameBuffer(Pixmap.Format.RGBA8888, buffersWidth / 2, buffersHeight / 2, false));
+        textureBuffers.add(new FrameBuffer(Pixmap.Format.RGBA8888, buffersWidth / 2, buffersHeight / 2, false));
+        textureBuffers.add(new FrameBuffer(Pixmap.Format.RGBA8888, buffersWidth / 2, buffersHeight / 2, false));
+        blurTempBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, buffersWidth / 2, buffersHeight / 2, false);
 
         shaderBasic = new BasicShader();
         shaderBlur = new BlurShader();
@@ -250,9 +249,12 @@ public class Renderer implements Disposable {
 
         Gdx.gl.glDepthMask(false);
         if (isNice) {
-            drawBlur(depthBuffers.get(1), textureBuffers.get(0), 10, 0.50f, 0.1f);
-            drawGlowMap(depthBuffers.get(0), textureBuffers.get(0), textureBuffers.get(1));
-            drawBlur(textureBuffers.get(1), textureBuffers.get(0), 10, 0.25f, 0.1f);
+            drawBlur(depthBuffers.get(1), textureBuffers.get(2), 10, 1.5f, 0.2f);
+            drawBlur(textureBuffers.get(2), textureBuffers.get(3), 10, 1.5f, 0.2f);
+            //drawBlur(textureBuffers.get(3), textureBuffers.get(4), 10, 1.5f, 0.2f);
+            drawGlowMap(depthBuffers.get(0), textureBuffers.get(3), textureBuffers.get(1));
+            //drawBlur(textureBuffers.get(1), textureBuffers.get(0), 10, 0.25f, 0.1f);
+            drawFXAA(textureBuffers.get(1), textureBuffers.get(0));
             drawFXAA(textureBuffers.get(0), null);
         } else {
             drawFXAA(depthBuffers.get(0), null);
