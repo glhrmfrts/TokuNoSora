@@ -1,11 +1,13 @@
 package com.habboi.tns.rendering;
 
-        import com.badlogic.gdx.graphics.g3d.ModelInstance;
-        import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.graphics.g3d.environment.PointLight;
+import com.badlogic.gdx.utils.Array;
 
 public class Fragment {
 
   public ModelInstance modelInstance;
+  public PointLight light;
   public Array<Fragment> children = new Array<>();
   private boolean glow;
   private boolean visible = true;

@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.Renderable;
 import com.badlogic.gdx.graphics.g3d.attributes.BlendingAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+import com.badlogic.gdx.graphics.g3d.attributes.FloatAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.IntAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
@@ -546,6 +547,7 @@ public final class Models {
 
         final Material material = new Material();
         material.set(IntAttribute.createCullFace(GL20.GL_NONE));
+        material.set(FloatAttribute.createShininess(2f));
 
         int[] bottomColors = colorsIndices[0];
         int[] topColors = colorsIndices[1];

@@ -137,6 +137,7 @@ public class Arrows extends LevelObject {
                 }
             }
 
+            arrow.light.position.set(arrow.pos);
             arrow.modelInstance.transform.setTranslation(arrow.pos);
             Models.setColor(arrow.modelInstance, ColorAttribute.Diffuse, arrow.color);
         }

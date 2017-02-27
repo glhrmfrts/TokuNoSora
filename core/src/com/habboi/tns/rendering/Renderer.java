@@ -40,7 +40,6 @@ public class Renderer implements Disposable {
     public static final int GraphicLevelFast = 1;
 
     Game game;
-    Environment environment;
     ModelBatch batch;
     SpriteBatch sb;
     Renderable tmpRenderable = new Renderable();
@@ -59,10 +58,6 @@ public class Renderer implements Disposable {
 
     public Renderer(Game g) {
         game = g;
-
-        environment = new Environment();
-        environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.4f, 0.4f, 0.4f, 1f));
-        environment.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
 
         batch = new ModelBatch();
         sb = new SpriteBatch();
@@ -229,8 +224,9 @@ public class Renderer implements Disposable {
 
         batch.begin(scene.getCamera());
 
+        Environment environment = scene.getEnvironment();
         for (Fragment fragment : scene.getFragments()) {
-            renderFragment(fragment);
+            renderFragment(fragment, environment);
         }
 
         batch.end();
@@ -260,7 +256,7 @@ public class Renderer implements Disposable {
         Gdx.gl.glDepthMask(true);
     }
 
-    private void renderFragment(Fragment fragment) {
+    private void renderFragment(Fragment fragment, Environment environment) {
       if (!fragment.visible()) return;
 
       if (fragment.modelInstance != null) {
@@ -273,7 +269,7 @@ public class Renderer implements Disposable {
       }
 
       for (Fragment f : fragment.children) {
-        renderFragment(f);
+        renderFragment(f, environment);
       }
     }
 
