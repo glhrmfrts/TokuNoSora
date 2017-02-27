@@ -23,7 +23,7 @@ public class World2 extends World {
 
         public Rect(ModelInstance modelInstance) {
             super(modelInstance);
-            glow = true;
+            glow(true);
         }
     }
 
@@ -74,13 +74,16 @@ public class World2 extends World {
         }
 
         background = new Texture(Gdx.files.internal("background.jpg"));
+
+        fragment = new Fragment(null);
+        for (Rect rect : rects) {
+            fragment.children.add(rect);
+        }
     }
 
     @Override
     public void addToScene(Scene scene) {
-        for (Rect rect : rects) {
-            scene.add(rect);
-        }
+        scene.add(fragment);
     }
 
     @Override

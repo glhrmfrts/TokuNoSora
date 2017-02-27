@@ -38,7 +38,7 @@ public class ShipExplosion extends LevelObject {
     public ShipExplosion() {
         for (int i = 0; i < TRIANGLE_COUNT; i++) {
             Triangle triangle = new Triangle(new ModelInstance(Models.getTriangleModel()));
-            triangle.visible = false;
+            triangle.visible(false);
 
             triangle.modelInstance.transform.setToScaling(0.25f, 0.25f, 0.25f);
 
@@ -75,7 +75,7 @@ public class ShipExplosion extends LevelObject {
         origin = pos;
 
         for (Triangle t : triangles) {
-            t.visible = true;
+            t.visible(true);
 
             t.pos.set(pos.x, pos.y, pos.z);
             t.vel.set(randomVel(), randomVel(1), randomVel());
@@ -110,7 +110,7 @@ public class ShipExplosion extends LevelObject {
             time = 0;
             isExploding = false;
             for (Triangle t : triangles) {
-                t.visible = false;
+                t.visible(false);
             }
 
             System.out.println("explosionEnd");

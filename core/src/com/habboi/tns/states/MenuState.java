@@ -4,8 +4,6 @@ import aurelienribon.tweenengine.Tween;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -22,7 +20,6 @@ import com.habboi.tns.ui.MainMenu;
 import com.habboi.tns.ui.Menu;
 import com.habboi.tns.ui.Rect;
 import com.habboi.tns.ui.Text;
-import com.habboi.tns.utils.FontManager;
 import com.habboi.tns.utils.InputManager;
 import com.habboi.tns.utils.MusicWrapper;
 
@@ -61,7 +58,14 @@ public class MenuState extends GameState {
         scene = new Scene(game.getWidth(), game.getHeight());
 
         world = Universe.get().worlds.get(0);
-        world.addToScene(scene);
+
+        for (World w : Universe.get().worlds) {
+          w.addToScene(scene);
+          w.fragment.visible(false);
+        }
+
+        world.fragment.visible(true);
+        scene.setBackgroundTexture(world.background);
 
         worldCam = scene.getCamera();
         worldCam.position.x = 0;
@@ -69,16 +73,16 @@ public class MenuState extends GameState {
 
         screenRect = game.getRenderer().getScreenRect();
         GameTweenManager.get().register("menu_state_in", new GameTweenManager.GameTween() {
-        @Override
-        public Tween tween() {
-          return screenRect.getFadeTween(1, 0, 2);
-        }
+          @Override
+          public Tween tween() {
+            return screenRect.getFadeTween(1, 0, 2);
+          }
 
-        @Override
-        public void onComplete() {
+          @Override
+          public void onComplete() {
 
-                }
-            });
+          }
+        });
     }
 
     @Override
@@ -109,7 +113,10 @@ public class MenuState extends GameState {
     }
 
     public void setWorld(World newWorld) {
+        world.fragment.visible(false);
         world = newWorld;
+        world.fragment.visible(true);
+        scene.setBackgroundTexture(world.background);
     }
 
     public void addMenu(Menu menu) {

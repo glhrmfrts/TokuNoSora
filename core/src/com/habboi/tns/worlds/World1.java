@@ -1,13 +1,11 @@
 package com.habboi.tns.worlds;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.Disposable;
 import com.habboi.tns.rendering.Fragment;
 import com.habboi.tns.rendering.Scene;
 import com.habboi.tns.utils.Models;
@@ -20,7 +18,7 @@ public class World1 extends World {
 
         public Line(ModelInstance modelInstance) {
             super(modelInstance);
-            glow = true;
+            glow(true);
         }
     }
 
@@ -89,19 +87,22 @@ public class World1 extends World {
         sunInstance.transform.setToScaling(SUN_RADIUS, SUN_RADIUS, 1);
 
         background = new Texture(Gdx.files.internal("background.jpg"));
+
+        fragment = new Fragment(null);
+        fragment.children.add(new Fragment(sunInstance).glow(true));
+        fragment.children.add(new Fragment(planeInstance));
+
+        for (Line line : lines) {
+            fragment.children.add(line);
+        }
+        for (Line line : verticalLines) {
+            fragment.children.add(line);
+        }
     }
 
     @Override
     public void addToScene(Scene scene) {
-        for (Line line : lines) {
-            scene.add(line);
-        }
-        for (Line line : verticalLines) {
-            scene.add(line);
-        }
-
-        scene.add(new Fragment(sunInstance).glow(true));
-        scene.add(new Fragment(planeInstance));
+        scene.add(fragment);
     }
 
     @Override

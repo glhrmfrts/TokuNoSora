@@ -38,7 +38,7 @@ public class Collectible extends LevelObject {
 
     @Override
     public void reset() {
-        fragment.visible = true;
+        fragment.visible(true);
         collected = false;
     }
 

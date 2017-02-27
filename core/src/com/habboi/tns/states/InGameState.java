@@ -76,6 +76,8 @@ public class InGameState extends GameState {
 
         scene = new Scene(game.getWidth(), game.getHeight());
         level.addToScene(scene);
+        level.getWorld().fragment.visible(true);
+        scene.setBackgroundTexture(level.getWorld().background);
 
         ShipController sc = new ShipController(false);
         ship = new Ship(game, level.getShipPos(), sc);

@@ -28,8 +28,7 @@ public class LoadingAllState extends LoadingState {
     am.load("audio/intro.ogg", Music.class);
     am.load("audio/menu.ogg", Music.class);
     am.load("audio/world1.ogg", Music.class);
-    am.load("models/shipbody.obj", Model.class);
-    am.load("models/shipoutline.obj", Model.class);
+    am.load("models/ship.obj", Model.class);
 
     fm.loadFont(Game.MAIN_FONT, Game.MAIN_FONT_SIZE);
     fm.loadFont(Game.MAIN_FONT, Game.HUGE_FONT_SIZE);

@@ -2,10 +2,12 @@ package com.habboi.tns.level;
 
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.Renderable;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+import com.badlogic.gdx.graphics.g3d.attributes.IntAttribute;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.habboi.tns.Game;
@@ -37,7 +39,6 @@ public class Ship extends LevelObject {
     public float oxygenLevel;
     public TileShape shape;
     public Fragment body;
-    public Fragment outline;
 
     public static ShipExplosion explosion;
 
@@ -56,6 +57,8 @@ public class Ship extends LevelObject {
     static final float BOUNCE_FACTOR = 0.35f;
     static final float OXYGEN_FILL_FACTOR = 0.50f;
     static final Color COLOR = new Color(0xff);
+    static final float MODEL_SCALE = 0.1f;
+    static final float MODEL_OFFSET = 0.5f;
 
     Vector3 spawnPos = new Vector3();
     Game game;
@@ -81,8 +84,8 @@ public class Ship extends LevelObject {
         this.controller = controller;
         this.game = game;
         
-        body = new Fragment(new ModelInstance(game.getAssetManager().get("models/shipbody.obj", Model.class)));
-        outline = new Fragment(new ModelInstance(game.getAssetManager().get("models/shipoutline.obj", Model.class)));
+        body = new Fragment(new ModelInstance(game.getAssetManager().get("models/ship.obj", Model.class)));
+        body.modelInstance.materials.get(2).set(IntAttribute.createCullFace(GL20.GL_FRONT_FACE));
         
         bounceSound = game.getAssetManager().get("audio/bounce.wav");
         explosionSound = game.getAssetManager().get("audio/explosion.wav");
@@ -99,7 +102,6 @@ public class Ship extends LevelObject {
     @Override
     public void addToScene(Scene scene) {
         scene.add(body);
-        scene.add(outline);
         explosion.addToScene(scene);
     }
 
@@ -133,8 +135,7 @@ public class Ship extends LevelObject {
         collected = 0;
         raceTime = 0;
         raceTimeMillis = 0;
-        body.visible = true;
-        outline.visible = true;
+        body.visible(true);
         fillOxygen = false;
         oxygenLevel = 1;
         state = State.WAITING;
@@ -143,12 +144,9 @@ public class Ship extends LevelObject {
         explosion.reset();
 
         body.modelInstance.transform.setToRotation(1, 1, 1, 0);
-        outline.modelInstance.transform.setToRotation(1, 1, 1, 0);
 
-        body.modelInstance.transform.setToScaling(BODY_WIDTH*BODY_OFF - 0.1f, BODY_HEIGHT*BODY_OFF, BODY_DEPTH*BODY_OFF);
+        body.modelInstance.transform.setToScaling(BODY_WIDTH*BODY_OFF*MODEL_SCALE, BODY_HEIGHT*BODY_OFF*MODEL_SCALE, BODY_DEPTH*BODY_OFF*MODEL_SCALE);
         body.modelInstance.transform.rotate(Vector3.Y, 180);
-        outline.modelInstance.transform.setToScaling(BODY_WIDTH - 0.1f, BODY_HEIGHT, BODY_DEPTH);
-        outline.modelInstance.transform.rotate(Vector3.Y, 180);
     }
 
     public void accelerate(float amount) {
@@ -168,8 +166,7 @@ public class Ship extends LevelObject {
     }
 
     public void update(float dt) {
-        body.modelInstance.transform.setTranslation(shape.pos);
-        outline.modelInstance.transform.setTranslation(shape.pos);
+        body.modelInstance.transform.setTranslation(shape.pos.x, shape.pos.y, shape.pos.z + MODEL_OFFSET);
 
         if (state == State.WAITING || state == State.ENDED || state == State.EXPLODED) {
             return;
@@ -238,8 +235,7 @@ public class Ship extends LevelObject {
     public void doExplode() {
         if (state == State.PLAYABLE) {
             vel.set(0, 0, 0);
-            body.visible = false;
-            outline.visible = false;
+            body.visible(false);
             explosion.explode(shape.pos);
             explosionSound.play(GameConfig.get().getSfxVolume());
         }
@@ -256,8 +252,7 @@ public class Ship extends LevelObject {
             if (readyToEnd) {
                 state = State.ENDED;
                 finish = (Finish) obj;
-                body.visible = false;
-                outline.visible = false;
+                body.visible(false);
             }
             return false;
         }
@@ -270,7 +265,6 @@ public class Ship extends LevelObject {
 
             body.modelInstance.transform.getRotation(rotationGetter);
             body.modelInstance.transform.rotate(Vector3.Z, (float)(-rotationGetter.x * 180 / Math.PI));
-            outline.modelInstance.transform.rotate(Vector3.Z, (float)(-rotationGetter.x * 180 / Math.PI));
 
             if (obj.effect == TouchEffect.EXPLODE) {
                 doExplode();
@@ -308,7 +302,6 @@ public class Ship extends LevelObject {
                 dSlide = c.slide;
 
                 body.modelInstance.transform.rotate(Vector3.Z, dSlide);
-                outline.modelInstance.transform.rotate(Vector3.Z, dSlide);
             }
         }
         return true;

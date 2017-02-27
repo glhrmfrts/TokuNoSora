@@ -223,17 +223,14 @@ public class Renderer implements Disposable {
         depthBuffers.get(0).begin();
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
+        sb.begin();
+        sb.draw(scene.getBackgroundTexture(), 0, 0);
+        sb.end();
+
         batch.begin(scene.getCamera());
 
         for (Fragment fragment : scene.getFragments()) {
-            if (!fragment.visible) continue;
-
-            batch.render(fragment.modelInstance, environment);
-            if (fragment.glow) {
-                glowingFragments.add(fragment);
-            } else {
-                occludingFragments.add(fragment);
-            }
+            renderFragment(fragment);
         }
 
         batch.end();
@@ -261,6 +258,23 @@ public class Renderer implements Disposable {
         }
 
         Gdx.gl.glDepthMask(true);
+    }
+
+    private void renderFragment(Fragment fragment) {
+      if (!fragment.visible()) return;
+
+      if (fragment.modelInstance != null) {
+        batch.render(fragment.modelInstance, environment);
+        if (fragment.glow()) {
+          glowingFragments.add(fragment);
+        } else {
+          occludingFragments.add(fragment);
+        }
+      }
+
+      for (Fragment f : fragment.children) {
+        renderFragment(f);
+      }
     }
 
     @Override

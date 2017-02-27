@@ -49,6 +49,7 @@ public class IntroState extends GameState {
 
         scene = new Scene(game.getWidth(), game.getHeight());
         world.addToScene(scene);
+        scene.setBackgroundTexture(world.background);
 
         worldCam = scene.getCamera();
         worldCam.position.set(0, MenuState.CAM_Y, 0);

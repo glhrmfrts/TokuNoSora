@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Disposable;
+import com.habboi.tns.rendering.Fragment;
 import com.habboi.tns.rendering.Scene;
 import com.habboi.tns.utils.Models;
 
@@ -23,6 +24,7 @@ public abstract class World implements Disposable {
     public String music;
     public ArrayList<Color> colors = new ArrayList<>();
     public Texture background;
+    public Fragment fragment;
 
     ArrayList<Model> tileModels = new ArrayList<>();
     ArrayList<int[][]> tilePresets = new ArrayList<>();
