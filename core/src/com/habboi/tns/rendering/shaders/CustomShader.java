@@ -17,11 +17,18 @@ public class CustomShader implements Shader {
     Matrix4 _matrix = new Matrix4();
     ShaderProgram program;
     Camera camera;
+    Environment environment;
     int u_worldTrans;
     int u_normalTrans;
     int u_projViewTrans;
     int u_diffuseColor;
     int u_ambientLight;
+    DirectionalLightUniform[NUM_DIRECTIONAL_LIGHTS] u_directionalLights = new DirectionalLightUniform[NUM_DIRECTIONAL_LIGHTS];
+    PointLightUniform[NUM_POINT_LIGHTS] u_pointLights = new PointLightUniform[NUM_POINT_LIGHTS];
+
+    public CustomShader(Environment environment) {
+        this.environment = environment;
+    }
 
     @Override
     public void init() {
@@ -37,6 +44,24 @@ public class CustomShader implements Shader {
         u_projViewTrans = program.getUniformLocation("u_projViewTrans");
         u_diffuseColor = program.getUniformLocation("u_diffuseColor");
         u_ambientLight = program.getUniformLocation("u_ambientLight");
+
+        for (int i = 0; i < NUM_POINT_LIGHTS; i++) {
+            u_pointLights[i] = new PointLightUniform();
+            u_pointLights[i].color = program.getUniformLocation("u_pointLights[" + i + "].color");
+            u_pointLights[i].pos = program.getUniformLocation("u_pointLights[" + i + "].pos");
+            u_pointLights[i].range = program.getUniformLocation("u_pointLights[" + i + "].range");
+            u_pointLights[i].intensity = program.getUniformLocation("u_pointLights[" + i + "].intensity");
+            u_pointLights[i].constAtt = program.getUniformLocation("u_pointLights[" + i + "].constAtt");
+            u_pointLights[i].linearAtt = program.getUniformLocation("u_pointLights[" + i + "].linearAtt");
+            u_pointLights[i].expAtt = program.getUniformLocation("u_pointLights[" + i + "].expAtt");
+        }
+
+        for (int i = 0; i < NUM_DIRECTIONAL_LIGHTS; i++) {
+            u_directionalLights[i] = new DirectionalLightUniform();
+            u_directionalLights[i].color = program.getUniformLocation("u_directionalLights[" + i + "].color");
+            u_directionalLights[i].dir = program.getUniformLocation("u_directionalLights[" + i + "].dir");
+            u_directionalLights[i].intensity = program.getUniformLocation("u_directionalLights[" + i + "].intensity");
+        }
     }
 
     @Override
@@ -55,11 +80,40 @@ public class CustomShader implements Shader {
         program.begin();
         program.setUniformMatrix(u_projViewTrans, camera.combined);
 
+        bindLights();
+
         Gdx.gl.glEnable(GL20.GL_CULL_FACE);
         Gdx.gl.glCullFace(GL20.GL_BACK);
         Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+    }
+
+    private void bindLights() {
+        final DirectionalLightsAttribute dla = environment.get(DirectionalLightsAttribute.class, DirectionalLightsAttribute.Type);
+        final Array<DirectionalLight> dirs = dla == null ? null : dla.lights;
+        final PointLightsAttribute pla = environment.get(PointLightsAttribute.class, PointLightsAttribute.Type);
+        final Array<PointLight> points = pla == null ? null : pla.lights;
+
+        if (dirs != null)
+            for (int i = 0; i < dirs.size; i++) {
+                DirectionalLight light = dirs.get(i);
+                program.setUniformf(u_directionalLights[i].color, light.color.r, light.color.g, light.color.b, light.color.a);
+                program.setUniformf(u_directionalLights[i].dir, light.direction.x, light.direction.y, light.direction.z);
+                program.setUniformf(u_directionalLights[i].intensity, 0.5f);
+            }
+
+        if (points != null)
+            for (int i = 0; i < points.size; i++) {
+                PointLight light = points.get(i);
+                program.setUniformf(u_pointLights[i].color, light.color.r, light.color.g, light.color.b, light.color.a);
+                program.setUniformf(u_pointLights[i].pos, light.direction.x, light.direction.y, light.direction.z);
+                program.setUniformf(u_pointLights[i].range, 0.5f);
+                program.setUniformf(u_pointLights[i].intensity, 0.5f);
+                program.setUniformf(u_pointLights[i].constAtt, 0.5f);
+                program.setUniformf(u_pointLights[i].linearAtt, 0.5f);
+                program.setUniformf(u_pointLights[i].expAtt, 0.5f);
+            }
     }
 
     @Override
