@@ -126,6 +126,7 @@ public class Level {
                 Collectible c = (Collectible)obj;
                 if (!c.collected) {
                     ship.onCollect(c);
+                    c.onCollect(ship);
                     c.collected = true;
                     c.fragment.visible(false);
                 }

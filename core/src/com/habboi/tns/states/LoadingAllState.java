@@ -23,6 +23,7 @@ public class LoadingAllState extends LoadingState {
     AssetManager am = game.getAssetManager();
     FontManager fm = FontManager.get();
     am.load("audio/bounce.wav", Sound.class);
+    am.load("audio/collect.wav", Sound.class);
     am.load("audio/explosion.wav", Sound.class);
     am.load("audio/select.wav", Sound.class);
     am.load("audio/intro.ogg", Music.class);

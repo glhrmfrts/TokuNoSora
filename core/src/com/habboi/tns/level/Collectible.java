@@ -1,7 +1,10 @@
 package com.habboi.tns.level;
 
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.habboi.tns.Game;
+import com.habboi.tns.GameConfig;
 import com.habboi.tns.rendering.Fragment;
 import com.habboi.tns.rendering.Scene;
 import com.habboi.tns.shapes.TileShape;
@@ -15,6 +18,8 @@ public class Collectible extends LevelObject {
 
     public boolean collected;
     public Fragment fragment;
+    private CollectibleExplosion explosion;
+    private Sound sound;
 
     public Collectible(Vector3 pos, World world) {
         pos.x = pos.x * TileShape.TILE_WIDTH;
@@ -29,11 +34,16 @@ public class Collectible extends LevelObject {
         fragment = new Fragment(new ModelInstance(Models.getPrismModel()));
         fragment.modelInstance.transform.setToScaling(tileShape.half);
         fragment.modelInstance.transform.setTranslation(pos);
+
+        explosion = new CollectibleExplosion(Level.GRAVITY * world.gravityFactor);
+
+        sound = Game.getInstance().getAssetManager().get("audio/collect.wav", Sound.class);
     }
 
     @Override
     public void addToScene(Scene scene) {
         scene.add(fragment);
+        explosion.addToScene(scene);
     }
 
     @Override
@@ -44,5 +54,36 @@ public class Collectible extends LevelObject {
 
     @Override
     public void update(float dt) {
+        explosion.update(dt);
     }
+
+    public void onCollect(Ship ship) {
+        explosion.maxVel = -ship.vel.z;
+        explosion.explode(shape.getPos(), 0, 0.5f, 1);
+
+        sound.play(GameConfig.get().getSfxVolume());
+    }
+
+    static class CollectibleExplosion extends Explosion {
+
+        public static final int PRISM_COUNT = 12;
+
+        public CollectibleExplosion(float gravity) {
+            super(PRISM_COUNT, Models.getPrismModel());
+
+            minVel = 1f;
+            maxVel = 7f;
+            minRot = 130f;
+            maxRot = 250f;
+            this.gravity = gravity;
+
+            for (Explosion.Piece p : pieces) {
+                p.modelInstance.transform.setToScaling(0.1f, 0.1f, 0.1f);
+            }
+        }
+
+        @Override
+        public void onExplosionEnd() {
+        }
+    }  
 }

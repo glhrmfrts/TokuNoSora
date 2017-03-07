@@ -910,8 +910,9 @@ public final class Models {
         MeshPartBuilder partBuilder;
         VertexInfo v1, v2, v3, v4;
 
-        final Material material = new Material(new BlendingAttribute(true, GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA, 0.75f));
+        final Material material = new Material();
         material.set(IntAttribute.createCullFace(GL20.GL_NONE));
+        material.set(ColorAttribute.createDiffuse(Color.WHITE));
 
         int[] bottomColors = colorsIndices[0];
         int[] topColors = colorsIndices[1];

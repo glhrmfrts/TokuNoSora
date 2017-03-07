@@ -46,6 +46,8 @@ public class Game extends ApplicationAdapter {
     static final float STEP_SECONDS = 0.016f;
     static final float STEP	    = STEP_SECONDS * 1000f;
 
+    static Game instance;
+
     long accumUpdateTime;
     long lastUpdateTime = -1;
 
@@ -65,8 +67,14 @@ public class Game extends ApplicationAdapter {
     int width;
     int height;
 
+    public static Game getInstance() {
+        return instance;
+    }
+
     @Override
     public void create () {
+        instance = this;
+        
         appType = Gdx.app.getType();
         width = Gdx.graphics.getWidth();
         height = Gdx.graphics.getHeight();
@@ -155,7 +163,7 @@ public class Game extends ApplicationAdapter {
     }
 
     public GameState setState(GameState state) {
-        GameState prev = popState();
+        GameState prev = popState(true);
         addState(state);
         return prev;
     }
@@ -168,13 +176,17 @@ public class Game extends ApplicationAdapter {
     }
 
     public GameState popState() {
+        return popState(false);
+    }
+
+    public GameState popState(boolean set) {
         GameState state = stateStack.pop();
         if (state != null) {
             state.dispose();
         }
         if (stateStack.size() > 0) {
             currentState = stateStack.peek();
-            currentState.resume();
+            if (!set) currentState.resume();
         } else {
             currentState = null;
         }

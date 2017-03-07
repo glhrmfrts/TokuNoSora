@@ -16,6 +16,7 @@ import com.habboi.tns.rendering.Fragment;
 import com.habboi.tns.rendering.Scene;
 import com.habboi.tns.shapes.Shape;
 import com.habboi.tns.shapes.TileShape;
+import com.habboi.tns.utils.EventEmitter;
 import com.habboi.tns.utils.InputManager;
 import com.habboi.tns.utils.Models;
 
@@ -313,4 +314,23 @@ public class Ship extends LevelObject {
             dBounce = 0;
         }
     }
+
+    static class ShipExplosion extends Explosion {
+
+        public static final int TRIANGLE_COUNT = 12;
+
+        public ShipExplosion() {
+            super(TRIANGLE_COUNT, Models.getTriangleModel());
+
+            for (Explosion.Piece p : pieces) {
+                p.modelInstance.transform.setToScaling(0.25f, 0.25f, 0.25f);
+                Models.setColor(p.modelInstance, ColorAttribute.Diffuse, Ship.COLOR);
+            }
+        }
+
+        @Override
+        public void onExplosionEnd() {
+            EventEmitter.get().notify("ship_explosion_end", null);
+        }
+    } 
 }

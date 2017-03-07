@@ -85,6 +85,8 @@ public class LevelParser {
       TouchEffect effect = TouchEffect.fromName(tempFields.getOrDefault("effect", ""));
 
       level.addTileWithTunnels(pos, size, preset, tunnels, effect);
+
+      tempFields.remove("effect");
     }
 
     if (objectName.equals("arrows")) {

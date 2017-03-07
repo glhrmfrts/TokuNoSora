@@ -1,0 +1,2 @@
+- Collectible's explosions
+- Fix ship rendering (something to do with the glow map)
