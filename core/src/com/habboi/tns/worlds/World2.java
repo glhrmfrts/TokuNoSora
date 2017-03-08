@@ -42,7 +42,7 @@ public class World2 extends World {
     ArrayList<Rect> rects = new ArrayList<>();
 
     public World2() {
-        super(2, 2, "Andromeda", "nice.ogg");
+        super(2, 2, "Andromeda", "audio/world1.ogg");
         addColor(0x64f7f7);
         addColor(0x458696);
         addColor(0x989822);

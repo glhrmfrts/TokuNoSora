@@ -21,7 +21,7 @@ public class Scene {
 
     environment = new Environment();
     environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.4f, 0.4f, 0.4f, 1f));
-    environment.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -0.2f, 0.2f, 0.8f));
+    environment.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, 0, -0.4f, 0.8f));
   }
 
   public void add(Fragment fragment) {

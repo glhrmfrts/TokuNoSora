@@ -29,6 +29,7 @@ import com.habboi.tns.rendering.shaders.BasicShader;
 import com.habboi.tns.rendering.shaders.BlurShader;
 import com.habboi.tns.rendering.shaders.FXAAShader;
 import com.habboi.tns.rendering.shaders.GlowShader;
+import com.habboi.tns.rendering.shaders.LitShader;
 import com.habboi.tns.ui.Rect;
 
 import java.util.ArrayList;
@@ -59,7 +60,7 @@ public class Renderer implements Disposable {
     public Renderer(Game g) {
         game = g;
 
-        batch = new ModelBatch();
+        batch = new ModelBatch(new LitShader.Provider());
         sb = new SpriteBatch();
 
         int buffersWidth = game.getWidth();

@@ -273,6 +273,7 @@ public final class Models {
         final int segments = SUN_SEGMENTS;
         final float deltaTheta = 2*(float)Math.PI / segments;
         final Material material = new Material(IntAttribute.createCullFace(GL20.GL_NONE));
+        material.set(ColorAttribute.createDiffuse(Color.WHITE));
         //material.set(new BlendingAttribute(true, GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA, 0.75f));
 
         float theta = 0;
@@ -547,7 +548,7 @@ public final class Models {
 
         final Material material = new Material();
         material.set(IntAttribute.createCullFace(GL20.GL_NONE));
-        material.set(FloatAttribute.createShininess(2f));
+        material.set(ColorAttribute.createDiffuse(Color.WHITE));
 
         int[] bottomColors = colorsIndices[0];
         int[] topColors = colorsIndices[1];
@@ -706,6 +707,7 @@ public final class Models {
 
         final Material material = new Material();
         material.set(IntAttribute.createCullFace(GL20.GL_NONE));
+        material.set(ColorAttribute.createDiffuse(Color.WHITE));
 
         final int segments = TUNNEL_SEGMENTS;
         final float deltaTheta = (float)Math.PI / segments;
@@ -803,6 +805,7 @@ public final class Models {
 
         final Material material = new Material();
         material.set(IntAttribute.createCullFace(GL20.GL_NONE));
+        material.set(ColorAttribute.createDiffuse(Color.WHITE));
 
         final int segments = TUNNEL_SEGMENTS;
         final float deltaTheta = (float)Math.PI / segments;
@@ -1016,6 +1019,7 @@ public final class Models {
 
         Material tunnelMaterial = new Material();
         tunnelMaterial.set(IntAttribute.createCullFace(GL20.GL_NONE));
+        tunnelMaterial.set(ColorAttribute.createDiffuse(Color.WHITE));
 
         final int segments = TUNNEL_SEGMENTS;
         final float deltaTheta = (float)Math.PI / segments;
