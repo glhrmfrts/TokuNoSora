@@ -11,28 +11,6 @@ struct PointLight
 };
 */
 
-#if defined(asdqwd)
-vec4 getDirectionalLightColor(const in DirectionalLight light, in vec3 normal)
-{
-  float diffuse = max(0.0, dot(normalize(normal), -light.direction));
-  return vec4(light.color * min(diffuse, 1.0), 1.0);
-}
-
-vec4 getPointLightColor(const in PointLight light, in vec3 worldPos, in vec3 normal)
-{
-  vec3 dif = worldPos - light.position;
-  float dist = length(dif);
-  normal = normalize(normal);
-
-  float diffuse = max(0.0, dot(normal, -normalize(dif)));
-
-  float difInf = 1.0;//-min(dist / length(light.range), 1.0);
-
-  //float totalAtt = light.constAtt + light.linearAtt*dist + light.linearAtt*(dist*dist);
-  return vec4(light.color * diffuse, 1.0) /** ((light.intensity+diffuse) / totalAtt)*/ * difInf;
-}
-#endif
-
 //uniform int u_numDirLights;
 //uniform int u_numPointLights;
 uniform vec4 u_diffuseColor;
@@ -52,11 +30,15 @@ struct PointLight
 {
   vec3 color;
   vec3 position;
+  float intensity;
 };
 uniform PointLight u_pointLights[numPointLights];
 #endif
 
+#if defined(colorFlag)
 varying vec4 v_color;
+#endif
+
 varying vec3 v_worldPos;
 
 #if defined(normalFlag)
@@ -65,7 +47,11 @@ varying vec3 v_normal;
 
 void main()
 {
+#if defined(colorFlag)
   vec4 color = v_color * u_diffuseColor;
+#else
+  vec4 color = u_diffuseColor;
+#endif
 
 #if defined(ambientLightFlag)
   vec3 light = vec4(u_ambientLight, 1.0);
@@ -86,7 +72,7 @@ void main()
     float difInf = 1.0 - min(dist / length(vec3(3, 3, 3)), 1.0);
     float att = 0.7 + (0.1 * dist) + (0.00008 * dist * dist);
 
-    light += u_pointLights[i].color * (diffuse/att) * difInf;
+    light += u_pointLights[i].color * (diffuse/att) * difInf * u_pointLights[i].intensity;
   }
 #endif
 

@@ -17,6 +17,6 @@ public class Arrow extends Fragment {
         this.color.set(color);
         this.pos.set(pos);
 
-        light = new PointLight().set(color, pos, 2f);
+        light = new PointLight().set(color, pos, 1f);
     }
 }

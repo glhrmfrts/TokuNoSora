@@ -16,7 +16,6 @@ import com.habboi.tns.rendering.Renderer;
 import com.habboi.tns.rendering.Scene;
 import com.habboi.tns.ui.GameTweenManager;
 import com.habboi.tns.level.Ship;
-import com.habboi.tns.level.ShipCamera;
 import com.habboi.tns.level.ShipController;
 import com.habboi.tns.level.Level;
 import com.habboi.tns.ui.PauseMenu;
@@ -41,7 +40,6 @@ public class InGameState extends GameState {
     OrthographicCamera orthoCam;
     Level level;
     Ship ship;
-    ShipCamera shipCam;
     Text levelCompleteText;
     Text raceTimeText;
     Text fpsText;
@@ -80,10 +78,9 @@ public class InGameState extends GameState {
         scene.setBackgroundTexture(level.getWorld().background);
 
         ShipController sc = new ShipController(false);
-        ship = new Ship(game, level.getShipPos(), sc);
+        ship = new Ship(game, level.getShipPos(), sc, scene.getCamera());
         ship.addToScene(scene);
-
-        shipCam = new ShipCamera(ship, scene.getCamera());
+        game.setShip(ship);
 
         level.setShip(ship);
 
@@ -216,7 +213,7 @@ public class InGameState extends GameState {
         timesLevelCompleted = LevelScore.get().getTimesCompleted(level.getName());
         paused = false;
         ship.reset();
-        shipCam.reset();
+        ship.getCam().reset();
         level.reset();
         level.getWorld().reset();
         gtm.start("start");
@@ -264,7 +261,7 @@ public class InGameState extends GameState {
 
         level.update(dt);
         ship.update(dt);
-        shipCam.update(dt);
+        ship.getCam().update(dt);
     }
 
     @Override
@@ -348,10 +345,10 @@ class HUD {
             null,
             Color.WHITE
         );
-        oxygenText.pos.set(w - BORDER_WIDTH - OXYGEN_RECT_WIDTH, BORDER_WIDTH + oxygenText.bounds.height);
+        oxygenText.pos.set(w - BORDER_WIDTH - OXYGEN_RECT_WIDTH - oxygenText.getBounds().x - BORDER_WIDTH, BORDER_WIDTH + oxygenText.bounds.height + OXYGEN_RECT_HEIGHT / 4);
 
         oxygenRectOutline = new Rect(
-            new Rectangle(w - BORDER_WIDTH - OXYGEN_RECT_WIDTH, BORDER_WIDTH + oxygenText.bounds.height + 10, OXYGEN_RECT_WIDTH, OXYGEN_RECT_HEIGHT),
+            new Rectangle(w - BORDER_WIDTH - OXYGEN_RECT_WIDTH, BORDER_WIDTH, OXYGEN_RECT_WIDTH, OXYGEN_RECT_HEIGHT),
             Color.WHITE
         );
 

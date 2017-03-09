@@ -180,7 +180,7 @@ preset = 1
 
 # WALLS BEFORE FINISH
 :arrows
-pos = -2,-6,656
+pos = -2,-6,655
 rotation = 0,-90,-90
 movement = 1,0,0
 depth = 3
@@ -189,7 +189,7 @@ color = 1
 pad = 0.5
 
 :arrows
-pos = 5,-6,656
+pos = 5,-6,655
 rotation = 0,90,-90
 movement = -1,0,0
 depth = 3

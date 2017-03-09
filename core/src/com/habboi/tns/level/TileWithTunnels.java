@@ -2,6 +2,7 @@ package com.habboi.tns.level;
 
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Vector3;
+import com.habboi.tns.Game;
 import com.habboi.tns.rendering.Fragment;
 import com.habboi.tns.rendering.Scene;
 import com.habboi.tns.shapes.TileShape;
@@ -11,6 +12,7 @@ import com.habboi.tns.worlds.World;
 public class TileWithTunnels extends LevelObject {
 
     public Fragment fragment;
+    boolean isShipInsideDt;
 
     public TileWithTunnels(Vector3 pos, Vector3 size, int preset, int[] tunnels, TouchEffect effect, World world) {
         size.x *= TileShape.TILE_WIDTH;
@@ -39,5 +41,15 @@ public class TileWithTunnels extends LevelObject {
 
     @Override
     public void update(float dt) {
+        ShipCamera cam = Game.getInstance().getShip().getCam();
+        boolean isShipInside = ((TWTShape) shape).isShipInside;
+
+        if (isShipInside) {
+            cam.distanceY = ShipCamera.DISTANCE_Y + shape.getSize().y;
+        } else if (isShipInsideDt) {
+            cam.distanceY = ShipCamera.DISTANCE_Y;
+        }
+
+        isShipInsideDt = isShipInside;
     }
 }

@@ -193,7 +193,7 @@ public class Renderer implements Disposable {
 
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
-        Gdx.gl.glDisable(GL20.GL_CULL_FACE);
+        //Gdx.gl.glDisable(GL20.GL_CULL_FACE);
         Gdx.gl.glColorMask(false, false, false, false);
         for (Fragment f : occludingFragments) {
             f.modelInstance.getRenderable(tmpRenderable);
@@ -205,7 +205,7 @@ public class Renderer implements Disposable {
             f.modelInstance.getRenderable(tmpRenderable);
             shaderBasic.render(tmpRenderable);
         }
-        Gdx.gl.glEnable(GL20.GL_CULL_FACE);
+        //Gdx.gl.glEnable(GL20.GL_CULL_FACE);
 
         shaderBasic.end();
 

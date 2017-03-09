@@ -12,6 +12,7 @@ public class ShipCamera {
     static final float LOOK_AT_OFFSET = 2;
     Ship ship;
     PerspectiveCamera cam;
+    float distanceY;
 
     public ShipCamera(Ship ship, PerspectiveCamera cam) {
         this.ship = ship;
@@ -20,14 +21,15 @@ public class ShipCamera {
     }
 
     public void reset() {
-        cam.position.set(ship.shape.pos.x, ship.shape.pos.y + DISTANCE_Y, ship.shape.pos.z + DISTANCE_Z);
+        distanceY = DISTANCE_Y;
+        cam.position.set(ship.shape.pos.x, ship.shape.pos.y + distanceY, ship.shape.pos.z + DISTANCE_Z);
     }
 
     private void setCameraPos(Vector3 pos, float dt) {
         final float max = 80;
 
         float dx = pos.x - cam.position.x;
-        float dy = pos.y + DISTANCE_Y - cam.position.y;
+        float dy = pos.y + distanceY - cam.position.y;
         float dz = pos.z + DISTANCE_Z - cam.position.z;
 
         dx = Math.min(Math.abs(dx), max) * Math.copySign(1, dx);

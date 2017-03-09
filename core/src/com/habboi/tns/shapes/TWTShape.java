@@ -8,6 +8,7 @@ public class TWTShape implements Shape {
 
     public Vector3 pos = new Vector3();
     public Vector3 size = new Vector3();
+    public boolean isShipInside;
 
     Shape.CollisionInfo collisionInfo;
     ArrayList<Shape> shapes = new ArrayList<>();
@@ -48,14 +49,22 @@ public class TWTShape implements Shape {
 
     @Override
     public boolean checkCollision(Shape abstractShape) {
+        boolean inside = false;
+        boolean col = false;
+
         for (Shape shape : shapes) {
             if (shape.checkCollision(abstractShape)) {
                 collisionInfo = shape.getCollisionInfo();
-                return true;
+                col = true;
+            }
+
+            if (shape instanceof TunnelShape && !inside) {
+                inside = ((TunnelShape)shape).isInside;
             }
         }
 
-        return false;
+        isShipInside = inside;
+        return col;
     }
 
     @Override

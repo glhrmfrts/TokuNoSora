@@ -15,6 +15,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.habboi.tns.level.Level;
 import com.habboi.tns.level.LevelLoader;
+import com.habboi.tns.level.Ship;
 import com.habboi.tns.rendering.Renderer;
 import com.habboi.tns.states.MenuState;
 import com.habboi.tns.utils.Models;
@@ -61,6 +62,7 @@ public class Game extends ApplicationAdapter {
     boolean stateChanged;
     boolean exiting;
     float fpsTime;
+    Ship ship;
 
     AssetManager am;
     Application.ApplicationType appType;
@@ -160,6 +162,14 @@ public class Game extends ApplicationAdapter {
 
     public AssetManager getAssetManager() {
         return am;
+    }
+
+    public Ship getShip() {
+        return ship;
+    }
+
+    public void setShip(Ship ship) {
+        this.ship = ship;
     }
 
     public GameState setState(GameState state) {

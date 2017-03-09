@@ -3,9 +3,9 @@ package com.habboi.tns.level;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
-import com.badlogic.gdx.graphics.g3d.Renderable;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.IntAttribute;
 import com.badlogic.gdx.math.Quaternion;
@@ -73,8 +73,9 @@ public class Ship extends LevelObject {
     float steerAccul;
     boolean fillOxygen;
     Quaternion rotationGetter = new Quaternion();
+    ShipCamera cam;
 
-    public Ship(Game game, Vector3 pos, ShipController controller) {
+    public Ship(Game game, Vector3 pos, ShipController controller, PerspectiveCamera camera) {
         shape = new TileShape(
                               new Vector3(pos.x*TileShape.TILE_WIDTH, pos.y*TileShape.TILE_HEIGHT, -pos.z*TileShape.TILE_DEPTH),
                               new Vector3(BODY_WIDTH, BODY_HEIGHT, BODY_DEPTH)
@@ -96,6 +97,8 @@ public class Ship extends LevelObject {
         } else {
             explosion.reset();
         }
+
+        cam = new ShipCamera(this, camera);
 
         reset();
     }
@@ -123,6 +126,10 @@ public class Ship extends LevelObject {
         return (dir == Math.signum(t - c)) ? c : t;
     }
 
+    public ShipCamera getCam() {
+        return cam;
+    }
+
     public String getTimeText() {
         long millis = raceTimeMillis;
         return String.format("%02d:%02d:%02d",
@@ -143,10 +150,11 @@ public class Ship extends LevelObject {
         shape.pos.set(spawnPos);
         vel.set(0, 0, 0);
         explosion.reset();
+        cam.reset();
 
         body.modelInstance.transform.setToRotation(1, 1, 1, 0);
 
-        body.modelInstance.transform.setToScaling(BODY_WIDTH*BODY_OFF*MODEL_SCALE, BODY_HEIGHT*BODY_OFF*MODEL_SCALE, BODY_DEPTH*BODY_OFF*MODEL_SCALE);
+        body.modelInstance.transform.setToScaling(BODY_WIDTH * BODY_OFF * MODEL_SCALE, BODY_HEIGHT * BODY_OFF * MODEL_SCALE, BODY_DEPTH * BODY_OFF * MODEL_SCALE);
         body.modelInstance.transform.rotate(Vector3.Y, 180);
     }
 
