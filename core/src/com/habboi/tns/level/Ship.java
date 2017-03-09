@@ -31,6 +31,8 @@ public class Ship extends LevelObject {
         ENDED
     }
 
+    public static final float MAX_VEL = 65;
+
     public int collected;
     public State state = State.WAITING;
     public Vector3 vel = new Vector3();
@@ -47,7 +49,6 @@ public class Ship extends LevelObject {
     static final float BODY_HEIGHT = 0.5f;
     static final float BODY_DEPTH = 2f;
     static final float BODY_OFF = 0.98f;
-    static final float MAX_VEL = 65;
     static final float STEER_VEL = 10;
     static final float STEER_ACCELERATION = 50;
     static final float MAX_STEER_ACCUL = 300;
@@ -85,10 +86,10 @@ public class Ship extends LevelObject {
         this.spawnPos.set(shape.pos);
         this.controller = controller;
         this.game = game;
-        
+
         body = new Fragment(new ModelInstance(game.getAssetManager().get("models/ship.obj", Model.class)));
         body.modelInstance.materials.get(2).set(IntAttribute.createCullFace(GL20.GL_FRONT_FACE));
-        
+
         bounceSound = game.getAssetManager().get("audio/bounce.wav");
         explosionSound = game.getAssetManager().get("audio/explosion.wav");
 
@@ -340,5 +341,5 @@ public class Ship extends LevelObject {
         public void onExplosionEnd() {
             EventEmitter.get().notify("ship_explosion_end", null);
         }
-    } 
+    }
 }

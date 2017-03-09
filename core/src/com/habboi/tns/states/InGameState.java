@@ -96,7 +96,7 @@ public class InGameState extends GameState {
         fpsText.getPos().set(20, 60);
 
         hud = new HUD();
-        
+
         screenRect = new Rect(new Rectangle(0, 0, game.getWidth(), game.getHeight()));
         pauseMenu = new PauseMenu(this, game);
 
@@ -294,7 +294,7 @@ public class InGameState extends GameState {
             fpsText.draw(sb, false);
         }
         sb.end();
-   
+
         if (paused) {
             pauseMenu.render();
         }
@@ -312,6 +312,9 @@ class HUD {
     static final int FONT_SIZE = Game.MAIN_FONT_SIZE;
     static final int OXYGEN_RECT_WIDTH = 150;
     static final int OXYGEN_RECT_HEIGHT = 30;
+    static final int SPEED_RADIUS = 100;
+    static final int SPEED_X = BORDER_WIDTH + SPEED_RADIUS;
+    static final int SPEED_Y = BORDER_WIDTH;
 
     Text collectedText;
     Rect oxygenRect;
@@ -338,7 +341,7 @@ class HUD {
             Color.WHITE
         );
         timeText.pos.set(w - timeText.bounds.width - BORDER_WIDTH, h - BORDER_WIDTH);
-    
+
         oxygenText = new Text(
             FontManager.get().getFont(Game.MAIN_FONT, FONT_SIZE),
             "oxygen",
@@ -363,6 +366,15 @@ class HUD {
 
         oxygenRect.draw(sr, ShapeRenderer.ShapeType.Filled, false);
         oxygenRectOutline.draw(sr, ShapeRenderer.ShapeType.Line, false);
+
+        sr.begin(ShapeRenderer.ShapeType.Line);
+        sr.arc(SPEED_X, SPEED_Y, SPEED_RADIUS, 0, 180);
+        sr.end();
+
+        float degrees = (180 * (-ship.vel.z / Ship.MAX_VEL));
+        sr.begin(ShapeRenderer.ShapeType.Filled);
+        sr.arc(SPEED_X, SPEED_Y + 5, SPEED_RADIUS - 10, 180 - degrees, degrees);
+        sr.end();
     }
 
     public void renderSprites(Ship ship, SpriteBatch sb) {

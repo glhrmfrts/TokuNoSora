@@ -54,9 +54,9 @@ void main()
 #endif
 
 #if defined(ambientLightFlag)
-  vec3 light = vec4(u_ambientLight, 1.0);
+  vec3 light = u_ambientLight;
 #else
-  vec3 light = vec4(0.5, 0.5, 0.5, 1.0);
+  vec3 light = vec3(0.5, 0.5, 0.5);
 #endif
 
 #if defined(normalFlag)
