@@ -56,6 +56,7 @@ public class World1 extends World {
         addTileModel(1);
 
         addTunnelModel(new int[]{1, 4});
+        addTunnelModel(new int[]{3, 3});
 
         // create the landscape
         count = 40;
