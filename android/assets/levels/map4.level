@@ -1,7 +1,7 @@
 name = Road 1
 number = 1
 world_index = 1
-oxygen_factor = 0.01
+oxygen_factor = 0.05
 center_x = 3
 ship_pos = 3,20,0
 

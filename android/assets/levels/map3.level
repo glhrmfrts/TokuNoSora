@@ -1,0 +1,224 @@
+name = Road 3
+number = 3
+world_index = 0
+oxygen_factor = 0.05
+center_x = 50
+ship_pos = 50,1,0
+
+# sideways {
+
+:tile
+pos = 46,0,0
+size = 2,5,400
+preset = 1
+
+:tile
+pos = 52,0,0
+size = 2,5,400
+preset = 1
+
+:tile
+pos = 46,5,58
+size = 8,3,4
+preset = 4
+
+:tile
+pos = 46,5,138
+size = 8,3,4
+preset = 4
+
+:tile
+pos = 46,5,218
+size = 8,3,4
+preset = 4
+
+:tile
+pos = 46,5,298
+size = 8,3,4
+preset = 4
+
+# } sideways
+
+
+:tile
+pos = 48,0,0
+size = 4,1,40
+preset = 0
+
+:tile
+pos = 48,0,40
+size = 4,1,40
+preset = 1
+
+:collectible
+pos = 50,1,30
+
+:twt
+pos = 48,1,40
+size = 4,4,40
+preset = 2
+tunnels = 0,3
+
+:tile
+pos = 48,0,80
+size = 4,1,40
+preset = 0
+
+:tile
+pos = 48,0,120
+size = 4,1,40
+preset = 1
+
+:collectible
+pos = 50,1,110
+
+:twt
+pos = 48,1,120
+size = 4,4,40
+preset = 2
+tunnels = 1,2
+
+:tile
+pos = 49,0,160
+size = 2,1,40
+preset = 0
+
+:tile
+pos = 49,0,200
+size = 2,1,40
+preset = 1
+
+:collectible
+pos = 50.5,1,190
+
+:twt
+pos = 49,1,200
+size = 2,4,40
+preset = 2
+tunnels = 0
+
+:tile
+pos = 49,0,240
+size = 2,1,40
+preset = 0
+
+:tile
+pos = 49,0,280
+size = 2,1,40
+preset = 1
+
+:collectible
+pos = 49.5,1,270
+
+:twt
+pos = 49,1,280
+size = 2,4,40
+preset = 2
+tunnels = 1
+
+:tile
+pos = 49,0,320
+size = 2,1,80
+preset = 0
+
+
+
+:tile
+pos = 48.75,0,400
+size = 1,1,10
+preset = 0
+
+:tile
+pos = 50.25,0,400
+size = 1,1,10
+preset = 0
+
+:tile
+pos = 48.50,0,410
+size = 1,1,10
+preset = 0
+
+:tile
+pos = 50.50,0,410
+size = 1,1,10
+preset = 0
+
+:tile
+pos = 48.25,0,420
+size = 1,1,10
+preset = 0
+
+:tile
+pos = 50.75,0,420
+size = 1,1,10
+preset = 0
+
+:tile
+pos = 48,0,430
+size = 1,1,10
+preset = 0
+
+:tile
+pos = 51,0,430
+size = 1,1,10
+preset = 0
+
+:tile
+pos = 47.75,0,440
+size = 1,1,10
+preset = 0
+
+:tile
+pos = 51.25,0,440
+size = 1,1,10
+preset = 0
+
+:tile
+pos = 47.50,0,450
+size = 1,1,10
+preset = 0
+
+:tile
+pos = 51.50,0,450
+size = 1,1,10
+preset = 0
+
+:tile
+pos = 47.25,0,460
+size = 1,1,10
+preset = 0
+
+:tile
+pos = 51.75,0,460
+size = 1,1,10
+preset = 0
+
+:tile
+pos = 47,0,470
+size = 1,1,10
+preset = 0
+
+:tile
+pos = 52,0,470
+size = 1,1,10
+preset = 0
+
+:tile
+pos = 46.75,0,480
+size = 1,1,10
+preset = 0
+
+:tile
+pos = 52.25,0,480
+size = 1,1,10
+preset = 0
+
+:tile
+pos = 46.50,0,490
+size = 1,1,10
+preset = 0
+
+:tile
+pos = 52.50,0,490
+size = 1,1,10
+preset = 0
