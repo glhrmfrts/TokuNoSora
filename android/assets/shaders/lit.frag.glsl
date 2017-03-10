@@ -25,7 +25,7 @@ struct DirectionalLight
 uniform DirectionalLight u_dirLights[numDirectionalLights];
 #endif
 
-#if defined(numPointLights)
+#if defined(numPointLights) && (numPointLights > 0)
 struct PointLight
 {
   vec3 color;
@@ -59,12 +59,14 @@ void main()
   vec3 light = vec3(0.5, 0.5, 0.5);
 #endif
 
-#if defined(normalFlag)
+#if defined(numDirectionalLights) && (numDirectionalLights > 0)
   for (int i = 0; i < numDirectionalLights; i++) {
     float diffuse = max(0.0, dot(normalize(v_normal), -u_dirLights[i].direction));
     light += u_dirLights[i].color * min(diffuse, 1.0);
   }
+#endif
 
+#if defined(numPointLights) && (numPointLights > 0)
   for (int i = 0; i < numPointLights; i++) {
     vec3 dif = v_worldPos - u_pointLights[i].position;
     float dist = length(dif);

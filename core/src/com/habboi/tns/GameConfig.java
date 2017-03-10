@@ -29,6 +29,10 @@ public class GameConfig {
         return prefs.getInteger("graphic_level", 0);
     }
 
+    public int getLightsOption() {
+        return prefs.getInteger("lights", 0);
+    }
+
     public float getMusicVolume() {
         return prefs.getFloat("music_volume", 0.5f);
     }
@@ -39,6 +43,10 @@ public class GameConfig {
 
     public void setGraphicLevel(int value) {
         prefs.putInteger("graphic_level", value);
+    }
+
+    public void setLightsOption(int value) {
+        prefs.putInteger("lights", value);
     }
 
     public void setMusicVolume(float value) {

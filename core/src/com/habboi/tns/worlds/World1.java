@@ -1,6 +1,7 @@
 package com.habboi.tns.worlds;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
@@ -62,7 +63,10 @@ public class World1 extends World {
         planeInstance = new ModelInstance(Models.createPlaneModel(colors.get(0)));
         planeInstance.transform.setToScaling(WIDTH, 1, DEPTH);
 
-        Model lineModel = Models.createLineModel(colors.get(1), new int[]{-1, 0, 0, 1, 0, 0});
+        Color lineColor = new Color(colors.get(1));
+        lineColor.a = 0.75f;
+
+        Model lineModel = Models.createLineModel(lineColor, new int[]{-1, 0, 0, 1, 0, 0});
         for (int i = 0; i < count; i++) {
             Line line = new Line(new ModelInstance(lineModel));
             line.offset = spread * i;
@@ -72,7 +76,7 @@ public class World1 extends World {
             Models.setColor(line.modelInstance, ColorAttribute.Emissive, colors.get(1));
         }
 
-        Model verticalLineModel = Models.createLineModel(colors.get(1), new int[]{0, 0, -1, 0, 0, 1});
+        Model verticalLineModel = Models.createLineModel(lineColor, new int[]{0, 0, -1, 0, 0, 1});
         verticalCount = (int)(WIDTH / (int)spread);
         for (int i = 0; i < verticalCount; i++) {
             Line line = new Line(new ModelInstance(verticalLineModel));

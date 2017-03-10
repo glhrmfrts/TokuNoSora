@@ -225,7 +225,7 @@ public class Renderer implements Disposable {
 
         batch.begin(scene.getCamera());
 
-        Environment environment = scene.getEnvironment();
+        Environment environment = scene.getEnvironment(GameConfig.get().getLightsOption() == 0);
         for (Fragment fragment : scene.getFragments()) {
             renderFragment(fragment, environment);
         }

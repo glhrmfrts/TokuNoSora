@@ -1325,6 +1325,7 @@ public final class Models {
 
         final Material material = new Material(ColorAttribute.createDiffuse(color));
         material.set(IntAttribute.createCullFace(GL20.GL_NONE));
+        material.set(new BlendingAttribute(0.75f));
 
         MeshPartBuilder partBuilder = mb.part("line", GL20.GL_LINES,
                                               VertexAttributes.Usage.Position | VertexAttributes.Usage.ColorPacked,

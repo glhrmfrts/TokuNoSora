@@ -24,6 +24,7 @@ public class OptionsMenu extends BaseMenu implements Disposable {
     MenuState menuState;
     SliderOptionsMenuItem musicItem, sfxItem;
     ChoiceOptionsMenuItem graphicsItem;
+    ChoiceOptionsMenuItem lightsItem;
 
     public OptionsMenu(final MenuState state, final Game game) {
         menuState = state;
@@ -71,6 +72,17 @@ public class OptionsMenu extends BaseMenu implements Disposable {
                 }
             });
         items.add(graphicsItem);
+
+        y -= bnds.height;
+        bnds.y -= bnds.height;
+        lightsItem = new ChoiceOptionsMenuItem("lighting", x, y, bnds, new String[]{"on", "off"}, GameConfig.get().getLightsOption());
+        lightsItem.setAction(new MenuItemAction() {
+                @Override
+                public void doAction() {
+                    GameConfig.get().setLightsOption(lightsItem.getSelectedOption());
+                }
+            });
+        items.add(lightsItem);
 
         y -= bnds.height;
         bnds.y -= bnds.height;
