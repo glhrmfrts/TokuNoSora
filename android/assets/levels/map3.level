@@ -122,103 +122,163 @@ size = 2,1,80
 preset = 0
 
 
+# BIFURCATION
 
 :tile
 pos = 48.75,0,400
 size = 1,1,10
-preset = 0
+preset = 1
 
 :tile
 pos = 50.25,0,400
 size = 1,1,10
-preset = 0
+preset = 1
 
 :tile
 pos = 48.50,0,410
 size = 1,1,10
-preset = 0
+preset = 1
 
 :tile
 pos = 50.50,0,410
 size = 1,1,10
-preset = 0
+preset = 1
 
 :tile
 pos = 48.25,0,420
 size = 1,1,10
-preset = 0
+preset = 1
 
 :tile
 pos = 50.75,0,420
 size = 1,1,10
-preset = 0
+preset = 1
 
 :tile
 pos = 48,0,430
 size = 1,1,10
-preset = 0
+preset = 1
 
 :tile
 pos = 51,0,430
 size = 1,1,10
-preset = 0
+preset = 1
 
 :tile
 pos = 47.75,0,440
 size = 1,1,10
-preset = 0
+preset = 1
 
 :tile
 pos = 51.25,0,440
 size = 1,1,10
-preset = 0
+preset = 1
 
 :tile
 pos = 47.50,0,450
 size = 1,1,10
-preset = 0
+preset = 1
 
 :tile
 pos = 51.50,0,450
 size = 1,1,10
-preset = 0
+preset = 1
 
 :tile
 pos = 47.25,0,460
 size = 1,1,10
-preset = 0
+preset = 1
 
 :tile
 pos = 51.75,0,460
 size = 1,1,10
-preset = 0
+preset = 1
 
 :tile
 pos = 47,0,470
 size = 1,1,10
-preset = 0
+preset = 1
 
 :tile
 pos = 52,0,470
 size = 1,1,10
-preset = 0
+preset = 1
 
 :tile
 pos = 46.75,0,480
 size = 1,1,10
-preset = 0
+preset = 1
 
 :tile
 pos = 52.25,0,480
 size = 1,1,10
-preset = 0
+preset = 1
 
 :tile
 pos = 46.50,0,490
 size = 1,1,10
-preset = 0
+preset = 1
 
 :tile
 pos = 52.50,0,490
 size = 1,1,10
+preset = 1
+
+:tile
+pos = 46.25,0,500
+size = 1,1,10
+preset = 1
+
+:tile
+pos = 52.75,0,500
+size = 1,1,10
+preset = 1
+
+:tile
+pos = 46,0,510
+size = 1,1,10
+preset = 1
+
+:tile
+pos = 53,0,510
+size = 1,1,10
+preset = 1
+
+#### AFTER BIFURCATION
+
+:tile
+pos = 46,0,520
+size = 1,1,180
+preset = 4
+
+:tunnel
+pos = 46.5,1,520
+depth = 60
+preset = 1
+
+:tile
+pos = 53,0,520
+size = 1,1,180
+preset = 4
+
+:tunnel
+pos = 53.5,1,520
+depth = 60
+preset = 1
+
+#### AFTER JUMP
+
+:tile
+pos = 43,0,720
+size = 4,12,20
+preset = 2
+
+:tile
+pos = 53,0,720
+size = 4,12,20
+preset = 2
+
+:tile
+pos = 47,0,720
+size = 6,1,60
 preset = 0
