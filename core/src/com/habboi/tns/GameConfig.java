@@ -11,7 +11,12 @@ public class GameConfig {
     public Preferences prefs;
 
     private GameConfig() {
+<<<<<<< HEAD
         prefs = Gdx.app.getPreferences(PREFERENCES_NAME);
+=======
+        values.put("music_volume", (float)0.75f);
+        values.put("sfx_volume", (float)0.75f);
+>>>>>>> 712bb5079c017712a2a912252a2cd0f0d825f62f
     }
 
     public static GameConfig get() {
