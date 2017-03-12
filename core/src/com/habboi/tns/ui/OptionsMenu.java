@@ -23,7 +23,7 @@ public class OptionsMenu extends BaseMenu implements Disposable {
 
     MenuState menuState;
     SliderOptionsMenuItem musicItem, sfxItem;
-    ChoiceOptionsMenuItem graphicsItem;
+    ChoiceOptionsMenuItem fxItem;
     ChoiceOptionsMenuItem lightsItem;
 
     public OptionsMenu(final MenuState state, final Game game) {
@@ -64,14 +64,14 @@ public class OptionsMenu extends BaseMenu implements Disposable {
 
         y -= bnds.height;
         bnds.y -= bnds.height;
-        graphicsItem = new ChoiceOptionsMenuItem("graphics", x, y, bnds, new String[]{"nice", "fast"}, GameConfig.get().getGraphicLevel());
-        graphicsItem.setAction(new MenuItemAction() {
+        fxItem = new ChoiceOptionsMenuItem("fx", x, y, bnds, new String[]{"on", "off"}, GameConfig.get().getFXOption());
+        fxItem.setAction(new MenuItemAction() {
                 @Override
                 public void doAction() {
-                    GameConfig.get().setGraphicLevel(graphicsItem.getSelectedOption());
+                    GameConfig.get().setFXOption(fxItem.getSelectedOption());
                 }
             });
-        items.add(graphicsItem);
+        items.add(fxItem);
 
         y -= bnds.height;
         bnds.y -= bnds.height;

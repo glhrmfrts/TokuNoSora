@@ -25,8 +25,8 @@ public class GameConfig {
         return prefs;
     }
 
-    public int getGraphicLevel() {
-        return prefs.getInteger("graphic_level", 0);
+    public int getFXOption() {
+        return prefs.getInteger("fx", 0);
     }
 
     public int getLightsOption() {
@@ -41,8 +41,8 @@ public class GameConfig {
         return prefs.getFloat("sfx_volume", 0.5f);
     }
 
-    public void setGraphicLevel(int value) {
-        prefs.putInteger("graphic_level", value);
+    public void setFXOption(int value) {
+        prefs.putInteger("fx", value);
     }
 
     public void setLightsOption(int value) {

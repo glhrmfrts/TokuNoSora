@@ -187,9 +187,12 @@ public class InputManager extends ControllerAdapter implements InputProcessor {
         if (axisCode == Xbox.R_STICK_VERTICAL_AXIS) {
             axis[LookVertical] = -value;
         }
+
+        /*
         if (axisCode == Xbox.R_TRIGGER || axisCode == Xbox.L_TRIGGER) {
             axis[Acceleration] = -value;
         }
+        */
 
         return true;
     }
@@ -213,10 +216,12 @@ public class InputManager extends ControllerAdapter implements InputProcessor {
         }
         if (buttonCode == Xbox.L_BUMPER) {
             buttons[Action1]++;
+            axis[Acceleration] = -1;
             return true;
         }
         if (buttonCode == Xbox.R_BUMPER) {
             buttons[Action2]++;
+            axis[Acceleration] = 1;
             return true;
         }
 
@@ -240,10 +245,12 @@ public class InputManager extends ControllerAdapter implements InputProcessor {
         }
         if (buttonCode == Xbox.L_BUMPER) {
             buttons[Action1] = 0;
+            axis[Acceleration] = 0;
             return true;
         }
         if (buttonCode == Xbox.R_BUMPER) {
             buttons[Action2] = 0;
+            axis[Acceleration] = 0;
             return true;
         }
         return false;

@@ -59,7 +59,7 @@ public class Ship extends LevelObject {
     static final float BOUNCE_FACTOR = 0.35f;
     static final float OXYGEN_FILL_FACTOR = 0.50f;
     static final Color COLOR = new Color(0xff);
-    static final float MODEL_SCALE = 0.1f;
+    static final float MODEL_SCALE = 0.08f;
     static final float MODEL_OFFSET = 0.5f;
 
     Vector3 spawnPos = new Vector3();

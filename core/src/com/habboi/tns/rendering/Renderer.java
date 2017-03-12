@@ -37,9 +37,6 @@ import java.util.ArrayList;
 public class Renderer implements Disposable {
     public static final float FOV = 45f;
 
-    public static final int GraphicLevelNice = 0;
-    public static final int GraphicLevelFast = 1;
-
     Game game;
     ModelBatch batch;
     SpriteBatch sb;
@@ -233,7 +230,7 @@ public class Renderer implements Disposable {
         batch.end();
         depthBuffers.get(0).end();
 
-        boolean isNice = GameConfig.get().getGraphicLevel() == GraphicLevelNice;
+        boolean isNice = GameConfig.get().getFXOption() == 0;
         if (isNice) {
             drawGlowingGeometry(scene.getCamera(), depthBuffers.get(1));
         }
@@ -251,7 +248,8 @@ public class Renderer implements Disposable {
             drawFXAA(textureBuffers.get(1), textureBuffers.get(0));
             drawFXAA(textureBuffers.get(0), null);
         } else {
-            drawFXAA(depthBuffers.get(0), null);
+            drawFXAA(depthBuffers.get(0), textureBuffers.get(0));
+            drawGlowMap(depthBuffers.get(0), textureBuffers.get(0), null);
         }
 
         Gdx.gl.glDepthMask(true);

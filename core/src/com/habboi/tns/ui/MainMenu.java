@@ -47,7 +47,7 @@ public class MainMenu extends BaseMenu implements Disposable {
         items.add(new MainMenuItem("editor", x, y, bnds).setAction(new MenuItemAction() {
                 @Override
                 public void doAction() {
-                    state.addMenu(new EditorWorldsMenu(state, game));
+                    //state.addMenu(new EditorWorldsMenu(state, game));
                 }
             }));
 
@@ -62,7 +62,12 @@ public class MainMenu extends BaseMenu implements Disposable {
 
         y -= bnds.height;
         bnds.y -= bnds.height;
-        items.add(new MainMenuItem("credits", x, y, bnds));
+        items.add(new MainMenuItem("credits", x, y, bnds).setAction(new MenuItemAction() {
+            @Override
+            public void doAction() {
+
+            }
+        }));
 
         y -= bnds.height;
         bnds.y -= bnds.height;

@@ -1,7 +1,7 @@
-name = Road 3
+name = Road 3 (WIP)
 number = 3
 world_index = 0
-oxygen_factor = 0.05
+oxygen_factor = 0.03
 center_x = 50
 ship_pos = 50,1,0
 

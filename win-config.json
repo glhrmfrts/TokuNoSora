@@ -1,0 +1,10 @@
+{
+    "platform": "windows64",
+    "jdk": "C:/Users/w7/Downloads/java-1.8.0-openjdk-1.8.0.121-1.b13.ojdkbuild.windows.x86_64.zip",
+    "executable": "tns",
+    "classpath": [
+        "desktop/build/libs/tns-0.1.jar"
+    ],
+    "mainclass": "com.habboi.tns.desktop.DesktopLauncher",
+    "output": "out-packr-win"
+}
